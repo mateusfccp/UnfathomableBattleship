@@ -1,4 +1,4 @@
-﻿namespace UnfathomableBattleShip
+﻿namespace UnfathomableBattleship
 {
     partial class Form1
     {
