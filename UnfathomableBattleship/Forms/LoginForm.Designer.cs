@@ -40,35 +40,37 @@
             // 
             // usernameTextbox
             // 
-            usernameTextbox.Location = new Point(284, 314);
+            usernameTextbox.Location = new Point(325, 428);
+            usernameTextbox.Margin = new Padding(3, 4, 3, 4);
             usernameTextbox.Name = "usernameTextbox";
-            usernameTextbox.Size = new Size(200, 23);
+            usernameTextbox.Size = new Size(228, 27);
             usernameTextbox.TabIndex = 0;
             // 
             // usernameLabel
             // 
             usernameLabel.AutoSize = true;
-            usernameLabel.Location = new Point(284, 296);
+            usernameLabel.Location = new Point(325, 404);
             usernameLabel.Name = "usernameLabel";
-            usernameLabel.Size = new Size(47, 15);
+            usernameLabel.Size = new Size(59, 20);
             usernameLabel.TabIndex = 2;
             usernameLabel.Text = "Usuario";
             // 
             // passwordLabel
             // 
             passwordLabel.AutoSize = true;
-            passwordLabel.Location = new Point(284, 348);
-            passwordLabel.Margin = new Padding(3, 8, 3, 0);
+            passwordLabel.Location = new Point(325, 470);
+            passwordLabel.Margin = new Padding(3, 11, 3, 0);
             passwordLabel.Name = "passwordLabel";
-            passwordLabel.Size = new Size(67, 15);
+            passwordLabel.Size = new Size(83, 20);
             passwordLabel.TabIndex = 3;
             passwordLabel.Text = "Contraseña";
             // 
             // passwordTextBox
             // 
-            passwordTextBox.Location = new Point(284, 366);
+            passwordTextBox.Location = new Point(325, 494);
+            passwordTextBox.Margin = new Padding(3, 4, 3, 4);
             passwordTextBox.Name = "passwordTextBox";
-            passwordTextBox.Size = new Size(200, 23);
+            passwordTextBox.Size = new Size(228, 27);
             passwordTextBox.TabIndex = 4;
             passwordTextBox.UseSystemPasswordChar = true;
             // 
@@ -87,7 +89,8 @@
             tableLayoutPanel.Controls.Add(loginButton, 1, 5);
             tableLayoutPanel.Controls.Add(createAccountButton, 1, 6);
             tableLayoutPanel.Dock = DockStyle.Fill;
-            tableLayoutPanel.Location = new Point(8, 8);
+            tableLayoutPanel.Location = new Point(9, 11);
+            tableLayoutPanel.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel.Name = "tableLayoutPanel";
             tableLayoutPanel.RowCount = 8;
             tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 80F));
@@ -98,7 +101,7 @@
             tableLayoutPanel.RowStyles.Add(new RowStyle());
             tableLayoutPanel.RowStyles.Add(new RowStyle());
             tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            tableLayoutPanel.Size = new Size(768, 545);
+            tableLayoutPanel.Size = new Size(878, 726);
             tableLayoutPanel.TabIndex = 5;
             // 
             // loginButton
@@ -106,11 +109,11 @@
             loginButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             loginButton.AutoSize = true;
             loginButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            loginButton.Location = new Point(284, 404);
-            loginButton.Margin = new Padding(3, 12, 3, 3);
+            loginButton.Location = new Point(325, 541);
+            loginButton.Margin = new Padding(3, 16, 3, 4);
             loginButton.Name = "loginButton";
-            loginButton.Padding = new Padding(2);
-            loginButton.Size = new Size(200, 29);
+            loginButton.Padding = new Padding(2, 3, 2, 3);
+            loginButton.Size = new Size(228, 36);
             loginButton.TabIndex = 5;
             loginButton.Text = "Login";
             loginButton.UseVisualStyleBackColor = true;
@@ -121,24 +124,27 @@
             createAccountButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             createAccountButton.AutoSize = true;
             createAccountButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            createAccountButton.Location = new Point(284, 439);
+            createAccountButton.Location = new Point(325, 585);
+            createAccountButton.Margin = new Padding(3, 4, 3, 4);
             createAccountButton.Name = "createAccountButton";
-            createAccountButton.Padding = new Padding(2);
-            createAccountButton.Size = new Size(200, 29);
+            createAccountButton.Padding = new Padding(2, 3, 2, 3);
+            createAccountButton.Size = new Size(228, 36);
             createAccountButton.TabIndex = 6;
             createAccountButton.Text = "Crear cuenta";
             createAccountButton.UseVisualStyleBackColor = true;
+            createAccountButton.Click += createAccountButton_Click;
             // 
             // LoginForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 561);
+            ClientSize = new Size(896, 748);
             Controls.Add(tableLayoutPanel);
             FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;
             Name = "LoginForm";
-            Padding = new Padding(8);
+            Padding = new Padding(9, 11, 9, 11);
             ShowInTaskbar = false;
             Text = "Form1";
             tableLayoutPanel.ResumeLayout(false);

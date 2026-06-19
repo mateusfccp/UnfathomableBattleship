@@ -35,20 +35,23 @@
             // 
             contentPanel.Dock = DockStyle.Fill;
             contentPanel.Location = new Point(0, 0);
+            contentPanel.Margin = new Padding(3, 4, 3, 4);
             contentPanel.Name = "contentPanel";
-            contentPanel.Size = new Size(784, 561);
+            contentPanel.Size = new Size(896, 748);
             contentPanel.TabIndex = 0;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 561);
+            ClientSize = new Size(896, 748);
             Controls.Add(contentPanel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;
             Name = "MainForm";
             ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Unfathomable Battleship";
             ResumeLayout(false);
         }

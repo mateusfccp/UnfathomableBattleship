@@ -1,3 +1,6 @@
+using UnfathomableBattleship.Interfaces;
+using UnfathomableBattleship.Services;
+
 namespace UnfathomableBattleship;
 
 internal static class Program
@@ -9,6 +12,15 @@ internal static class Program
     static void Main()
     {
         ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm());
+        IAuthenticationService authService = new AuthenticationService(getDBConnectionString());
+        Application.Run(new MainForm(authService));
+    }
+
+    private static string getDBConnectionString()
+    {
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        string dbPath = Path.Combine(baseDirectory, "DataBase", "UBS_DB.db");
+        string connectionString = $"Data Source={dbPath};Version=3;Foreign Keys=True;";
+        return connectionString;
     }
 }
