@@ -1,4 +1,3 @@
-using System.Drawing;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Models;
 
@@ -44,10 +43,15 @@ public interface IGame
     /// </summary>
     /// <param name="position">The position of the cell to attack.</param>
     /// <returns>The position of the cell the enemy attacked back, if any. The only cases where this should be null are when the result of ¬your attack ends the game or when you are playing in single-player mode.</returns>   
-    Point? AttackCell(Point position);
+    public Point? AttackCell(Point position);
+
+    /// <summary>
+    /// Saves the current game.
+    /// </summary>
+    public void Save();
 
     /// <summary>
     /// The current state of the game.
     /// </summary>
-    GameState State { get; }
+    public GameState State { get; }
 }
