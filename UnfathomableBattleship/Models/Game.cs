@@ -15,6 +15,8 @@ namespace UnfathomableBattleship.Models
         public Dictionary<Point, Ship> EnemyShips { get; private set; }
         public Size BoardSize { get; private set; }
         public GameState State { get; private set; }
+        public GameDescription Description { get; private set; }
+        public TimeSpan ElapsedTime { get; set; }
 
         /// <summary>
         /// Constructor para NUEVAS partidas.
@@ -22,12 +24,13 @@ namespace UnfathomableBattleship.Models
         /// <param name="gameId"></param>
         /// <param name="config"></param>
         /// <param name="connectionString"></param>
-        public Game(int gameId, GameConfiguration config, string connectionString)
+        public Game(GameDescription description, string connectionString)
         {
-            _gameId = gameId;
+            Description = description;
             _connectionString = connectionString;
-            BoardSize = config.BoardSize;
-            State = GameState.InGame;
+            _gameId = Convert.ToInt32(description.Id);
+            BoardSize = description.Configuration.BoardSize;
+            State = description.State;
 
             EnemyBoard = new bool[BoardSize.Width, BoardSize.Height];
             PlayerBoard = new bool[BoardSize.Width, BoardSize.Height];
@@ -45,17 +48,17 @@ namespace UnfathomableBattleship.Models
         /// <param name="savedEnemyShips"></param>
         /// <param name="savedPlayerBoard"></param>
         /// <param name="savedEnemyBoard"></param>
-        public Game(int gameId, GameConfiguration config, string connectionString,
-                    GameState savedState,
+        public Game(GameDescription description, string connectionString,
                     Dictionary<Point, Ship> savedPlayerShips,
                     Dictionary<Point, Ship> savedEnemyShips,
                     bool[,] savedPlayerBoard,
                     bool[,] savedEnemyBoard)
         {
-            _gameId = gameId;
+            Description = description;
             _connectionString = connectionString;
-            BoardSize = config.BoardSize;
-            State = savedState;
+            _gameId = Convert.ToInt32(description.Id);
+            BoardSize = description.Configuration.BoardSize;
+            State = description.State;
 
             PlayerShips = savedPlayerShips;
             EnemyShips = savedEnemyShips;
@@ -96,7 +99,7 @@ namespace UnfathomableBattleship.Models
             const string query = @"DELETE FROM Shot WHERE board_id IN 
 (SELECT user_board_id FROM Game WHERE game_id = @gameId 
 UNION SELECT enemy_board_id FROM Game WHERE game_id = @gameId);";
-            var shotCommand = new SQLiteCommand(query, connection);
+            using var shotCommand = new SQLiteCommand(query, connection);
             shotCommand.Parameters.AddWithValue("@gameId", _gameId);
             shotCommand.ExecuteNonQuery();
 
@@ -104,7 +107,7 @@ UNION SELECT enemy_board_id FROM Game WHERE game_id = @gameId);";
             const string shipQuery = @"DELETE FROM Ship WHERE board_id IN 
 (SELECT user_board_id FROM Game WHERE game_id = @gameId 
 UNION SELECT enemy_board_id FROM Game WHERE game_id = @gameId);";
-            var shipCommand = new SQLiteCommand(shipQuery, connection);
+            using var shipCommand = new SQLiteCommand(shipQuery, connection);
             shipCommand.Parameters.AddWithValue("@gameId", _gameId);
             shipCommand.ExecuteNonQuery();
         }
@@ -189,11 +192,15 @@ UNION SELECT enemy_board_id FROM Game WHERE game_id = @gameId);";
 
         private void RefreshLastUpdateTime(SQLiteConnection connection)
         {
-            const string query = "UPDATE Game SET last_update = @now WHERE game_id = @gameId;";
-            var command = new SQLiteCommand(query, connection);
+            // Sumamos la columna elapsed_time a la actualización
+            const string query = "UPDATE Game SET last_update = @now, elapsed_time = @elapsed WHERE game_id = @gameId;";
+            using var command = new SQLiteCommand(query, connection);
+
             command.Parameters.AddWithValue("@now", DateTime.Now.ToString("O"));
+            command.Parameters.AddWithValue("@elapsed", ElapsedTime.Ticks); // Ticks extrae el número long puro
             command.Parameters.AddWithValue("@gameId", _gameId);
-            if(command.ExecuteNonQuery() == 0)
+
+            if (command.ExecuteNonQuery() == 0)
             {
                 throw new Exception("No se pudo actualizar la última hora de actualización del juego.");
             }

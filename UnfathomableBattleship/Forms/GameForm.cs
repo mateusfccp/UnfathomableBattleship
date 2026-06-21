@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Collections.Generic;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
@@ -222,10 +224,10 @@ internal class ShipGameObject : IGameObject
 internal class WaterTile : IGameObject
 {
     private readonly Sprite[,] _sprites;
-    private static List<int> Variant1 => [33, 34, 35];
-    private static List<int> Variant2 => [34, 35, 33];
-    private static List<int> Variant3 => [35, 33, 34];
-    private static readonly List<List<int>> Variants = [Variant1, Variant2, Variant3];
+    private static readonly List<int> Variant1 = new() { 33, 34, 35 };
+    private static readonly List<int> Variant2 = new() { 34, 35, 33 };
+    private static readonly List<int> Variant3 = new() { 35, 33, 34 };
+    private static readonly List<List<int>> Variants = new() { Variant1, Variant2, Variant3 };
 
     public WaterTile()
     {
@@ -277,7 +279,7 @@ internal class WaterTile : IGameObject
 
 public class MockGame : IGame
 {
-    public GameDescription Description =>
+        public GameDescription Description =>
         new(
             0,
             "Joaquín Forni",
@@ -288,7 +290,7 @@ public class MockGame : IGame
             new GameConfiguration(
                 GameMode.SinglePlayer,
                 new(8, 8),
-                []
+                new List<Ship>()
             )
         );
 
@@ -296,9 +298,9 @@ public class MockGame : IGame
 
     public bool[,] PlayerBoard { get; }
 
-    public Dictionary<Point, Ship> PlayerShips { get; } = [];
+    public Dictionary<Point, Ship> PlayerShips { get; } = new Dictionary<Point, Ship>();
 
-    public Dictionary<Point, Ship> EnemyShips { get; } = [];
+    public Dictionary<Point, Ship> EnemyShips { get; } = new Dictionary<Point, Ship>();
 
     public GameState State => GameState.InGame;
 

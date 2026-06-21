@@ -5,12 +5,18 @@ using UnfathomableBattleship.Models;
 
 namespace UnfathomableBattleship.Services
 {
-    internal class GameManager(string connectionString, object userId) : IGameManager
+    internal class GameManager : IGameManager
     {
-        private readonly object _userId = userId;
+        private readonly string _connectionString;
+        private readonly object _userId;
+        public GameManager(string connectionString, object userId)
+        {
+            _connectionString = connectionString;
+            _userId = userId;
+        }
         public IGame NewGame(GameConfiguration configuration)
         {
-            using var connection = new SQLiteConnection(connectionString);
+            using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
             using var transaction = connection.BeginTransaction();
             try
@@ -30,8 +36,24 @@ namespace UnfathomableBattleship.Services
                 command.Parameters.AddWithValue("@lastUpdate", now);
                 var gameId = Convert.ToInt32(command.ExecuteScalar());
 
+                const string userQuery = "SELECT user_name FROM User WHERE user_id = @id;";
+                using var userCmd = new SQLiteCommand(userQuery, connection);
+                userCmd.Parameters.AddWithValue("@id", _userId);
+                string username = Convert.ToString(userCmd.ExecuteScalar()) ?? "Usuario Desconocido";
+
+                var description = new GameDescription(
+                    gameId,
+                    username,
+                    DateTime.Parse(now),
+                    DateTime.Parse(now),
+                    null,
+                    TimeSpan.Zero,
+                    GameState.InGame,
+                    configuration
+                );
+
                 transaction.Commit();
-                return new Game(gameId, configuration, connectionString);
+                return new Game(description, _connectionString);
             }
             catch
             {
@@ -43,7 +65,7 @@ namespace UnfathomableBattleship.Services
         public IGame QuickGame()
         {
             GameConfiguration configuration;
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(_connectionString))
             {
                 connection.Open();
                 const string query = @"
@@ -94,7 +116,7 @@ namespace UnfathomableBattleship.Services
         {
             int targetGameId = Convert.ToInt32(id);
 
-            using var connection = new SQLiteConnection(connectionString);
+            using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
             using var transaction = connection.BeginTransaction();
 
@@ -173,7 +195,7 @@ namespace UnfathomableBattleship.Services
             var rawGames = GetRawGameList(filterByCurrentUser);
             var finalGamesList = new List<GameDescription>();
 
-            using var connection = new SQLiteConnection(connectionString);
+            using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
             foreach (var (gameId, username, startTime, lastUpdate, endTime, state, mode, boardSize, boardId) in rawGames)
@@ -195,7 +217,7 @@ namespace UnfathomableBattleship.Services
                 }
 
                 var config = new GameConfiguration(mode, boardSize, ships);
-                finalGamesList.Add(new GameDescription(gameId, username, startTime, lastUpdate, endTime, state, config));
+                finalGamesList.Add(new GameDescription(gameId, username, startTime, lastUpdate, endTime, TimeSpan.Zero, state, config));
             }
 
             return finalGamesList;
@@ -204,7 +226,7 @@ namespace UnfathomableBattleship.Services
         private List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId)> GetRawGameList(bool filterByCurrentUser)
         {
             var rawGames = new List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId)>();
-            using var connection = new SQLiteConnection(connectionString);
+            using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -259,33 +281,35 @@ namespace UnfathomableBattleship.Services
         public IGame LoadGame(object id)
         {
             int targetGameId = Convert.ToInt32(id);
-
-            using var connection = new SQLiteConnection(connectionString);
+            using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
-            var (mode, state, boardSize, userBoardId, enemyBoardId) = GetGameInfo(connection, targetGameId);
+            var (mode, state, boardSize, userBoardId, enemyBoardId, username, startTime, lastUpdate, endTime, elapsedTime) = GetGameInfo(connection, targetGameId);
             var (playerShips, enemyShips, allShipsForConfig) = LoadShips(connection, userBoardId, enemyBoardId);
             var (playerBoard, enemyBoard) = LoadShots(connection, userBoardId, enemyBoardId, boardSize);
             var configuration = new GameConfiguration(mode, boardSize, allShipsForConfig);
 
-            return new Game(
+            var description = new GameDescription(
                 targetGameId,
-                configuration,
-                connectionString,
+                username,
+                startTime,
+                lastUpdate,
+                endTime,
+                elapsedTime,
                 state,
-                playerShips,
-                enemyShips,
-                playerBoard,
-                enemyBoard
+                configuration
             );
+            return new Game(description, _connectionString, playerShips, enemyShips, playerBoard, enemyBoard);
         }
 
-        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId) GetGameInfo(SQLiteConnection connection, int targetGameId)
+        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime,TimeSpan elapsedTime) GetGameInfo(SQLiteConnection connection, int targetGameId)
         {
             const string query = @"
-        SELECT g.game_mode, g.state, b.width, b.height, g.user_board_id, g.enemy_board_id 
+        SELECT g.game_mode, g.state, b.width, b.height, g.user_board_id, g.enemy_board_id, 
+               u.user_name, g.start_time, g.last_update, g.end_time, g.elapsed_time
         FROM Game g 
         INNER JOIN Board b ON g.user_board_id = b.board_id 
+        INNER JOIN User u ON g.user_id = u.user_id
         WHERE g.game_id = @gameId AND g.user_id = @userId;";
 
             using var command = new SQLiteCommand(query, connection);
@@ -303,7 +327,12 @@ namespace UnfathomableBattleship.Services
                 (GameState)reader.GetInt32(1),
                 new Size(reader.GetInt32(2), reader.GetInt32(3)),
                 reader.GetInt32(4),
-                reader.GetInt32(5)
+                reader.GetInt32(5),
+                reader.GetString(6),
+                DateTime.Parse(reader.GetString(7)),
+                DateTime.Parse(reader.GetString(8)),
+                reader.IsDBNull(9) ? null : DateTime.Parse(reader.GetString(9)),
+                TimeSpan.FromTicks(reader.GetInt64(10))
             );
         }
 
