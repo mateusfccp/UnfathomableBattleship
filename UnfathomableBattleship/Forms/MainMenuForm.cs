@@ -3,7 +3,7 @@ namespace UnfathomableBattleship.Forms;
 
 public partial class MainMenuForm : Form
 {
-    MainForm? MainForm => Tag as MainForm;
+    private MainForm? MainForm => Tag as MainForm;
     private readonly IGameManager _gameManager;
     public MainMenuForm(IGameManager gameManager)
     {

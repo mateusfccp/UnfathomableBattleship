@@ -1,4 +1,4 @@
-﻿namespace UnfathomableBattleship
+﻿namespace UnfathomableBattleship.Forms
 {
     partial class LoginForm
     {

@@ -1,15 +1,15 @@
 using UnfathomableBattleship.Interfaces;
 
-namespace UnfathomableBattleship;
+namespace UnfathomableBattleship.Forms;
 
 public partial class MainForm : Form
 {
-    private IAuthenticationService _authenticationService { get; set; }
+    private IAuthenticationService AuthenticationService { get; }
     public MainForm(IAuthenticationService authService)
     {
         InitializeComponent();
-        _authenticationService = authService;
-        SwitchForm(new LoginForm(_authenticationService));
+        AuthenticationService = authService;
+        SwitchForm(new LoginForm(AuthenticationService));
     }
 
     public void SwitchForm(Form subForm)

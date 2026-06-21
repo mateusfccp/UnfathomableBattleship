@@ -1,6 +1,4 @@
-﻿using System.Drawing.Imaging;
-using System.Security.Policy;
-using UnfathomableBattleship.Enums;
+﻿using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Properties;
@@ -9,13 +7,13 @@ namespace UnfathomableBattleship.Forms;
 
 public class Board : IGameObject
 {
-    private readonly bool HiddenMode;
-    private readonly WaterTile[,] WaterTiles;
-    private readonly ShipGameObject[,] Ships;
-    private readonly bool[,] BoardDestruction;
-    private readonly Dictionary<ShipGameObject, Point> ShipOrigins = [];
+    private readonly bool _hiddenMode;
+    private readonly WaterTile[,] _waterTiles;
+    private readonly ShipGameObject?[,] _ships;
+    private readonly bool[,] _boardDestruction;
+    private readonly Dictionary<ShipGameObject, Point> _shipOrigins = [];
 
-    private readonly static Sprite SmallFireSprite = new(
+    private static readonly Sprite SmallFireSprite = new(
         Resources.fire,
         new()
         {
@@ -25,7 +23,7 @@ public class Board : IGameObject
         new Size(32, 32)
     );
 
-    private readonly static Sprite BigFireSprite = new(
+    private static readonly Sprite BigFireSprite = new(
         Resources.fire,
         new()
         {
@@ -35,7 +33,7 @@ public class Board : IGameObject
         new Size(32, 32)
     );
 
-    private readonly static Sprite Bubbles = new(
+    private static readonly Sprite Bubbles = new(
         Resources.water,
         new()
         {
@@ -45,21 +43,21 @@ public class Board : IGameObject
         new Size(16, 16)
     );
 
-    public Size Size { get; init; }
+    public Size Size { get; }
 
     public Board(Size size, Dictionary<Point, Ship> ships, bool[,] boardDestruction, bool hiddenMode)
     {
-        HiddenMode = hiddenMode;
+        _hiddenMode = hiddenMode;
         Size = size;
-        BoardDestruction = boardDestruction;
-        WaterTiles = new WaterTile[Size.Width, Size.Height];
-        Ships = new ShipGameObject[Size.Width, Size.Height];
+        _boardDestruction = boardDestruction;
+        _waterTiles = new WaterTile[Size.Width, Size.Height];
+        _ships = new ShipGameObject[Size.Width, Size.Height];
 
         for (var column = 0; column < Size.Width; column++)
         {
             for (var line = 0; line < Size.Height; line++)
             {
-                WaterTiles[column, line] = new WaterTile();
+                _waterTiles[column, line] = new WaterTile();
             }
         }
 
@@ -69,7 +67,7 @@ public class Board : IGameObject
             var ship = pair.Value;
             var shipGameObject = new ShipGameObject(ship);
 
-            ShipOrigins[shipGameObject] = origin;
+            _shipOrigins[shipGameObject] = origin;
             for (var i = 0; i < ship.Length; i++)
             {
                 var currentX = origin.X + (ship.Orientation == ShipOrientation.Horizontal ? i : 0);
@@ -77,7 +75,7 @@ public class Board : IGameObject
 
                 if (currentX >= 0 && currentX < Size.Width && currentY >= 0 && currentY < Size.Height)
                 {
-                    Ships[currentX, currentY] = shipGameObject;
+                    _ships[currentX, currentY] = shipGameObject;
                 }
             }
         }
@@ -86,25 +84,25 @@ public class Board : IGameObject
     public void Draw(Graphics graphics, Point _)
     {
         // Tiles
-        for (int column = 0; column < WaterTiles.GetLength(0); column++)
+        for (var column = 0; column < _waterTiles.GetLength(0); column++)
         {
-            for (int line = 0; line < WaterTiles.GetLength(1); line++)
+            for (var line = 0; line < _waterTiles.GetLength(1); line++)
             {
-                var tile = WaterTiles[column, line];
+                var tile = _waterTiles[column, line];
                 var point = new Point(column * GameForm.TileDimension, line * GameForm.TileDimension);
                 tile.Draw(graphics, point);
             }
         }
 
         // Grid lines
-        for (int i = 0; i < Size.Width; i++)
+        for (var i = 0; i < Size.Width; i++)
         {
             var p1 = new Point(i * GameForm.TileDimension, 0);
             var p2 = new Point(i * GameForm.TileDimension, Size.Height * GameForm.TileDimension);
             graphics.DrawLine(Pens.LightSlateGray, p1, p2);
         }
 
-        for (int j = 0; j < Size.Height; j++)
+        for (var j = 0; j < Size.Height; j++)
         {
             var p1 = new Point(0, j * GameForm.TileDimension);
             var p2 = new Point(Size.Width * GameForm.TileDimension, j * GameForm.TileDimension);
@@ -112,11 +110,11 @@ public class Board : IGameObject
         }
 
         // Ships
-        foreach (var pair in ShipOrigins)
+        foreach (var pair in _shipOrigins)
         {
             var shipGameObject = pair.Key;
 
-            if (IsShipSunken(shipGameObject) || HiddenMode) continue;
+            if (IsShipSunken(shipGameObject) || _hiddenMode) continue;
 
             var origin = pair.Value;
             var point = new Point(origin.X * GameForm.TileDimension, origin.Y * GameForm.TileDimension);
@@ -124,52 +122,51 @@ public class Board : IGameObject
         }
 
         // Hit places && hiding mist
-        for (int column = 0; column < Size.Width; column++)
+        for (var column = 0; column < Size.Width; column++)
         {
-            for (int line = 0; line < Size.Height; line++)
+            for (var line = 0; line < Size.Height; line++)
             {
-                if (BoardDestruction[column, line])
+                if (!_boardDestruction[column, line]) continue;
+
+                var shipGameObject = _ships[column, line];
+                var point = new Point(column * GameForm.TileDimension, line * GameForm.TileDimension);
+
+                if (shipGameObject != null)
                 {
-                    var shipGameObject = Ships[column, line];
-                    var point = new Point(column * GameForm.TileDimension, line * GameForm.TileDimension);
+                    var damageLevel = GetHitCount(shipGameObject);
 
-                    if (shipGameObject != null)
-                    {
-                        var damageLevel = GetHitCount(shipGameObject);
-
-                        if (damageLevel == shipGameObject.Ship.Length)
-                        {
-                            var rect = new Rectangle(point, GameForm.TileSize);
-                            var color = Color.FromArgb(200, Color.IndianRed);
-                            using var pen = new Pen(color, 2.0f);
-                            graphics.DrawRectangle(pen, rect);
-
-                            point.Offset(GameForm.TileDimension / 2, GameForm.TileDimension / 2);
-                            point.Offset(-Bubbles.Rectangle.Width / 2, -Bubbles.Rectangle.Height / 2);
-                            graphics.DrawSprite(Bubbles, point);
-                        }
-                        else
-                        {
-                            point.Offset(0, -8);
-                            var sprite = damageLevel switch
-                            {
-                                1 => SmallFireSprite,
-                                _ => BigFireSprite
-                            };
-                            graphics.DrawSprite(sprite, point);
-                        }
-                    }
-                    else
+                    if (damageLevel == shipGameObject.Ship.Length)
                     {
                         var rect = new Rectangle(point, GameForm.TileSize);
-                        var color = Color.FromArgb(100, Color.WhiteSmoke);
+                        var color = Color.FromArgb(200, Color.IndianRed);
                         using var pen = new Pen(color, 2.0f);
-                        graphics.DrawRoundedRectangle(pen, rect, GameForm.TileSize);
+                        graphics.DrawRectangle(pen, rect);
 
                         point.Offset(GameForm.TileDimension / 2, GameForm.TileDimension / 2);
                         point.Offset(-Bubbles.Rectangle.Width / 2, -Bubbles.Rectangle.Height / 2);
                         graphics.DrawSprite(Bubbles, point);
                     }
+                    else
+                    {
+                        point.Offset(0, -8);
+                        var sprite = damageLevel switch
+                        {
+                            1 => SmallFireSprite,
+                            _ => BigFireSprite
+                        };
+                        graphics.DrawSprite(sprite, point);
+                    }
+                }
+                else
+                {
+                    var rect = new Rectangle(point, GameForm.TileSize);
+                    var color = Color.FromArgb(100, Color.WhiteSmoke);
+                    using var pen = new Pen(color, 2.0f);
+                    graphics.DrawRoundedRectangle(pen, rect, GameForm.TileSize);
+
+                    point.Offset(GameForm.TileDimension / 2, GameForm.TileDimension / 2);
+                    point.Offset(-Bubbles.Rectangle.Width / 2, -Bubbles.Rectangle.Height / 2);
+                    graphics.DrawSprite(Bubbles, point);
                 }
             }
         }
@@ -180,39 +177,39 @@ public class Board : IGameObject
         SmallFireSprite.Tick();
         BigFireSprite.Tick();
         Bubbles.Tick();
-        foreach (var tile in WaterTiles) { tile.Tick(); }
-        foreach (var ship in Ships) { ship?.Tick(); }
+        foreach (var tile in _waterTiles)
+        {
+            tile.Tick();
+        }
+
+        foreach (var ship in _ships)
+        {
+            ship?.Tick();
+        }
     }
 
     private int GetHitCount(ShipGameObject targetShip)
     {
-        if (ShipOrigins.TryGetValue(targetShip, out Point origin))
-        {
-            return CalculateHitsFromOrigin(origin.X, origin.Y, targetShip);
-        }
-        else
-        {
-            return 0;
-        }
+        return _shipOrigins.TryGetValue(targetShip, out Point origin)
+            ? CalculateHitsFromOrigin(origin.X, origin.Y, targetShip)
+            : 0;
     }
 
     private int CalculateHitsFromOrigin(int startX, int startY, ShipGameObject shipGameObject)
     {
-        int hits = 0;
-        int length = shipGameObject.Ship.Length;
+        var hits = 0;
+        var length = shipGameObject.Ship.Length;
         var orientation = shipGameObject.Ship.Orientation;
 
         for (var i = 0; i < length; i++)
         {
-            int currentX = startX + (orientation == ShipOrientation.Horizontal ? i : 0);
-            int currentY = startY + (orientation == ShipOrientation.Vertical ? i : 0);
+            var currentX = startX + (orientation == ShipOrientation.Horizontal ? i : 0);
+            var currentY = startY + (orientation == ShipOrientation.Vertical ? i : 0);
 
-            if (currentX >= 0 && currentX < Size.Width && currentY >= 0 && currentY < Size.Height)
+            if (currentX < 0 || currentX >= Size.Width || currentY < 0 || currentY >= Size.Height) continue;
+            if (_boardDestruction[currentX, currentY])
             {
-                if (BoardDestruction[currentX, currentY])
-                {
-                    hits++;
-                }
+                hits++;
             }
         }
 

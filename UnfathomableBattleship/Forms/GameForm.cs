@@ -6,59 +6,61 @@ using UnfathomableBattleship.Properties;
 
 namespace UnfathomableBattleship.Forms;
 
+/// <summary>
+/// The main form of the game.
+/// </summary>
 public partial class GameForm : Form
 {
     MainForm? MainForm => Tag as MainForm;
 
-    private IGameManager gameManager;
-    private IGame game;
-    private System.Windows.Forms.Timer gameTimer;
-    private Stopwatch gameStopwatch;
+    private readonly IGameManager _gameManager;
+    private readonly IGame _game;
+    private readonly Stopwatch _gameStopwatch;
 
-    private GameCanvas playerCanvas;
-    private GameCanvas enemyCanvas;
+    private readonly GameCanvas _playerCanvas;
+    private readonly GameCanvas _enemyCanvas;
 
-    private Board playerBoard;
-    private Board enemyBoard;
+    private readonly Board _playerBoard;
+    private readonly Board _enemyBoard;
 
     public const int TileDimension = 32;
     public static readonly Size TileSize = new(TileDimension, TileDimension);
 
-    private TimeSpan ElapsedTime
-    {
-        get
-        {
-            return game.Description.ElapsedTime + gameStopwatch.Elapsed;
-        }
-    }
+    private TimeSpan ElapsedTime => _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
 
-    public GameForm(IGameManager gameManager)
+    /// <summary>
+    /// Creates a new game form.
+    /// </summary>
+    /// <param name="gameManager">The game manager related to the given game.</param>
+    /// <param name="game">The game to be played.</param>
+    public GameForm(IGameManager gameManager, IGame game)
     {
-        this.gameManager = gameManager;
-        game = new MockGame();
+        _gameManager = gameManager;
+        _game = game;
         DoubleBuffered = true;
 
         InitializeComponent();
 
-        gameTimer = new()
+        Timer gameTimer = new()
         {
             Interval = 16
         };
         gameTimer.Tick += GameLoop;
         gameTimer.Start();
 
-        gameStopwatch = new();
-        gameStopwatch.Start();
+        _gameStopwatch = new Stopwatch();
+        _gameStopwatch.Start();
 
-        playerNameLabel.Text = game.Description.Username;
+        playerNameLabel.Text = _game.Description.Username;
 
-        playerCanvas = new GameCanvas(playerCanvasPictureBox, game.Description.Configuration.BoardSize);
-        enemyCanvas = new GameCanvas(enemyCanvasPictureBox, game.Description.Configuration.BoardSize);
+        _playerCanvas = new GameCanvas(playerCanvasPictureBox, _game.Description.Configuration.BoardSize);
+        _enemyCanvas = new GameCanvas(enemyCanvasPictureBox, _game.Description.Configuration.BoardSize);
 
-        enemyCanvas.TileClicked += EnemyCanvasTileClicked;
+        _enemyCanvas.TileClicked += EnemyCanvasTileClicked;
 
-        playerBoard = new Board(game.Description.Configuration.BoardSize, game.PlayerShips, game.PlayerBoard, false);
-        enemyBoard = new Board(game.Description.Configuration.BoardSize, game.EnemyShips, game.EnemyBoard, true);
+        _playerBoard = new Board(_game.Description.Configuration.BoardSize, _game.PlayerShips, _game.PlayerBoard,
+            false);
+        _enemyBoard = new Board(_game.Description.Configuration.BoardSize, _game.EnemyShips, _game.EnemyBoard, true);
     }
 
     private void GameLoop(object? sender, EventArgs eventArgs)
@@ -69,45 +71,45 @@ public partial class GameForm : Form
 
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
     {
-        game.AttackCell(eventArgs);
+        _game.AttackCell(eventArgs);
     }
 
     private void UpdateGame()
     {
         timerValueLabel.Text = $"{ElapsedTime.Hours:00}:{ElapsedTime.Minutes:00}:{ElapsedTime.Seconds:00}";
-        playerCanvas.Update();
-        enemyCanvas.Update();
-        playerBoard.Tick();
-        enemyBoard.Tick();
+        _playerCanvas.Update();
+        _enemyCanvas.Update();
+        _playerBoard.Tick();
+        _enemyBoard.Tick();
     }
 
     private void RenderGame()
     {
-        playerCanvas.Present();
-        enemyCanvas.Present();
+        _playerCanvas.Present();
+        _enemyCanvas.Present();
 
-        playerCanvas.Graphics.Clear(Color.Black);
-        enemyCanvas.Graphics.Clear(Color.Black);
+        _playerCanvas.Graphics.Clear(Color.Black);
+        _enemyCanvas.Graphics.Clear(Color.Black);
 
         // Board
-        playerBoard.Draw(playerCanvas.Graphics, Point.Empty);
-        enemyBoard.Draw(enemyCanvas.Graphics, Point.Empty);
+        _playerBoard.Draw(_playerCanvas.Graphics, Point.Empty);
+        _enemyBoard.Draw(_enemyCanvas.Graphics, Point.Empty);
 
         // Cursor
         using var pen = new Pen(Brushes.Yellow, 2.0f);
-        if (enemyCanvas.CursorPosition is Point position)
-        {
-            var point = new Point(position.X * TileDimension, position.Y * TileDimension);
-            var rect = new Rectangle(point, TileSize);
-            enemyCanvas.Graphics.DrawRectangle(pen, rect);
-        }
+
+        if (_enemyCanvas.CursorPosition is not Point position) return;
+
+        var point = new Point(position.X * TileDimension, position.Y * TileDimension);
+        var rect = new Rectangle(point, TileSize);
+        _enemyCanvas.Graphics.DrawRectangle(pen, rect);
     }
 
     private void saveButton_Click(object sender, EventArgs e)
     {
         try
         {
-            game.Save();
+            _game.Save();
             MessageBox.Show(
                 "¡El juego fue guardado con éxito!",
                 "¡Éxito!",
@@ -124,13 +126,10 @@ public partial class GameForm : Form
                 MessageBoxIcon.Error
             );
         }
-
-
     }
 
     private void exitButton_Click(object sender, EventArgs e)
     {
-
         var result = MessageBox.Show(
             "¿Estás seguro que querés desistir, cobarde?",
             "Abandonar juego",
@@ -144,7 +143,8 @@ public partial class GameForm : Form
         }
     }
 
-    private void ShowGameOver() {
+    private void ShowGameOver()
+    {
         MessageBox.Show(
             "¡Que fracasado, perdiste el juego!",
             "Game Over"
@@ -152,17 +152,14 @@ public partial class GameForm : Form
 
         // TODO: registrar derrota
 
-        MainForm?.SwitchForm(new MainMenuForm(gameManager));
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 }
 
-class ShipGameObject : IGameObject
+internal class ShipGameObject : IGameObject
 {
-    public Ship Ship { get; init; }
-    private readonly Sprite ShipSprite;
-    private readonly Sprite FireSprite;
-    private readonly bool[] Destroyed;
-    private bool HasDestruction;
+    public Ship Ship { get; }
+    private readonly Sprite _shipSprite;
 
     public ShipGameObject(Ship ship)
     {
@@ -176,31 +173,7 @@ class ShipGameObject : IGameObject
             _ => throw new NotImplementedException($"No sprites available for a ship with length {ship.Length}."),
         };
 
-        ShipSprite = new Sprite(image);
-
-        FireSprite = new Sprite(
-            Resources.fire,
-            new()
-            {
-                ["small"] = new SpriteAnimation(6, [196, 197, 198, 199]),
-                ["big"] = new SpriteAnimation(6, [131, 132, 133, 134]),
-            },
-            "big",
-            new Size(32, 32)
-        );
-
-        Destroyed = new bool[Ship.Length];
-        for (int i = 0; i < Ship.Length; i++)
-        {
-            Destroyed[i] = false;
-        }
-    }
-
-    public void SetDestroyed(int tile)
-    {
-        Debug.Assert(tile < Ship.Length);
-        Destroyed[tile] = true;
-        HasDestruction = true;
+        _shipSprite = new Sprite(image);
     }
 
     public void Draw(Graphics graphics, Point point)
@@ -210,51 +183,26 @@ class ShipGameObject : IGameObject
             var state = graphics.Save();
 
             var width = Ship.Length * GameForm.TileDimension;
-            var height = GameForm.TileDimension;
-            var centerX = point.X + (width / 2f);
-            var centerY = point.Y + (height / 2f);
+            const int height = GameForm.TileDimension;
+            var centerX = point.X + width / 2f;
+            var centerY = point.Y + height / 2f;
 
             graphics.TranslateTransform(centerX, centerY);
             graphics.RotateTransform(90);
 
-            var offsetPoint = new Point(-ShipSprite.SpriteSheet.Width / 2, -ShipSprite.SpriteSheet.Height / 2);
-            graphics.DrawSprite(ShipSprite, offsetPoint);
+            var offsetPoint = new Point(-_shipSprite.SpriteSheet.Width / 2, -_shipSprite.SpriteSheet.Height / 2);
+            graphics.DrawSprite(_shipSprite, offsetPoint);
 
             graphics.Restore(state);
         }
         else
         {
-            graphics.DrawSprite(ShipSprite, point);
-        }
-
-        // Draw fires
-        if (HasDestruction)
-        {
-            point.Offset(0, -16);
-
-            for (var i = 0; i < Ship.Length; i++)
-            {
-                if (Destroyed[i])
-                {
-                    graphics.DrawSprite(FireSprite, point);
-                }
-
-                switch (Ship.Orientation)
-                {
-                    case ShipOrientation.Horizontal:
-                        point.Offset(32, 0);
-                        break;
-                    case ShipOrientation.Vertical:
-                        point.Offset(0, 32);
-                        break;
-                }
-            }
+            graphics.DrawSprite(_shipSprite, point);
         }
     }
 
     public void Tick()
     {
-        FireSprite.Tick();
     }
 
     public Size Size
@@ -271,9 +219,9 @@ class ShipGameObject : IGameObject
     }
 }
 
-class WaterTile : IGameObject
+internal class WaterTile : IGameObject
 {
-    private Sprite[,] sprites;
+    private readonly Sprite[,] _sprites;
     private static List<int> Variant1 => [33, 34, 35];
     private static List<int> Variant2 => [34, 35, 33];
     private static List<int> Variant3 => [35, 33, 34];
@@ -281,15 +229,15 @@ class WaterTile : IGameObject
 
     public WaterTile()
     {
-        sprites = new Sprite[2, 2];
+        _sprites = new Sprite[2, 2];
         for (var i = 0; i < 2; i++)
         {
             for (var j = 0; j < 2; j++)
             {
                 var variantIndex = Random.Shared.Next(3);
-                sprites[i, j] = new Sprite(
+                _sprites[i, j] = new Sprite(
                     Resources.water,
-                    new()
+                    new Dictionary<string, SpriteAnimation>
                     {
                         ["idle"] = new SpriteAnimation(40, Variants[variantIndex]),
                     },
@@ -306,8 +254,9 @@ class WaterTile : IGameObject
         {
             for (var j = 0; j < 2; j++)
             {
-                var offsetPoint = new Point(point.X + i * GameForm.TileDimension / 2, point.Y + j * GameForm.TileDimension / 2);
-                graphics.DrawSprite(sprites[i, j], offsetPoint);
+                var offsetPoint = new Point(point.X + i * GameForm.TileDimension / 2,
+                    point.Y + j * GameForm.TileDimension / 2);
+                graphics.DrawSprite(_sprites[i, j], offsetPoint);
             }
         }
     }
@@ -318,7 +267,7 @@ class WaterTile : IGameObject
         {
             for (var j = 0; j < 2; j++)
             {
-                sprites[i, j].Tick();
+                _sprites[i, j].Tick();
             }
         }
     }
@@ -326,37 +275,32 @@ class WaterTile : IGameObject
     public Size Size => new(1, 1);
 }
 
-class MockGame : IGame
+public class MockGame : IGame
 {
-    public GameDescription Description
-    {
-        get
-        {
-            return new GameDescription(
-                0,
-                "Joaquín Forni",
-                new DateTime(2026, 06, 10),
-                new DateTime(2026, 06, 10),
-                null, TimeSpan.Zero,
-                GameState.InGame,
-                new GameConfiguration(
-                    GameMode.SinglePlayer,
-                    new(8, 8),
-                    []
-                )
-            );
-        }
-    }
+    public GameDescription Description =>
+        new(
+            0,
+            "Joaquín Forni",
+            new DateTime(2026, 06, 10),
+            new DateTime(2026, 06, 10),
+            null, TimeSpan.Zero,
+            GameState.InGame,
+            new GameConfiguration(
+                GameMode.SinglePlayer,
+                new(8, 8),
+                []
+            )
+        );
 
-    public bool[,] EnemyBoard { get; private set; }
+    public bool[,] EnemyBoard { get; }
 
-    public bool[,] PlayerBoard { get; private set; }
+    public bool[,] PlayerBoard { get; }
 
     public Dictionary<Point, Ship> PlayerShips { get; } = [];
 
     public Dictionary<Point, Ship> EnemyShips { get; } = [];
 
-    public GameState State { get; } = GameState.InGame;
+    public GameState State => GameState.InGame;
 
     public void Save() => Console.WriteLine("Game saved!");
 
@@ -375,7 +319,8 @@ class MockGame : IGame
 
         do
         {
-            resultingAttack = new(Random.Shared.Next(Description.Configuration.BoardSize.Width), Random.Shared.Next(Description.Configuration.BoardSize.Width));
+            resultingAttack = new(Random.Shared.Next(Description.Configuration.BoardSize.Width),
+                Random.Shared.Next(Description.Configuration.BoardSize.Width));
         } while (PlayerBoard[resultingAttack.X, resultingAttack.Y]);
 
         PlayerBoard[resultingAttack.X, resultingAttack.Y] = true;
@@ -390,7 +335,7 @@ class MockGame : IGame
         EnemyBoard = new bool[width, height];
         PlayerBoard = new bool[width, height];
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var x = Random.Shared.Next(0, width);
             var y = Random.Shared.Next(0, height);
@@ -399,7 +344,7 @@ class MockGame : IGame
             PlayerShips[point] = CreateRandomShip();
         }
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var x = Random.Shared.Next(0, width);
             var y = Random.Shared.Next(0, height);
@@ -409,7 +354,7 @@ class MockGame : IGame
         }
     }
 
-    static Ship CreateRandomShip()
+    private static Ship CreateRandomShip()
     {
         var length = Random.Shared.Next(1, 4);
         var orientation = (ShipOrientation)Random.Shared.Next(2);

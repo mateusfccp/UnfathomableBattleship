@@ -5,8 +5,10 @@
 /// </summary>
 public record SpriteAnimation(int TicksPerFrame, List<int> Frames)
 {
-    public List<int> Frames { get; init; } = Frames.Count == 0
+    /// <summary>
+    /// The frames of the animation.
+    /// </summary>
+    public List<int> Frames { get; } = Frames.Count == 0
         ? throw new ArgumentException("Frames cannot be empty.", nameof(Frames))
         : Frames;
 }
-

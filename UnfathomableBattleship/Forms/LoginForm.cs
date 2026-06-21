@@ -1,9 +1,7 @@
 using UnfathomableBattleship.Exceptions;
-using UnfathomableBattleship.Forms;
 using UnfathomableBattleship.Interfaces;
 
-
-namespace UnfathomableBattleship;
+namespace UnfathomableBattleship.Forms;
 
 public partial class LoginForm : Form
 {

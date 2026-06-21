@@ -1,5 +1,5 @@
-﻿using System.CodeDom;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Drawing;
 
 namespace UnfathomableBattleship.Forms;
 
@@ -8,43 +8,56 @@ namespace UnfathomableBattleship.Forms;
 /// </summary>
 public class Sprite
 {
+    /// <summary>
+    /// The image that contains the sprite.
+    /// </summary>
     public Image SpriteSheet { get; }
 
+    /// <summary>
+    /// Creates a new sprite.
+    /// </summary>
+    /// <param name="spriteSheet">The image that contains the sprite.</param>
+    /// <param name="rectSize">The size of the rect that will be shown within the sprite sheet. If null, it will take the size of the entire image.</param>
     public Sprite(Image spriteSheet, Size? rectSize = null)
     {
         SpriteSheet = spriteSheet;
-        this.rectSize = rectSize;
+        _rectSize = rectSize;
         var frameWidth = rectSize == null ? spriteSheet.Width : rectSize.Value.Width;
-        columnsCount = spriteSheet.Width / frameWidth;
-        animations = [];
+        _columnsCount = spriteSheet.Width / frameWidth;
+        _animations = [];
     }
 
-    public Sprite(Image spriteSheet, Dictionary<string, SpriteAnimation> animations, String defaultAnimation, Size? rectSize = null)
+    /// <summary>
+    /// Creates a new sprite with animations.
+    /// </summary>
+    /// <param name="spriteSheet">The image that contains the sprite.</param>
+    /// <param name="animations">A dictionary of named animations.</param>
+    /// <param name="defaultAnimation">The default animation name.</param>
+    /// <param name="rectSize">The size of the rect that will be shown within the sprite sheet. If null, it will take the size of the entire image.</param>
+    public Sprite(Image spriteSheet, Dictionary<string, SpriteAnimation> animations, String defaultAnimation,
+        Size? rectSize = null)
     {
+        Debug.Assert(animations.ContainsKey(defaultAnimation));
+
         SpriteSheet = spriteSheet;
-        this.rectSize = rectSize;
+        _rectSize = rectSize;
         var frameWidth = rectSize == null ? spriteSheet.Width : rectSize.Value.Width;
-        columnsCount = spriteSheet.Width / frameWidth;
-        this.animations = animations;
-        currentAnimation = defaultAnimation;
+        _columnsCount = spriteSheet.Width / frameWidth;
+        _animations = animations;
+        _currentAnimation = defaultAnimation;
     }
 
     private Point FramePoint
     {
         get
         {
-            if (CurrentAnimation is SpriteAnimation animation)
-            {
-                var index = animation.Frames[currentFrame];
-                var column = index % columnsCount;
-                var row = index / columnsCount;
+            if (CurrentAnimation is not { } animation) return Point.Empty;
 
-                return new Point(column * FrameSize.Width, row * FrameSize.Height);
-            }
-            else
-            {
-                return Point.Empty;
-            }
+            var index = animation.Frames[_currentFrame];
+            var column = index % _columnsCount;
+            var row = index / _columnsCount;
+
+            return new Point(column * FrameSize.Width, row * FrameSize.Height);
         }
     }
 
@@ -52,14 +65,12 @@ public class Sprite
     {
         get
         {
-            if (currentAnimation is string key)
+            if (_currentAnimation is { } key)
             {
-                return animations[key];
+                return _animations[key];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
@@ -67,57 +78,39 @@ public class Sprite
     {
         get
         {
-            if (rectSize is Size size)
+            if (_rectSize is Size size)
             {
                 return size;
             }
-            else
-            {
-                return SpriteSheet.Size;
-            }
+
+            return SpriteSheet.Size;
         }
     }
 
-    public Rectangle Rectangle
-    {
-        get
-        {
-            return new Rectangle(FramePoint, FrameSize);
-        }
-    }
-
-    public void SwitchAnimation(string name)
-    {
-        Debug.Assert(animations.ContainsKey(name));
-
-        currentAnimation = name;
-    }
+    public Rectangle Rectangle => new Rectangle(FramePoint, FrameSize);
 
     public void Tick()
     {
-        if (CurrentAnimation is SpriteAnimation animation)
+        if (CurrentAnimation is not { } animation) return;
+        _currentTick = _currentTick + 1;
+
+        if (_currentTick != animation.TicksPerFrame) return;
+
+        _currentTick = 0;
+        _currentFrame = _currentFrame + 1;
+
+        if (_currentFrame == animation.Frames.Count)
         {
-            currentTick = currentTick + 1;
-
-            if (currentTick == animation.TicksPerFrame)
-            {
-                currentTick = 0;
-                currentFrame = currentFrame + 1;
-
-                if (currentFrame == animation.Frames.Count)
-                {
-                    currentFrame = 0;
-                }
-            }
+            _currentFrame = 0;
         }
     }
 
-    private int columnsCount;
-    private Size? rectSize;
-    private int currentFrame = 0;
-    private int currentTick = 0;
-    private string? currentAnimation;
-    private Dictionary<string, SpriteAnimation> animations;
+    private readonly int _columnsCount;
+    private readonly Size? _rectSize;
+    private int _currentFrame;
+    private int _currentTick;
+    private readonly string? _currentAnimation;
+    private readonly Dictionary<string, SpriteAnimation> _animations;
 }
 
 public static class SpriteExtensions
