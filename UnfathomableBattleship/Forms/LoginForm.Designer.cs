@@ -119,7 +119,7 @@
             loginButton.TabIndex = 5;
             loginButton.Text = "Login";
             loginButton.UseVisualStyleBackColor = true;
-            loginButton.Click += loginButton_Click;
+            loginButton.Click += LoginButton_Click;
             // 
             // createAccountButton
             // 
@@ -134,7 +134,7 @@
             createAccountButton.TabIndex = 6;
             createAccountButton.Text = "Crear cuenta";
             createAccountButton.UseVisualStyleBackColor = true;
-            createAccountButton.Click += createAccountButton_Click;
+            createAccountButton.Click += CreateAccountButton_Click;
             // 
             // lbFeedBackUser
             // 

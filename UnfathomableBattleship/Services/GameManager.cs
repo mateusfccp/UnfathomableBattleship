@@ -4,15 +4,10 @@ using UnfathomableBattleship.Models;
 
 namespace UnfathomableBattleship.Services
 {
-    internal class GameManager : IGameManager
+    internal class GameManager(string connectionString, object userId) : IGameManager
     {
-        private readonly string _connectionString;
-        private readonly int _userId;
-        public GameManager(string connectionString, int userId)
-        {
-            _connectionString = connectionString;
-            _userId = userId;
-        }
+        private object UserId { get; } = userId;
+
         public void DeleteGame(object id)
         {
             throw new NotImplementedException();
@@ -35,10 +30,8 @@ namespace UnfathomableBattleship.Services
 
         public IGame NewGame(GameConfiguration configuration)
         {
-            using(var connection = new SQLiteConnection(_connectionString))
-            {
-                throw new NotImplementedException();
-            }
+            using var connection = new SQLiteConnection(connectionString);
+            throw new NotImplementedException();
         }
 
         public IGame QuickGame()

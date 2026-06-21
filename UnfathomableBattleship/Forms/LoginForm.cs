@@ -7,7 +7,7 @@ namespace UnfathomableBattleship;
 
 public partial class LoginForm : Form
 {
-    private IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
     MainForm? MainForm => Tag as MainForm;
 
     public LoginForm(IAuthenticationService authService)
@@ -16,7 +16,7 @@ public partial class LoginForm : Form
         _authenticationService = authService;
     }
 
-    private void loginButton_Click(object sender, EventArgs e)
+    private void LoginButton_Click(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(usernameTextbox.Text) || string.IsNullOrWhiteSpace(passwordTextBox.Text))
         {
@@ -39,11 +39,9 @@ public partial class LoginForm : Form
 
     }
 
-    private void createAccountButton_Click(object sender, EventArgs e)
+    private void CreateAccountButton_Click(object sender, EventArgs e)
     {
-        using (var createForm = new RegisterForm(_authenticationService))
-        {
-            createForm.ShowDialog();
-        }
+        using var createForm = new RegisterForm(_authenticationService);
+        createForm.ShowDialog();
     }
 }

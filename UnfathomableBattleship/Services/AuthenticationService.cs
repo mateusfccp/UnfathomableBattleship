@@ -6,65 +6,52 @@ using UnfathomableBattleship.Interfaces;
 
 namespace UnfathomableBattleship.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(string connectionString) : IAuthenticationService
     {
-        private readonly string _connectionString;
-        public AuthenticationService(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        private readonly string _connectionString = connectionString;
+
         public void CreateUser(string username, string password)
         {
-            using (var connection = new SQLiteConnection(_connectionString))
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            if (CheckUserExists(connection, username))
             {
-                connection.Open();
-                if(CheckUserExists(connection, username))
-                {
-                    throw new RegistrationFailedException("User name already exits");
-                }
-                string passwordHash = HashPassword(password);
-                string insertQuery = "INSERT INTO User (user_name, password_hash) VALUES (@username, @passwordHash)";
-                using (var command = new SQLiteCommand(insertQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@username", username);
-                    command.Parameters.AddWithValue("@passwordHash", passwordHash);
-                    command.ExecuteNonQuery();
-                }
+                throw new RegistrationFailedException("User name already exits");
             }
-
-                
+            string passwordHash = HashPassword(password);
+            string insertQuery = "INSERT INTO User (user_name, password_hash) VALUES (@username, @passwordHash)";
+            using var command = new SQLiteCommand(insertQuery, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@passwordHash", passwordHash);
+            command.ExecuteNonQuery();
         }
 
         public IGameManager Login(string username, string password)
         {
-            using (var connection = new SQLiteConnection(_connectionString))
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            string query = "SELECT user_id, password_hash FROM User WHERE user_name = @username";
+            using (var command = new SQLiteCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT user_id, password_hash FROM User WHERE user_name = @username";
-                using (var command = new SQLiteCommand(query, connection))
+                command.Parameters.AddWithValue("@username", username);
+
+                using var reader = command.ExecuteReader();
+                if (reader.Read())// If Read() is true, the user exists
                 {
-                    command.Parameters.AddWithValue("@username", username);
+                    string storedHash = reader.GetString(1);
 
-                    using (var reader = command.ExecuteReader())
+                    if (HashPassword(password) == storedHash)
                     {
-                        if (reader.Read())// If Read() is true, the user exists
-                        {
-                            string storedHash = reader.GetString(1);
-
-                            if (HashPassword(password) == storedHash)
-                            {
-                                int userId = reader.GetInt32(0);
-                                return new GameManager(userId);
-                            }
-                        }
+                        int userId = reader.GetInt32(0);
+                        return new GameManager(_connectionString, userId);
                     }
                 }
-                throw new AuthenticationFailedException();
             }
+            throw new AuthenticationFailedException();
         }
 
 
-        private bool CheckUserExists(SQLiteConnection connection, string userInput)
+        private static bool CheckUserExists(SQLiteConnection connection, string userInput)
         {
             var command = new SQLiteCommand("SELECT EXISTS(SELECT 1 FROM User WHERE user_name = @user_input)", connection);
             command.Parameters.AddWithValue("@user_input", userInput);  
@@ -78,19 +65,16 @@ namespace UnfathomableBattleship.Services
         /// </summary>
         /// <param name="password"></param>
         /// <returns></returns>
-        private string HashPassword(string password)
+        private static string HashPassword(string password)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
 
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
+            StringBuilder builder = new();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
             }
+            return builder.ToString();
         }
     }
 }
