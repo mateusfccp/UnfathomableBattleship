@@ -1,53 +1,50 @@
-﻿using UnfathomableBattleship.Forms;
+﻿namespace UnfathomableBattleship.Forms;
 
 public class GameCanvas : IDisposable
 {
-    private bool isLeftMouseDown;
-    private bool wasLeftMouseDown;
+    private bool _isLeftMouseDown;
+    private bool _wasLeftMouseDown;
 
-    public event EventHandler<Point> TileClicked;
+    public event EventHandler<Point> TileClicked = delegate { };
 
-    public Point? MousePosition { get; private set; }
+    private Point? MousePosition { get; set; }
 
     public Point? CursorPosition
     {
         get
         {
-            if (MousePosition is Point position)
-            {
-                var mouseTileX = position.X / GameForm.TileSize;
-                var mouseTileY = position.Y / GameForm.TileSize;
-                return new Point(mouseTileX, mouseTileY);
-            } else
-            {
-                return null;
-            }
+            if (MousePosition is not Point position) return null;
+
+            var mouseTileX = position.X / GameForm.TileDimension;
+            var mouseTileY = position.Y / GameForm.TileDimension;
+            return new Point(mouseTileX, mouseTileY);
         }
     }
 
-    public PictureBox PictureBox { get; }
-    public Bitmap Bitmap { get; private set; }
+    private PictureBox PictureBox { get; }
+    private Bitmap Bitmap { get; set; }
     public Graphics Graphics { get; private set; }
 
     public GameCanvas(PictureBox pictureBox, Size size)
     {
         PictureBox = pictureBox;
         PictureBox.Resize += (s, e) => Rebuild();
-        PictureBox.Width = size.Width * GameForm.TileSize;
-        PictureBox.Height = size.Height * GameForm.TileSize;
+        PictureBox.Width = size.Width * GameForm.TileDimension;
+        PictureBox.Height = size.Height * GameForm.TileDimension;
         PictureBox.MouseMove += MouseMove;
         PictureBox.MouseDown += MouseDown;
         PictureBox.MouseUp += MouseUp;
         PictureBox.MouseLeave += MouseLeave;
+
         Rebuild();
     }
 
-    public void Rebuild()
+    private void Rebuild()
     {
         if (PictureBox.Width <= 0 || PictureBox.Height <= 0) return;
 
-        Graphics?.Dispose();
-        Bitmap?.Dispose();
+        Graphics.Dispose();
+        Bitmap.Dispose();
 
         Bitmap = new Bitmap(PictureBox.Width, PictureBox.Height);
         Graphics = Graphics.FromImage(Bitmap);
@@ -62,7 +59,7 @@ public class GameCanvas : IDisposable
     {
         if (eventArgs.Button == MouseButtons.Left)
         {
-            isLeftMouseDown = true;
+            _isLeftMouseDown = true;
         }
     }
 
@@ -70,14 +67,14 @@ public class GameCanvas : IDisposable
     {
         if (eventArgs.Button == MouseButtons.Left)
         {
-            isLeftMouseDown = false;
+            _isLeftMouseDown = false;
         }
     }
 
     private void MouseLeave(object? sender, EventArgs eventArgs)
     {
         MousePosition = null;
-        isLeftMouseDown = false;
+        _isLeftMouseDown = false;
     }
 
     public void Present()
@@ -87,7 +84,7 @@ public class GameCanvas : IDisposable
 
     public void Update()
     {
-        if (isLeftMouseDown && !wasLeftMouseDown)
+        if (_isLeftMouseDown && !_wasLeftMouseDown)
         {
             if (CursorPosition is Point position)
             {
@@ -95,12 +92,13 @@ public class GameCanvas : IDisposable
             }
         }
 
-        wasLeftMouseDown = isLeftMouseDown;
+        _wasLeftMouseDown = _isLeftMouseDown;
     }
 
     public void Dispose()
     {
-        Graphics?.Dispose();
-        Bitmap?.Dispose();
+        Graphics.Dispose();
+        Bitmap.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

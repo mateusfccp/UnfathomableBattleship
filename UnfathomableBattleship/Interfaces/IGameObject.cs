@@ -16,6 +16,11 @@ public interface IGameObject
     /// Updates the game object according to the clock tick.
     /// </summary>
     public void Tick();
+
+    /// <summary>
+    /// The size this object occupies in the tilemap.
+    /// </summary>
+    public Size Size { get; }
 }
 
 /// <summary>

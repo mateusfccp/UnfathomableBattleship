@@ -4,7 +4,7 @@ namespace UnfathomableBattleship.Forms;
 
 public partial class MainMenuForm : Form
 {
-    MainForm? MainForm => Tag as MainForm;
+    private MainForm? MainForm => Tag as MainForm;
     private readonly IGameManager _gameManager;
     public MainMenuForm(IGameManager gameManager)
     {
@@ -19,7 +19,7 @@ public partial class MainMenuForm : Form
 
     private void Button1_Click(object sender, EventArgs e)
     {
-        MainForm?.SwitchForm(new GameForm());
+        MainForm?.SwitchForm(new GameForm(_gameManager, new MockGame()));
     }
 }
 

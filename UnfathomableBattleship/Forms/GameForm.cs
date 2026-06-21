@@ -1,198 +1,115 @@
-﻿using UnfathomableBattleship.Enums;
+﻿using System.Diagnostics;
+using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Properties;
 
 namespace UnfathomableBattleship.Forms;
 
+/// <summary>
+/// The main form of the game.
+/// </summary>
 public partial class GameForm : Form
 {
-    private IGame game;
-    private System.Windows.Forms.Timer gameTimer;
+    MainForm? MainForm => Tag as MainForm;
 
-    private GameCanvas playerCanvas;
-    private GameCanvas enemyCanvas;
+    private readonly IGameManager _gameManager;
+    private readonly IGame _game;
+    private readonly Stopwatch _gameStopwatch;
 
-    private WaterTile[,] PlayerWaterTiles;
-    private WaterTile[,] EnemyWaterTiles;
-    private ShipGameObject[,] PlayerShips;
-    private ShipGameObject[,] EnemyShips;
+    private readonly GameCanvas _playerCanvas;
+    private readonly GameCanvas _enemyCanvas;
 
-    public const int TileSize = 32;
+    private readonly Board _playerBoard;
+    private readonly Board _enemyBoard;
 
-    public GameForm()
+    public const int TileDimension = 32;
+    public static readonly Size TileSize = new(TileDimension, TileDimension);
+
+    private TimeSpan ElapsedTime => _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
+
+    /// <summary>
+    /// Creates a new game form.
+    /// </summary>
+    /// <param name="gameManager">The game manager related to the given game.</param>
+    /// <param name="game">The game to be played.</param>
+    public GameForm(IGameManager gameManager, IGame game)
     {
-        game = new MockGame(8, 8);
+        _gameManager = gameManager;
+        _game = game;
+        DoubleBuffered = true;
 
         InitializeComponent();
 
-        gameTimer = new()
+        System.Windows.Forms.Timer gameTimer = new()
         {
             Interval = 16
         };
         gameTimer.Tick += GameLoop;
         gameTimer.Start();
 
-        playerCanvas = new GameCanvas(playerCanvasPictureBox, game.BoardSize);
-        enemyCanvas = new GameCanvas(enemyCanvasPictureBox, game.BoardSize);
+        _gameStopwatch = new Stopwatch();
+        _gameStopwatch.Start();
 
-        enemyCanvas.TileClicked += EnemyCanvasTileClicked;
+        playerNameLabel.Text = _game.Description.Username;
 
-        // Initialize water tiles
-        PlayerWaterTiles = new WaterTile[game.BoardSize.Width, game.BoardSize.Height];
-        EnemyWaterTiles = new WaterTile[game.BoardSize.Width, game.BoardSize.Height];
+        _playerCanvas = new GameCanvas(playerCanvasPictureBox, _game.Description.Configuration.BoardSize);
+        _enemyCanvas = new GameCanvas(enemyCanvasPictureBox, _game.Description.Configuration.BoardSize);
 
-        for (var line = 0; line < game.BoardSize.Height; line++)
-        {
-            for (var column = 0; column < game.BoardSize.Width; column++)
-            {
-                PlayerWaterTiles[column, line] = new WaterTile();
-                EnemyWaterTiles[column, line] = new WaterTile();
-            }
-        }
+        _enemyCanvas.TileClicked += EnemyCanvasTileClicked;
 
-        // Initialize ships
-        PlayerShips = new ShipGameObject[game.BoardSize.Width, game.BoardSize.Height];
-        EnemyShips = new ShipGameObject[game.BoardSize.Width, game.BoardSize.Height];
-
-        for (var line = 0; line < game.BoardSize.Height; line++)
-        {
-            for (var column = 0; column < game.BoardSize.Width; column++)
-            {
-                var point = new Point(column, line);
-                if (game.PlayerShips.ContainsKey(point) && game.PlayerShips[point] is Ship playerShip)
-                {
-                    PlayerShips[column, line] = new ShipGameObject(playerShip);
-                }
-
-                if (game.EnemyShips.ContainsKey(point) && game.EnemyShips[point] is Ship enemyShip)
-                {
-                    EnemyShips[column, line] = new ShipGameObject(enemyShip);
-                }
-            }
-        }
+        _playerBoard = new Board(_game.Description.Configuration.BoardSize, _game.PlayerShips, _game.PlayerBoard,
+            false);
+        _enemyBoard = new Board(_game.Description.Configuration.BoardSize, _game.EnemyShips, _game.EnemyBoard, true);
     }
 
     private void GameLoop(object? sender, EventArgs eventArgs)
     {
         UpdateGame();
         RenderGame();
-
     }
 
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
     {
-        game.AttackCell(eventArgs);
+        _game.AttackCell(eventArgs);
     }
 
     private void UpdateGame()
     {
-        playerCanvas.Update();
-        enemyCanvas.Update();
-
-        for (var column = 0; column < game.BoardSize.Width; column++)
-        {
-            for (var line = 0; line < game.BoardSize.Height; line++)
-
-            {
-                PlayerWaterTiles[column, line].Tick();
-                EnemyWaterTiles[column, line].Tick();
-                PlayerShips[column, line]?.Tick();
-                EnemyShips[column, line]?.Tick();
-            }
-        }
+        timerValueLabel.Text = $"{ElapsedTime.Hours:00}:{ElapsedTime.Minutes:00}:{ElapsedTime.Seconds:00}";
+        _playerCanvas.Update();
+        _enemyCanvas.Update();
+        _playerBoard.Tick();
+        _enemyBoard.Tick();
     }
 
     private void RenderGame()
     {
-        playerCanvas.Present();
-        enemyCanvas.Present();
+        _playerCanvas.Present();
+        _enemyCanvas.Present();
 
-        playerCanvas.Graphics.Clear(Color.Black);
-        enemyCanvas.Graphics.Clear(Color.Black);
+        _playerCanvas.Graphics.Clear(Color.Black);
+        _enemyCanvas.Graphics.Clear(Color.Black);
 
-        // Layer 1: Board
-        DrawBoard(enemyCanvas.Graphics, game.BoardSize, game.EnemyBoard, EnemyShips, EnemyWaterTiles, Brushes.LightGray);
-        DrawBoard(playerCanvas.Graphics, game.BoardSize, game.PlayerBoard, PlayerShips, PlayerWaterTiles, Brushes.LightGreen);
+        // Board
+        _playerBoard.Draw(_playerCanvas.Graphics, Point.Empty);
+        _enemyBoard.Draw(_enemyCanvas.Graphics, Point.Empty);
 
-        // Layer 2: Cursor
+        // Cursor
         using var pen = new Pen(Brushes.Yellow, 2.0f);
-        if (enemyCanvas.CursorPosition is Point position)
-        {
-            enemyCanvas.Graphics.DrawRectangle(pen, position.X * TileSize, position.Y * TileSize, TileSize, TileSize);
-        }
-    }
 
-    private void DrawBoard(Graphics graphics, Size size, bool[,] board, ShipGameObject[,] ships, WaterTile[,] waterTiles, Brush borderBrush)
-    {
-        // Tiles
-        for (int column = 0; column < waterTiles.GetLength(0); column++)
-        {
-            for (int line = 0; line < waterTiles.GetLength(1); line++)
-            {
-                var tile = waterTiles[column, line];
-                var point = new Point(column * TileSize, line * TileSize);
-                tile.Draw(graphics, point);
-            }
-        }
+        if (_enemyCanvas.CursorPosition is not Point position) return;
 
-        using var linesPen = new Pen(borderBrush, 1.0f);
-
-        // Grid lines
-        for (int i = 0; i < size.Width; i++)
-        {
-            var p1 = new Point(i * TileSize, 0);
-            var p2 = new Point(i * TileSize, size.Height * TileSize);
-            graphics.DrawLine(linesPen, p1, p2);
-        }
-
-        for (int j = 0; j < size.Height; j++)
-        {
-            var p1 = new Point(0, j * TileSize);
-            var p2 = new Point(size.Width * TileSize, j * TileSize);
-            graphics.DrawLine(linesPen, p1, p2);
-        }
-
-        // Ships
-        for (int column = 0; column < ships.GetLength(0); column++)
-        {
-            for (int line = 0; line < ships.GetLength(1); line++)
-            {
-                var ship = ships[column, line];
-
-                if (ship != null)
-                {
-                    var point = new Point(column * TileSize, line * TileSize);
-                    ship.Draw(graphics, point);
-                }
-            }
-        }
-
-        // Hit places
-        for (int column = 0; column < board.GetLength(0); column++)
-        {
-            for (int line = 0; line < board.GetLength(1); line++)
-            {
-                if (board[column, line])
-                {
-                    var point = new Point(column * TileSize, line * TileSize);
-                    var rect = new Rectangle(point, new Size(TileSize, TileSize));
-                    graphics.DrawString("❌", DefaultFont, Brushes.White, rect, new StringFormat()
-                    {
-                        Alignment = StringAlignment.Center,
-                        LineAlignment = StringAlignment.Center
-                    });
-                }
-
-            }
-        }
+        var point = new Point(position.X * TileDimension, position.Y * TileDimension);
+        var rect = new Rectangle(point, TileSize);
+        _enemyCanvas.Graphics.DrawRectangle(pen, rect);
     }
 
     private void saveButton_Click(object sender, EventArgs e)
     {
         try
         {
-            game.Save();
+            _game.Save();
             MessageBox.Show(
                 "¡El juego fue guardado con éxito!",
                 "¡Éxito!",
@@ -203,22 +120,46 @@ public partial class GameForm : Form
         catch
         {
             MessageBox.Show(
-                "Ooops! Algo malo pasó y no pudimos guardar tu el juego!",
+                "¡Ooops! Algo malo pasó y no pudimos guardar tu el juego!",
                 "Error",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error
             );
         }
+    }
 
+    private void exitButton_Click(object sender, EventArgs e)
+    {
+        var result = MessageBox.Show(
+            "¿Estás seguro que querés desistir, cobarde?",
+            "Abandonar juego",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+        );
 
+        if (result == DialogResult.Yes)
+        {
+            ShowGameOver();
+        }
+    }
+
+    private void ShowGameOver()
+    {
+        MessageBox.Show(
+            "¡Que fracasado, perdiste el juego!",
+            "Game Over"
+        );
+
+        // TODO: registrar derrota
+
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 }
 
-class ShipGameObject : IGameObject
+internal class ShipGameObject : IGameObject
 {
-    private readonly Ship Ship;
-    private readonly Sprite ShipSprite;
-    private readonly Sprite FireSprite;
+    public Ship Ship { get; }
+    private readonly Sprite _shipSprite;
 
     public ShipGameObject(Ship ship)
     {
@@ -232,18 +173,7 @@ class ShipGameObject : IGameObject
             _ => throw new NotImplementedException($"No sprites available for a ship with length {ship.Length}."),
         };
 
-        ShipSprite = new Sprite(image);
-
-        FireSprite = new Sprite(
-            Resources.fire,
-            new()
-            {
-                ["small"] = new SpriteAnimation(6, [196, 197, 198, 199]),
-                ["big"] = new SpriteAnimation(6, [131, 132, 133, 134]),
-            },
-            "big",
-            new Size(32, 32)
-        );
+        _shipSprite = new Sprite(image);
     }
 
     public void Draw(Graphics graphics, Point point)
@@ -252,37 +182,46 @@ class ShipGameObject : IGameObject
         {
             var state = graphics.Save();
 
-            var width = Ship.Length * GameForm.TileSize;
-            var height = GameForm.TileSize;
-            var centerX = point.X + (width / 2f);
-            var centerY = point.Y + (height / 2f);
+            var width = Ship.Length * GameForm.TileDimension;
+            const int height = GameForm.TileDimension;
+            var centerX = point.X + width / 2f;
+            var centerY = point.Y + height / 2f;
 
             graphics.TranslateTransform(centerX, centerY);
             graphics.RotateTransform(90);
 
-            var offsetPoint = new Point(-ShipSprite.SpriteSheet.Width / 2, -ShipSprite.SpriteSheet.Height / 2);
-            graphics.DrawSprite(ShipSprite, offsetPoint);
+            var offsetPoint = new Point(-_shipSprite.SpriteSheet.Width / 2, -_shipSprite.SpriteSheet.Height / 2);
+            graphics.DrawSprite(_shipSprite, offsetPoint);
 
             graphics.Restore(state);
         }
         else
         {
-            graphics.DrawSprite(ShipSprite, point);
+            graphics.DrawSprite(_shipSprite, point);
         }
-
-        point.Offset(0, -16);
-        graphics.DrawSprite(FireSprite, point);
     }
 
     public void Tick()
     {
-        FireSprite.Tick();
+    }
+
+    public Size Size
+    {
+        get
+        {
+            return Ship.Orientation switch
+            {
+                ShipOrientation.Horizontal => new(Ship.Length, 1),
+                ShipOrientation.Vertical => new(1, Ship.Length),
+                _ => throw new NotImplementedException(),
+            };
+        }
     }
 }
 
-class WaterTile : IGameObject
+internal class WaterTile : IGameObject
 {
-    private Sprite[,] sprites;
+    private readonly Sprite[,] _sprites;
     private static List<int> Variant1 => [33, 34, 35];
     private static List<int> Variant2 => [34, 35, 33];
     private static List<int> Variant3 => [35, 33, 34];
@@ -290,17 +229,17 @@ class WaterTile : IGameObject
 
     public WaterTile()
     {
-        sprites = new Sprite[2, 2];
+        _sprites = new Sprite[2, 2];
         for (var i = 0; i < 2; i++)
         {
             for (var j = 0; j < 2; j++)
             {
                 var variantIndex = Random.Shared.Next(3);
-                sprites[i, j] = new Sprite(
+                _sprites[i, j] = new Sprite(
                     Resources.water,
-                    new()
+                    new Dictionary<string, SpriteAnimation>
                     {
-                        ["idle"] = new SpriteAnimation(60, Variants[variantIndex]),
+                        ["idle"] = new SpriteAnimation(40, Variants[variantIndex]),
                     },
                     "idle",
                     new Size(16, 16)
@@ -315,8 +254,9 @@ class WaterTile : IGameObject
         {
             for (var j = 0; j < 2; j++)
             {
-                var offsetPoint = new Point(point.X + i * GameForm.TileSize / 2, point.Y + j * GameForm.TileSize / 2);
-                graphics.DrawSprite(sprites[i, j], offsetPoint);
+                var offsetPoint = new Point(point.X + i * GameForm.TileDimension / 2,
+                    point.Y + j * GameForm.TileDimension / 2);
+                graphics.DrawSprite(_sprites[i, j], offsetPoint);
             }
         }
     }
@@ -327,26 +267,40 @@ class WaterTile : IGameObject
         {
             for (var j = 0; j < 2; j++)
             {
-                sprites[i, j].Tick();
+                _sprites[i, j].Tick();
             }
         }
     }
+
+    public Size Size => new(1, 1);
 }
 
-class MockGame : IGame
+public class MockGame : IGame
 {
+    public GameDescription Description =>
+        new(
+            0,
+            "Joaquín Forni",
+            new DateTime(2026, 06, 10),
+            new DateTime(2026, 06, 10),
+            null, TimeSpan.Zero,
+            GameState.InGame,
+            new GameConfiguration(
+                GameMode.SinglePlayer,
+                new(8, 8),
+                []
+            )
+        );
 
-    public bool[,] EnemyBoard { get; private set; }
+    public bool[,] EnemyBoard { get; }
 
-    public bool[,] PlayerBoard { get; private set; }
+    public bool[,] PlayerBoard { get; }
 
     public Dictionary<Point, Ship> PlayerShips { get; } = [];
 
     public Dictionary<Point, Ship> EnemyShips { get; } = [];
 
-    public Size BoardSize => new Size(8, 8);
-
-    public GameState State { get; } = GameState.InGame;
+    public GameState State => GameState.InGame;
 
     public void Save() => Console.WriteLine("Game saved!");
 
@@ -365,7 +319,8 @@ class MockGame : IGame
 
         do
         {
-            resultingAttack = new(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Width));
+            resultingAttack = new(Random.Shared.Next(Description.Configuration.BoardSize.Width),
+                Random.Shared.Next(Description.Configuration.BoardSize.Width));
         } while (PlayerBoard[resultingAttack.X, resultingAttack.Y]);
 
         PlayerBoard[resultingAttack.X, resultingAttack.Y] = true;
@@ -373,12 +328,14 @@ class MockGame : IGame
         return resultingAttack;
     }
 
-    public MockGame(int width, int height)
+    public MockGame()
     {
+        var width = Description.Configuration.BoardSize.Width;
+        var height = Description.Configuration.BoardSize.Height;
         EnemyBoard = new bool[width, height];
         PlayerBoard = new bool[width, height];
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var x = Random.Shared.Next(0, width);
             var y = Random.Shared.Next(0, height);
@@ -387,7 +344,7 @@ class MockGame : IGame
             PlayerShips[point] = CreateRandomShip();
         }
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var x = Random.Shared.Next(0, width);
             var y = Random.Shared.Next(0, height);
@@ -397,7 +354,7 @@ class MockGame : IGame
         }
     }
 
-    static Ship CreateRandomShip()
+    private static Ship CreateRandomShip()
     {
         var length = Random.Shared.Next(1, 4);
         var orientation = (ShipOrientation)Random.Shared.Next(2);
