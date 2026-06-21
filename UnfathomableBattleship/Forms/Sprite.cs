@@ -13,9 +13,6 @@ public class Sprite
     /// </summary>
     public Image SpriteSheet { get; }
 
-    public bool IsFinished { get; private set; }
-    public event Action? OnAnimationFinished;
-
     /// <summary>
     /// Creates a new sprite.
     /// </summary>
@@ -37,14 +34,13 @@ public class Sprite
     /// <param name="animations">A dictionary of named animations.</param>
     /// <param name="defaultAnimation">The default animation name.</param>
     /// <param name="rectSize">The size of the rect that will be shown within the sprite sheet. If null, it will take the size of the entire image.</param>
-    public Sprite(Image spriteSheet, Dictionary<string, SpriteAnimation> animations, String defaultAnimation,
-        Size? rectSize = null)
+    public Sprite(Image spriteSheet, Dictionary<string, SpriteAnimation> animations, String defaultAnimation, Size? rectSize = null)
     {
         Debug.Assert(animations.ContainsKey(defaultAnimation));
 
         SpriteSheet = spriteSheet;
         _rectSize = rectSize;
-        var frameWidth = rectSize == null ? spriteSheet.Width : rectSize.Value.Width;
+        var frameWidth = rectSize?.Width ?? spriteSheet.Width;
         _columnsCount = spriteSheet.Width / frameWidth;
         _animations = animations;
         _currentAnimation = defaultAnimation;
@@ -81,7 +77,7 @@ public class Sprite
     {
         get
         {
-            if (_rectSize is Size size)
+            if (_rectSize is { } size)
             {
                 return size;
             }
@@ -90,8 +86,15 @@ public class Sprite
         }
     }
 
-    public Rectangle Rectangle => new Rectangle(FramePoint, FrameSize);
+    /// <summary>
+    /// The rectangle within the sprite sheet that will be drawn.
+    /// </summary>
+    public Rectangle Rectangle => new (FramePoint, FrameSize);
 
+    /// <summary>
+    /// Plays the animation.
+    /// </summary>
+    /// <param name="onFinish">The callback to execute when the animation is finished.</param>
     public void Play(Action? onFinish = null)
     {
         _playbackState = PlaybackState.Playing;
@@ -100,6 +103,9 @@ public class Sprite
         _currentTick = 0;
     }
 
+    /// <summary>
+    /// Play the animation in a loop.
+    /// </summary>
     public void Repeat()
     {
         _playbackState = PlaybackState.Repeating;
@@ -107,6 +113,9 @@ public class Sprite
         _currentTick = 0;
     }
 
+    /// <summary>
+    /// Stops the animation.
+    /// </summary>
     public void Stop()
     {
         _playbackState = PlaybackState.Stopped;
@@ -141,7 +150,13 @@ public class Sprite
         }
     }
 
-    private enum PlaybackState { Stopped, Playing, Repeating }
+    private enum PlaybackState
+    {
+        Stopped,
+        Playing,
+        Repeating
+    }
+
     private PlaybackState _playbackState = PlaybackState.Repeating;
     private Action? _onFinish;
 

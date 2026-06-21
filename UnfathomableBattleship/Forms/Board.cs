@@ -83,6 +83,12 @@ public class Board : IGameObject
         }
     }
 
+    /// <summary>
+    /// Play an explosion animation on the given tile.
+    /// </summary>
+    /// <param name="tileCoordinate">The tile coordinate of the explosion.</param>
+    /// <param name="onFinish">The action to happen when the animation ends.</param>
+    /// <returns></returns>
     public void PlayExplosion(Point tileCoordinate, Action onFinish)
     {
         var isShip = _ships[tileCoordinate.X, tileCoordinate.Y] != null;
