@@ -41,7 +41,7 @@ public partial class GameForm : Form
 
         InitializeComponent();
 
-        Timer gameTimer = new()
+        System.Windows.Forms.Timer gameTimer = new()
         {
             Interval = 16
         };
