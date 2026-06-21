@@ -3,13 +3,20 @@ using UnfathomableBattleship.Exceptions;
 
 namespace UnfathomableBattleship.Forms
 {
-    public partial class CreateCountForm : Form
+    public partial class RegisterForm : Form
     {
         private IAuthenticationService _authenticationService;
-        public CreateCountForm(IAuthenticationService authService)
+        public RegisterForm(IAuthenticationService authService)
         {
             InitializeComponent();
+            MyInitializeComponet();
             _authenticationService = authService;
+            
+        }
+        private void MyInitializeComponet()
+        {
+            
+            lbTitle.Location = new Point(ClientSize.Height/2,10);
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -26,9 +33,8 @@ namespace UnfathomableBattleship.Forms
             }
             try
             {
-                _authenticationService.CreateUser(tbUser.Text, tbPassword.Text);
-                Hide();
-                MessageBox.Show("Your account was succesfully created", "Succesfull Register", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _authenticationService.CreateUser(tbUser.Text.Trim(), tbPassword.Text);
+                MessageBox.Show($"Tu cuenta ha sido creda exitosamente {tbUser.Text.Trim()}!", "Registro completado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 DialogResult = DialogResult.OK;
             }

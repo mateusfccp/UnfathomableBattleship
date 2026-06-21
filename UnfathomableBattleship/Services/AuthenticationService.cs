@@ -37,8 +37,32 @@ namespace UnfathomableBattleship.Services
 
         public IGameManager Login(string username, string password)
         {
-            throw new NotImplementedException();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT user_id, password_hash FROM User WHERE user_name = @username";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())// If Read() is true, the user exists
+                        {
+                            string storedHash = reader.GetString(1);
+
+                            if (HashPassword(password) == storedHash)
+                            {
+                                int userId = reader.GetInt32(0);
+                                return new GameManager(userId);
+                            }
+                        }
+                    }
+                }
+                throw new AuthenticationFailedException();
+            }
         }
+
 
         private bool CheckUserExists(SQLiteConnection connection, string userInput)
         {
@@ -47,6 +71,7 @@ namespace UnfathomableBattleship.Services
             var result = command.ExecuteScalar();
             return Convert.ToBoolean(result);
         }
+
 
         /// <summary>
         /// Takes a string and creates a hash with it.

@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-
+﻿using UnfathomableBattleship.Interfaces;
 namespace UnfathomableBattleship.Forms;
 
 public partial class MainMenuForm : Form
 {
     MainForm? MainForm => Tag as MainForm;
-
-    public MainMenuForm()
+    private readonly IGameManager _gameManager;
+    public MainMenuForm(IGameManager gameManager)
     {
         InitializeComponent();
+        _gameManager = gameManager;
     }
 
     private void label1_Click(object sender, EventArgs e)

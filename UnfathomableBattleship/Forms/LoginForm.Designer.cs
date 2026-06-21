@@ -35,6 +35,7 @@
             tableLayoutPanel = new TableLayoutPanel();
             loginButton = new Button();
             createAccountButton = new Button();
+            lbFeedBackUser = new Label();
             tableLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -88,6 +89,7 @@
             tableLayoutPanel.Controls.Add(passwordLabel, 1, 3);
             tableLayoutPanel.Controls.Add(loginButton, 1, 5);
             tableLayoutPanel.Controls.Add(createAccountButton, 1, 6);
+            tableLayoutPanel.Controls.Add(lbFeedBackUser, 2, 2);
             tableLayoutPanel.Dock = DockStyle.Fill;
             tableLayoutPanel.Location = new Point(9, 11);
             tableLayoutPanel.Margin = new Padding(3, 4, 3, 4);
@@ -134,8 +136,19 @@
             createAccountButton.UseVisualStyleBackColor = true;
             createAccountButton.Click += createAccountButton_Click;
             // 
+            // lbFeedBackUser
+            // 
+            lbFeedBackUser.AutoSize = true;
+            lbFeedBackUser.ForeColor = Color.Red;
+            lbFeedBackUser.Location = new Point(559, 424);
+            lbFeedBackUser.Name = "lbFeedBackUser";
+            lbFeedBackUser.Size = new Size(0, 20);
+            lbFeedBackUser.TabIndex = 7;
+            lbFeedBackUser.Visible = false;
+            // 
             // LoginForm
             // 
+            AcceptButton = loginButton;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(896, 748);
@@ -161,5 +174,6 @@
         private TableLayoutPanel tableLayoutPanel;
         private Button loginButton;
         private Button createAccountButton;
+        private Label lbFeedBackUser;
     }
 }

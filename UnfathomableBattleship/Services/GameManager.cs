@@ -1,10 +1,18 @@
-﻿using UnfathomableBattleship.Interfaces;
+﻿using System.Data.SQLite;
+using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 
 namespace UnfathomableBattleship.Services
 {
     internal class GameManager : IGameManager
     {
+        private readonly string _connectionString;
+        private readonly int _userId;
+        public GameManager(string connectionString, int userId)
+        {
+            _connectionString = connectionString;
+            _userId = userId;
+        }
         public void DeleteGame(object id)
         {
             throw new NotImplementedException();
@@ -27,7 +35,10 @@ namespace UnfathomableBattleship.Services
 
         public IGame NewGame(GameConfiguration configuration)
         {
-            throw new NotImplementedException();
+            using(var connection = new SQLiteConnection(_connectionString))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public IGame QuickGame()
