@@ -9,7 +9,7 @@ public class Sprite
 {
     public Image SpriteSheet { get; }
 
-    public Sprite(Image spriteSheet, Size? rectSize)
+    public Sprite(Image spriteSheet, Size? rectSize = null)
     {
         SpriteSheet = spriteSheet;
         this.rectSize = rectSize;
@@ -18,7 +18,7 @@ public class Sprite
         animations = [];
     }
 
-    public Sprite(Image spriteSheet, Size? rectSize, Dictionary<string, SpriteAnimation> animations, String defaultAnimation)
+    public Sprite(Image spriteSheet, Dictionary<string, SpriteAnimation> animations, String defaultAnimation, Size? rectSize = null)
     {
         SpriteSheet = spriteSheet;
         this.rectSize = rectSize;
