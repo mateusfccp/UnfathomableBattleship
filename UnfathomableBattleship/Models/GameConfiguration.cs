@@ -1,4 +1,3 @@
-using System.Drawing;
 using UnfathomableBattleship.Enums;
 
 namespace UnfathomableBattleship.Models;

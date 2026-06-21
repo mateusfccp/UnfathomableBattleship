@@ -5,7 +5,7 @@ public class GameCanvas : IDisposable
     private bool isLeftMouseDown;
     private bool wasLeftMouseDown;
 
-    public event EventHandler<Point> TileClicked;
+    public event EventHandler<Point> TileClicked = delegate { };
 
     public Point? MousePosition { get; private set; }
 
@@ -15,8 +15,8 @@ public class GameCanvas : IDisposable
         {
             if (MousePosition is Point position)
             {
-                var mouseTileX = position.X / GameForm.TileSize;
-                var mouseTileY = position.Y / GameForm.TileSize;
+                var mouseTileX = position.X / GameForm.TileDimension;
+                var mouseTileY = position.Y / GameForm.TileDimension;
                 return new Point(mouseTileX, mouseTileY);
             } else
             {
@@ -33,12 +33,13 @@ public class GameCanvas : IDisposable
     {
         PictureBox = pictureBox;
         PictureBox.Resize += (s, e) => Rebuild();
-        PictureBox.Width = size.Width * GameForm.TileSize;
-        PictureBox.Height = size.Height * GameForm.TileSize;
+        PictureBox.Width = size.Width * GameForm.TileDimension;
+        PictureBox.Height = size.Height * GameForm.TileDimension;
         PictureBox.MouseMove += MouseMove;
         PictureBox.MouseDown += MouseDown;
         PictureBox.MouseUp += MouseUp;
         PictureBox.MouseLeave += MouseLeave;
+
         Rebuild();
     }
 

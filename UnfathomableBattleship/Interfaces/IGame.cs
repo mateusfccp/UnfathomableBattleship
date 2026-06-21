@@ -6,6 +6,11 @@ namespace UnfathomableBattleship.Interfaces;
 public interface IGame
 {
     /// <summary>
+    /// The description of the game.
+    /// </summary>
+    public GameDescription Description { get; }
+
+    /// <summary>
     /// The state of the enemy board.
     /// <br />
     /// True means a shot was shot in the corresponding cell.
@@ -32,11 +37,6 @@ public interface IGame
     /// The ships of the enemy.
     /// </summary>
     public Dictionary<Point, Ship> EnemyShips { get; }
-
-    /// <summary>
-    /// The board size.
-    /// </summary>
-    public Size BoardSize { get; }
 
     /// <summary>
     /// Attacks the given cell.

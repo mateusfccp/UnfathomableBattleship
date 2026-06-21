@@ -1,4 +1,5 @@
-﻿using UnfathomableBattleship.Enums;
+﻿using System.Diagnostics;
+using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Properties;
@@ -7,22 +8,35 @@ namespace UnfathomableBattleship.Forms;
 
 public partial class GameForm : Form
 {
+    MainForm? MainForm => Tag as MainForm;
+
+    private IGameManager gameManager;
     private IGame game;
     private System.Windows.Forms.Timer gameTimer;
+    private Stopwatch gameStopwatch;
 
     private GameCanvas playerCanvas;
     private GameCanvas enemyCanvas;
 
-    private WaterTile[,] PlayerWaterTiles;
-    private WaterTile[,] EnemyWaterTiles;
-    private ShipGameObject[,] PlayerShips;
-    private ShipGameObject[,] EnemyShips;
+    private Board playerBoard;
+    private Board enemyBoard;
 
-    public const int TileSize = 32;
+    public const int TileDimension = 32;
+    public static readonly Size TileSize = new(TileDimension, TileDimension);
 
-    public GameForm()
+    private TimeSpan ElapsedTime
     {
-        game = new MockGame(8, 8);
+        get
+        {
+            return game.Description.ElapsedTime + gameStopwatch.Elapsed;
+        }
+    }
+
+    public GameForm(IGameManager gameManager)
+    {
+        this.gameManager = gameManager;
+        game = new MockGame();
+        DoubleBuffered = true;
 
         InitializeComponent();
 
@@ -33,51 +47,24 @@ public partial class GameForm : Form
         gameTimer.Tick += GameLoop;
         gameTimer.Start();
 
-        playerCanvas = new GameCanvas(playerCanvasPictureBox, game.BoardSize);
-        enemyCanvas = new GameCanvas(enemyCanvasPictureBox, game.BoardSize);
+        gameStopwatch = new();
+        gameStopwatch.Start();
+
+        playerNameLabel.Text = game.Description.Username;
+
+        playerCanvas = new GameCanvas(playerCanvasPictureBox, game.Description.Configuration.BoardSize);
+        enemyCanvas = new GameCanvas(enemyCanvasPictureBox, game.Description.Configuration.BoardSize);
 
         enemyCanvas.TileClicked += EnemyCanvasTileClicked;
 
-        // Initialize water tiles
-        PlayerWaterTiles = new WaterTile[game.BoardSize.Width, game.BoardSize.Height];
-        EnemyWaterTiles = new WaterTile[game.BoardSize.Width, game.BoardSize.Height];
-
-        for (var line = 0; line < game.BoardSize.Height; line++)
-        {
-            for (var column = 0; column < game.BoardSize.Width; column++)
-            {
-                PlayerWaterTiles[column, line] = new WaterTile();
-                EnemyWaterTiles[column, line] = new WaterTile();
-            }
-        }
-
-        // Initialize ships
-        PlayerShips = new ShipGameObject[game.BoardSize.Width, game.BoardSize.Height];
-        EnemyShips = new ShipGameObject[game.BoardSize.Width, game.BoardSize.Height];
-
-        for (var line = 0; line < game.BoardSize.Height; line++)
-        {
-            for (var column = 0; column < game.BoardSize.Width; column++)
-            {
-                var point = new Point(column, line);
-                if (game.PlayerShips.ContainsKey(point) && game.PlayerShips[point] is Ship playerShip)
-                {
-                    PlayerShips[column, line] = new ShipGameObject(playerShip);
-                }
-
-                if (game.EnemyShips.ContainsKey(point) && game.EnemyShips[point] is Ship enemyShip)
-                {
-                    EnemyShips[column, line] = new ShipGameObject(enemyShip);
-                }
-            }
-        }
+        playerBoard = new Board(game.Description.Configuration.BoardSize, game.PlayerShips, game.PlayerBoard, false);
+        enemyBoard = new Board(game.Description.Configuration.BoardSize, game.EnemyShips, game.EnemyBoard, true);
     }
 
     private void GameLoop(object? sender, EventArgs eventArgs)
     {
         UpdateGame();
         RenderGame();
-
     }
 
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
@@ -87,20 +74,11 @@ public partial class GameForm : Form
 
     private void UpdateGame()
     {
+        timerValueLabel.Text = $"{ElapsedTime.Hours:00}:{ElapsedTime.Minutes:00}:{ElapsedTime.Seconds:00}";
         playerCanvas.Update();
         enemyCanvas.Update();
-
-        for (var column = 0; column < game.BoardSize.Width; column++)
-        {
-            for (var line = 0; line < game.BoardSize.Height; line++)
-
-            {
-                PlayerWaterTiles[column, line].Tick();
-                EnemyWaterTiles[column, line].Tick();
-                PlayerShips[column, line]?.Tick();
-                EnemyShips[column, line]?.Tick();
-            }
-        }
+        playerBoard.Tick();
+        enemyBoard.Tick();
     }
 
     private void RenderGame()
@@ -111,80 +89,17 @@ public partial class GameForm : Form
         playerCanvas.Graphics.Clear(Color.Black);
         enemyCanvas.Graphics.Clear(Color.Black);
 
-        // Layer 1: Board
-        DrawBoard(enemyCanvas.Graphics, game.BoardSize, game.EnemyBoard, EnemyShips, EnemyWaterTiles, Brushes.LightGray);
-        DrawBoard(playerCanvas.Graphics, game.BoardSize, game.PlayerBoard, PlayerShips, PlayerWaterTiles, Brushes.LightGreen);
+        // Board
+        playerBoard.Draw(playerCanvas.Graphics, Point.Empty);
+        enemyBoard.Draw(enemyCanvas.Graphics, Point.Empty);
 
-        // Layer 2: Cursor
+        // Cursor
         using var pen = new Pen(Brushes.Yellow, 2.0f);
         if (enemyCanvas.CursorPosition is Point position)
         {
-            enemyCanvas.Graphics.DrawRectangle(pen, position.X * TileSize, position.Y * TileSize, TileSize, TileSize);
-        }
-    }
-
-    private void DrawBoard(Graphics graphics, Size size, bool[,] board, ShipGameObject[,] ships, WaterTile[,] waterTiles, Brush borderBrush)
-    {
-        // Tiles
-        for (int column = 0; column < waterTiles.GetLength(0); column++)
-        {
-            for (int line = 0; line < waterTiles.GetLength(1); line++)
-            {
-                var tile = waterTiles[column, line];
-                var point = new Point(column * TileSize, line * TileSize);
-                tile.Draw(graphics, point);
-            }
-        }
-
-        using var linesPen = new Pen(borderBrush, 1.0f);
-
-        // Grid lines
-        for (int i = 0; i < size.Width; i++)
-        {
-            var p1 = new Point(i * TileSize, 0);
-            var p2 = new Point(i * TileSize, size.Height * TileSize);
-            graphics.DrawLine(linesPen, p1, p2);
-        }
-
-        for (int j = 0; j < size.Height; j++)
-        {
-            var p1 = new Point(0, j * TileSize);
-            var p2 = new Point(size.Width * TileSize, j * TileSize);
-            graphics.DrawLine(linesPen, p1, p2);
-        }
-
-        // Ships
-        for (int column = 0; column < ships.GetLength(0); column++)
-        {
-            for (int line = 0; line < ships.GetLength(1); line++)
-            {
-                var ship = ships[column, line];
-
-                if (ship != null)
-                {
-                    var point = new Point(column * TileSize, line * TileSize);
-                    ship.Draw(graphics, point);
-                }
-            }
-        }
-
-        // Hit places
-        for (int column = 0; column < board.GetLength(0); column++)
-        {
-            for (int line = 0; line < board.GetLength(1); line++)
-            {
-                if (board[column, line])
-                {
-                    var point = new Point(column * TileSize, line * TileSize);
-                    var rect = new Rectangle(point, new Size(TileSize, TileSize));
-                    graphics.DrawString("❌", DefaultFont, Brushes.White, rect, new StringFormat()
-                    {
-                        Alignment = StringAlignment.Center,
-                        LineAlignment = StringAlignment.Center
-                    });
-                }
-
-            }
+            var point = new Point(position.X * TileDimension, position.Y * TileDimension);
+            var rect = new Rectangle(point, TileSize);
+            enemyCanvas.Graphics.DrawRectangle(pen, rect);
         }
     }
 
@@ -203,7 +118,7 @@ public partial class GameForm : Form
         catch
         {
             MessageBox.Show(
-                "Ooops! Algo malo pasó y no pudimos guardar tu el juego!",
+                "¡Ooops! Algo malo pasó y no pudimos guardar tu el juego!",
                 "Error",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error
@@ -212,13 +127,42 @@ public partial class GameForm : Form
 
 
     }
+
+    private void exitButton_Click(object sender, EventArgs e)
+    {
+
+        var result = MessageBox.Show(
+            "¿Estás seguro que querés desistir, cobarde?",
+            "Abandonar juego",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+        );
+
+        if (result == DialogResult.Yes)
+        {
+            ShowGameOver();
+        }
+    }
+
+    private void ShowGameOver() {
+        MessageBox.Show(
+            "¡Que fracasado, perdiste el juego!",
+            "Game Over"
+        );
+
+        // TODO: registrar derrota
+
+        MainForm?.SwitchForm(new MainMenuForm(gameManager));
+    }
 }
 
 class ShipGameObject : IGameObject
 {
-    private readonly Ship Ship;
+    public Ship Ship { get; init; }
     private readonly Sprite ShipSprite;
     private readonly Sprite FireSprite;
+    private readonly bool[] Destroyed;
+    private bool HasDestruction;
 
     public ShipGameObject(Ship ship)
     {
@@ -244,6 +188,19 @@ class ShipGameObject : IGameObject
             "big",
             new Size(32, 32)
         );
+
+        Destroyed = new bool[Ship.Length];
+        for (int i = 0; i < Ship.Length; i++)
+        {
+            Destroyed[i] = false;
+        }
+    }
+
+    public void SetDestroyed(int tile)
+    {
+        Debug.Assert(tile < Ship.Length);
+        Destroyed[tile] = true;
+        HasDestruction = true;
     }
 
     public void Draw(Graphics graphics, Point point)
@@ -252,8 +209,8 @@ class ShipGameObject : IGameObject
         {
             var state = graphics.Save();
 
-            var width = Ship.Length * GameForm.TileSize;
-            var height = GameForm.TileSize;
+            var width = Ship.Length * GameForm.TileDimension;
+            var height = GameForm.TileDimension;
             var centerX = point.X + (width / 2f);
             var centerY = point.Y + (height / 2f);
 
@@ -270,13 +227,47 @@ class ShipGameObject : IGameObject
             graphics.DrawSprite(ShipSprite, point);
         }
 
-        point.Offset(0, -16);
-        graphics.DrawSprite(FireSprite, point);
+        // Draw fires
+        if (HasDestruction)
+        {
+            point.Offset(0, -16);
+
+            for (var i = 0; i < Ship.Length; i++)
+            {
+                if (Destroyed[i])
+                {
+                    graphics.DrawSprite(FireSprite, point);
+                }
+
+                switch (Ship.Orientation)
+                {
+                    case ShipOrientation.Horizontal:
+                        point.Offset(32, 0);
+                        break;
+                    case ShipOrientation.Vertical:
+                        point.Offset(0, 32);
+                        break;
+                }
+            }
+        }
     }
 
     public void Tick()
     {
         FireSprite.Tick();
+    }
+
+    public Size Size
+    {
+        get
+        {
+            return Ship.Orientation switch
+            {
+                ShipOrientation.Horizontal => new(Ship.Length, 1),
+                ShipOrientation.Vertical => new(1, Ship.Length),
+                _ => throw new NotImplementedException(),
+            };
+        }
     }
 }
 
@@ -300,7 +291,7 @@ class WaterTile : IGameObject
                     Resources.water,
                     new()
                     {
-                        ["idle"] = new SpriteAnimation(60, Variants[variantIndex]),
+                        ["idle"] = new SpriteAnimation(40, Variants[variantIndex]),
                     },
                     "idle",
                     new Size(16, 16)
@@ -315,7 +306,7 @@ class WaterTile : IGameObject
         {
             for (var j = 0; j < 2; j++)
             {
-                var offsetPoint = new Point(point.X + i * GameForm.TileSize / 2, point.Y + j * GameForm.TileSize / 2);
+                var offsetPoint = new Point(point.X + i * GameForm.TileDimension / 2, point.Y + j * GameForm.TileDimension / 2);
                 graphics.DrawSprite(sprites[i, j], offsetPoint);
             }
         }
@@ -331,10 +322,31 @@ class WaterTile : IGameObject
             }
         }
     }
+
+    public Size Size => new(1, 1);
 }
 
 class MockGame : IGame
 {
+    public GameDescription Description
+    {
+        get
+        {
+            return new GameDescription(
+                0,
+                "Joaquín Forni",
+                new DateTime(2026, 06, 10),
+                new DateTime(2026, 06, 10),
+                null, TimeSpan.Zero,
+                GameState.InGame,
+                new GameConfiguration(
+                    GameMode.SinglePlayer,
+                    new(8, 8),
+                    []
+                )
+            );
+        }
+    }
 
     public bool[,] EnemyBoard { get; private set; }
 
@@ -343,8 +355,6 @@ class MockGame : IGame
     public Dictionary<Point, Ship> PlayerShips { get; } = [];
 
     public Dictionary<Point, Ship> EnemyShips { get; } = [];
-
-    public Size BoardSize => new Size(8, 8);
 
     public GameState State { get; } = GameState.InGame;
 
@@ -365,7 +375,7 @@ class MockGame : IGame
 
         do
         {
-            resultingAttack = new(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Width));
+            resultingAttack = new(Random.Shared.Next(Description.Configuration.BoardSize.Width), Random.Shared.Next(Description.Configuration.BoardSize.Width));
         } while (PlayerBoard[resultingAttack.X, resultingAttack.Y]);
 
         PlayerBoard[resultingAttack.X, resultingAttack.Y] = true;
@@ -373,8 +383,10 @@ class MockGame : IGame
         return resultingAttack;
     }
 
-    public MockGame(int width, int height)
+    public MockGame()
     {
+        var width = Description.Configuration.BoardSize.Width;
+        var height = Description.Configuration.BoardSize.Height;
         EnemyBoard = new bool[width, height];
         PlayerBoard = new bool[width, height];
 
