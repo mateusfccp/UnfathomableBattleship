@@ -40,7 +40,7 @@
             label1.Size = new Size(106, 15);
             label1.TabIndex = 0;
             label1.Text = "MATHY HACE ESO";
-            label1.Click += label1_Click;
+            label1.Click += Label1_Click;
             // 
             // button1
             // 
@@ -50,7 +50,7 @@
             button1.TabIndex = 1;
             button1.Text = "button1";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            button1.Click += Button1_Click;
             // 
             // MainMenuForm
             // 

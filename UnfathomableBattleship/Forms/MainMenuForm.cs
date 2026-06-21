@@ -1,4 +1,5 @@
 ﻿using UnfathomableBattleship.Interfaces;
+using UnfathomableBattleship.Models;
 namespace UnfathomableBattleship.Forms;
 
 public partial class MainMenuForm : Form
@@ -11,12 +12,12 @@ public partial class MainMenuForm : Form
         _gameManager = gameManager;
     }
 
-    private void label1_Click(object sender, EventArgs e)
+    private void Label1_Click(object sender, EventArgs e)
     {
 
     }
 
-    private void button1_Click(object sender, EventArgs e)
+    private void Button1_Click(object sender, EventArgs e)
     {
         MainForm?.SwitchForm(new GameForm());
     }

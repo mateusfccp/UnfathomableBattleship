@@ -46,6 +46,7 @@
             usernameTextbox.Name = "usernameTextbox";
             usernameTextbox.Size = new Size(228, 27);
             usernameTextbox.TabIndex = 0;
+            usernameTextbox.KeyPress += UsernameTextbox_KeyPress;
             // 
             // usernameLabel
             // 

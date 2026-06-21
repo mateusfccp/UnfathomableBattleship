@@ -30,9 +30,9 @@ public partial class LoginForm : Form
         }
         catch (AuthenticationFailedException)
         {
-            MessageBox.Show("Usuario y/o contraseña incorrecta","Error de inicio de sesión", MessageBoxButtons.OK,MessageBoxIcon.Warning);
+            MessageBox.Show("Usuario y/o contraseña incorrecta", "Error de inicio de sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             MessageBox.Show($"Error inesperado: {ex.Message}", "Error crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -43,5 +43,9 @@ public partial class LoginForm : Form
     {
         using var createForm = new RegisterForm(_authenticationService);
         createForm.ShowDialog();
+    }
+
+    private void UsernameTextbox_KeyPress(object sender, KeyPressEventArgs e)
+    {
     }
 }
