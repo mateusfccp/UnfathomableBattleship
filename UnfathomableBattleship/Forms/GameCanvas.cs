@@ -27,8 +27,8 @@ public class GameCanvas : IDisposable
 
     public GameCanvas(PictureBox pictureBox, Size size)
     {
+        
         PictureBox = pictureBox;
-        PictureBox.Resize += (s, e) => Rebuild();
         PictureBox.Width = size.Width * GameForm.TileDimension;
         PictureBox.Height = size.Height * GameForm.TileDimension;
         PictureBox.MouseMove += MouseMove;
@@ -36,7 +36,9 @@ public class GameCanvas : IDisposable
         PictureBox.MouseUp += MouseUp;
         PictureBox.MouseLeave += MouseLeave;
 
-        Rebuild();
+        Bitmap = new Bitmap(PictureBox.Width, PictureBox.Height);
+        Graphics = Graphics.FromImage(Bitmap);
+        PictureBox.Resize += (s, e) => Rebuild();
     }
 
     private void Rebuild()
