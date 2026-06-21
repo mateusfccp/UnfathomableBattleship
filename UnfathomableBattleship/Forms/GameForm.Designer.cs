@@ -41,7 +41,8 @@
             // 
             // playerCanvasPictureBox
             // 
-            playerCanvasPictureBox.Location = new Point(3, 38);
+            playerCanvasPictureBox.Anchor = AnchorStyles.None;
+            playerCanvasPictureBox.Location = new Point(46, 148);
             playerCanvasPictureBox.Name = "playerCanvasPictureBox";
             playerCanvasPictureBox.Size = new Size(300, 300);
             playerCanvasPictureBox.TabIndex = 0;
@@ -66,7 +67,8 @@
             // 
             // enemyCanvasPictureBox
             // 
-            enemyCanvasPictureBox.Location = new Point(395, 38);
+            enemyCanvasPictureBox.Anchor = AnchorStyles.None;
+            enemyCanvasPictureBox.Location = new Point(438, 148);
             enemyCanvasPictureBox.Name = "enemyCanvasPictureBox";
             enemyCanvasPictureBox.Size = new Size(300, 300);
             enemyCanvasPictureBox.TabIndex = 2;

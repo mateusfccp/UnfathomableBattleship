@@ -1,4 +1,5 @@
 ﻿using System.CodeDom;
+using System.Diagnostics;
 
 namespace UnfathomableBattleship.Forms;
 
@@ -83,6 +84,13 @@ public class Sprite
         {
             return new Rectangle(FramePoint, FrameSize);
         }
+    }
+
+    public void SwitchAnimation(string name)
+    {
+        Debug.Assert(animations.ContainsKey(name));
+
+        currentAnimation = name;
     }
 
     public void Tick()
