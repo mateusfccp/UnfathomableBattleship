@@ -1,4 +1,4 @@
-﻿using UnfathomableBattleship.Enums;
+using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Properties;
@@ -12,6 +12,8 @@ public class Board : IGameObject
     private readonly ShipGameObject?[,] _ships;
     private readonly bool[,] _boardDestruction;
     private readonly Dictionary<ShipGameObject, Point> _shipOrigins = [];
+    private readonly List<Explosion> _explosions = [];
+    private record Explosion(Sprite Sprite, Point Coordinate);
 
     private static readonly Sprite SmallFireSprite = new(
         Resources.fire,
@@ -79,6 +81,37 @@ public class Board : IGameObject
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Play an explosion animation on the given tile.
+    /// </summary>
+    /// <param name="tileCoordinate">The tile coordinate of the explosion.</param>
+    /// <param name="onFinish">The action to happen when the animation ends.</param>
+    /// <returns></returns>
+    public void PlayExplosion(Point tileCoordinate, Action onFinish)
+    {
+        var isShip = _ships[tileCoordinate.X, tileCoordinate.Y] != null;
+        var image = isShip ? Resources.fire : Resources.fire_blue;
+        var frames = isShip ? new List<int> { 276, 277, 278, 279 } : new List<int> { 296, 297, 298, 299 };
+
+        var explosionSprite = new Sprite(
+            image,
+            new Dictionary<string, SpriteAnimation>
+            {
+                ["explode"] = new SpriteAnimation(5, frames),
+            },
+            "explode",
+            new Size(32, 32)
+        );
+
+        explosionSprite.Play(() =>
+        {
+            _explosions.RemoveAll(e => e.Sprite == explosionSprite);
+            onFinish();
+        });
+
+        _explosions.Add(new Explosion(explosionSprite, tileCoordinate));
     }
 
     public void Draw(Graphics graphics, Point _)
@@ -170,6 +203,13 @@ public class Board : IGameObject
                 }
             }
         }
+
+        // Explosions
+        foreach (var explosion in _explosions.ToList())
+        {
+            var point = new Point(explosion.Coordinate.X * GameForm.TileDimension, explosion.Coordinate.Y * GameForm.TileDimension);
+            graphics.DrawSprite(explosion.Sprite, point);
+        }
     }
 
     public void Tick()
@@ -185,6 +225,11 @@ public class Board : IGameObject
         foreach (var ship in _ships)
         {
             ship?.Tick();
+        }
+
+        foreach (var explosion in _explosions.ToList())
+        {
+            explosion.Sprite.Tick();
         }
     }
 

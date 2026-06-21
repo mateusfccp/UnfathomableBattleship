@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using UnfathomableBattleship.Enums;
@@ -24,6 +24,8 @@ public partial class GameForm : Form
 
     private readonly Board _playerBoard;
     private readonly Board _enemyBoard;
+
+    private bool _isAnimating;
 
     public const int TileDimension = 32;
     public static readonly Size TileSize = new(TileDimension, TileDimension);
@@ -73,7 +75,27 @@ public partial class GameForm : Form
 
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
     {
-        _game.AttackCell(eventArgs);
+        if (_isAnimating) return;
+        if (_game.EnemyBoard[eventArgs.X, eventArgs.Y]) return;
+
+        _isAnimating = true;
+
+        _enemyBoard.PlayExplosion(eventArgs, () =>
+        {
+            var enemyAttack = _game.AttackCell(eventArgs);
+
+            if (enemyAttack is Point attack)
+            {
+                _playerBoard.PlayExplosion(attack, () =>
+                {
+                    _isAnimating = false;
+                });
+            }
+            else
+            {
+                _isAnimating = false;
+            }
+        });
     }
 
     private void UpdateGame()
@@ -98,13 +120,17 @@ public partial class GameForm : Form
         _enemyBoard.Draw(_enemyCanvas.Graphics, Point.Empty);
 
         // Cursor
-        using var pen = new Pen(Brushes.Yellow, 2.0f);
+        if (!_isAnimating)
+        {
+            using var pen = new Pen(Brushes.Yellow, 2.0f);
 
-        if (_enemyCanvas.CursorPosition is not Point position) return;
-
-        var point = new Point(position.X * TileDimension, position.Y * TileDimension);
-        var rect = new Rectangle(point, TileSize);
-        _enemyCanvas.Graphics.DrawRectangle(pen, rect);
+            if (_enemyCanvas.CursorPosition is Point position)
+            {
+                var point = new Point(position.X * TileDimension, position.Y * TileDimension);
+                var rect = new Rectangle(point, TileSize);
+                _enemyCanvas.Graphics.DrawRectangle(pen, rect);
+            }
+        }
     }
 
     private void saveButton_Click(object sender, EventArgs e)
