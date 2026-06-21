@@ -1,4 +1,4 @@
-﻿namespace UnfathomableBattleship.Forms;
+namespace UnfathomableBattleship.Forms;
 
 /// <summary>
 /// An animation that a sprite can use.

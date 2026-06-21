@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace UnfathomableBattleship.Forms;
@@ -12,6 +12,9 @@ public class Sprite
     /// The image that contains the sprite.
     /// </summary>
     public Image SpriteSheet { get; }
+
+    public bool IsFinished { get; private set; }
+    public event Action? OnAnimationFinished;
 
     /// <summary>
     /// Creates a new sprite.
@@ -89,9 +92,31 @@ public class Sprite
 
     public Rectangle Rectangle => new Rectangle(FramePoint, FrameSize);
 
+    public void Play(Action? onFinish = null)
+    {
+        _playbackState = PlaybackState.Playing;
+        _onFinish = onFinish;
+        _currentFrame = 0;
+        _currentTick = 0;
+    }
+
+    public void Repeat()
+    {
+        _playbackState = PlaybackState.Repeating;
+        _currentFrame = 0;
+        _currentTick = 0;
+    }
+
+    public void Stop()
+    {
+        _playbackState = PlaybackState.Stopped;
+    }
+
     public void Tick()
     {
         if (CurrentAnimation is not { } animation) return;
+        if (_playbackState == PlaybackState.Stopped) return;
+
         _currentTick = _currentTick + 1;
 
         if (_currentTick != animation.TicksPerFrame) return;
@@ -101,9 +126,24 @@ public class Sprite
 
         if (_currentFrame == animation.Frames.Count)
         {
-            _currentFrame = 0;
+            if (_playbackState == PlaybackState.Repeating)
+            {
+                _currentFrame = 0;
+            }
+            else if (_playbackState == PlaybackState.Playing)
+            {
+                _currentFrame = animation.Frames.Count - 1;
+                _playbackState = PlaybackState.Stopped;
+                var callback = _onFinish;
+                _onFinish = null;
+                callback?.Invoke();
+            }
         }
     }
+
+    private enum PlaybackState { Stopped, Playing, Repeating }
+    private PlaybackState _playbackState = PlaybackState.Repeating;
+    private Action? _onFinish;
 
     private readonly int _columnsCount;
     private readonly Size? _rectSize;

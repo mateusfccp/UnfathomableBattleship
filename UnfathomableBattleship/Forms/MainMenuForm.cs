@@ -18,7 +18,7 @@ public partial class MainMenuForm : Form
 
     private void button1_Click(object sender, EventArgs e)
     {
-        MainForm?.SwitchForm(new GameForm(_gameManager));
+        MainForm?.SwitchForm(new GameForm(_gameManager, new MockGame()));
     }
 }
 
