@@ -74,7 +74,7 @@
             // 
             // tableLayoutPanel
             // 
-            tableLayoutPanel.BackgroundImage = Properties.Resources.Background;
+            tableLayoutPanel.BackgroundImage = Properties.Resources.login_background;
             tableLayoutPanel.BackgroundImageLayout = ImageLayout.Stretch;
             tableLayoutPanel.ColumnCount = 3;
             tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));

@@ -28,33 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
+            canvasPictureBox = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)canvasPictureBox).BeginInit();
             SuspendLayout();
             // 
-            // label1
+            // canvasPictureBox
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(383, 124);
-            label1.Name = "label1";
-            label1.Size = new Size(42, 15);
-            label1.TabIndex = 0;
-            label1.Text = "JUEGO";
+            canvasPictureBox.Dock = DockStyle.Fill;
+            canvasPictureBox.Location = new Point(0, 0);
+            canvasPictureBox.Name = "canvasPictureBox";
+            canvasPictureBox.Size = new Size(800, 450);
+            canvasPictureBox.TabIndex = 0;
+            canvasPictureBox.TabStop = false;
             // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(label1);
+            Controls.Add(canvasPictureBox);
             FormBorderStyle = FormBorderStyle.None;
             Name = "GameForm";
             Text = "GameForm";
+            ((System.ComponentModel.ISupportInitialize)canvasPictureBox).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
+        private PictureBox canvasPictureBox;
     }
 }
