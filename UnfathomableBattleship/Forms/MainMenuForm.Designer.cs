@@ -28,46 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            button1 = new Button();
+            NewGameButton = new Button();
+            LoadGameButton = new Button();
             SuspendLayout();
             // 
-            // label1
+            // NewGameButton
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(353, 42);
-            label1.Name = "label1";
-            label1.Size = new Size(106, 15);
-            label1.TabIndex = 0;
-            label1.Text = "MATHY HACE ESO";
-            label1.Click += Label1_Click;
+            NewGameButton.Location = new Point(325, 195);
+            NewGameButton.Margin = new Padding(3, 4, 3, 4);
+            NewGameButton.Name = "NewGameButton";
+            NewGameButton.Size = new Size(217, 99);
+            NewGameButton.TabIndex = 1;
+            NewGameButton.Text = "New Game";
+            NewGameButton.UseVisualStyleBackColor = true;
+            NewGameButton.Click += NewGameButton_Click;
             // 
-            // button1
+            // LoadGameButton
             // 
-            button1.Location = new Point(376, 179);
-            button1.Name = "button1";
-            button1.Size = new Size(190, 76);
-            button1.TabIndex = 1;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += Button1_Click;
+            LoadGameButton.Location = new Point(325, 325);
+            LoadGameButton.Margin = new Padding(3, 4, 3, 4);
+            LoadGameButton.Name = "LoadGameButton";
+            LoadGameButton.Size = new Size(217, 105);
+            LoadGameButton.TabIndex = 2;
+            LoadGameButton.Text = "Load Game";
+            LoadGameButton.UseVisualStyleBackColor = true;
             // 
             // MainMenuForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(button1);
-            Controls.Add(label1);
+            ClientSize = new Size(914, 600);
+            Controls.Add(LoadGameButton);
+            Controls.Add(NewGameButton);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(3, 4, 3, 4);
+            MaximizeBox = false;
             Name = "MainMenuForm";
             Text = "MainMenuForm";
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
-        private Button button1;
+        private Button NewGameButton;
+        private Button LoadGameButton;
     }
 }
