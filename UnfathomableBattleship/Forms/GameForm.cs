@@ -163,8 +163,8 @@ public partial class GameForm : Form
             _game.Save();
             MessageBox.Show(
                 "¡El juego fue guardado con éxito!",
-                "¡Éxito!",
-                MessageBoxButtons.YesNoCancel,
+                "Éxito",
+                MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
         }
