@@ -95,16 +95,30 @@ public partial class GameForm : Form
             {
                 _playerBoard.PlayExplosion(attack, () =>
                 {
-                    _isAnimating = false;
+                    PostTurn();
                 });
             }
             else
             {
-                _isAnimating = false;
+                PostTurn();
             }
 
             UpdateShipCount();
         });
+    }
+
+    private void PostTurn()
+    {
+        _isAnimating = false;
+
+        if (_game.State == GameState.Victory)
+        {
+            ShowVictory();
+        }
+        else if (_game.State == GameState.GameOver)
+        {
+            ShowGameOver();
+        }
     }
 
     private void UpdateGame()
@@ -178,6 +192,18 @@ public partial class GameForm : Form
         {
             ShowGameOver();
         }
+    }
+
+    private void ShowVictory()
+    {
+        MessageBox.Show(
+            "¡Felicitaciones, sos el mejor almirante de los siete mares! ¡Viva la guerra!",
+            "Victoria"
+        );
+
+        // TODO: registrar victoria
+
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 
     private void ShowGameOver()
