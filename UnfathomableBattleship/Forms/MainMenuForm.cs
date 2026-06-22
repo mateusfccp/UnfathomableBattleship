@@ -23,9 +23,7 @@ public partial class MainMenuForm : Form
     {
         var barcos = new List<Ship>
         {
-            new Ship(4, ShipOrientation.Horizontal),
-            new Ship(3, ShipOrientation.Vertical),
-            new Ship(3, ShipOrientation.Vertical)
+            new Ship(1, ShipOrientation.Horizontal)
         };
 
         var configuracion = new GameConfiguration(GameMode.FearAndHunger, new Size(10, 10), barcos);

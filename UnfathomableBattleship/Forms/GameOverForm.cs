@@ -19,6 +19,15 @@ public class GameOverForm : Form
         _gameManager = gameManager;
         _game = game;
 
+        if (isVictory)
+        {
+            try { new System.Media.SoundPlayer(@"C:\Windows\Media\tada.wav").Play(); } catch { }
+        }
+        else
+        {
+            try { new System.Media.SoundPlayer(@"C:\Windows\Media\chord.wav").Play(); } catch { }
+        }
+
         this.BackColor = Color.FromArgb(26, 26, 36);
 
         int totalTurns = 0;
@@ -36,38 +45,62 @@ public class GameOverForm : Form
         }
         double accuracy = totalTurns > 0 ? (successfulHits * 100.0 / totalTurns) : 0;
 
+        var tlp = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 4,
+            BackColor = Color.Transparent
+        };
+        tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 30F));
+        tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
+        tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 15F));
+        tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 15F));
+
         var lblTitle = new Label
         {
             Text = isVictory ? "¡VICTORIA!" : "DERROTA",
-            Font = new Font("Segoe UI", 36, FontStyle.Bold),
+            Font = new Font("Segoe UI", 48, FontStyle.Bold),
             ForeColor = isVictory ? Color.LimeGreen : Color.IndianRed,
-            AutoSize = true,
-            Location = new Point(250, 100)
+            TextAlign = ContentAlignment.MiddleCenter,
+            Dock = DockStyle.Fill
         };
-        this.Controls.Add(lblTitle);
+
+        string descText = $"Jugador: {_game.Description.Username}\n" +
+                          $"Dificultad: {_game.Description.Configuration.Mode}\n" +
+                          $"Inicio: {_game.Description.StartTime:dd/MM/yyyy HH:mm}\n" +
+                          $"Fin: {DateTime.Now:dd/MM/yyyy HH:mm}\n" +
+                          $"Tiempo de juego: {_game.Description.ElapsedTime:hh\\:mm\\:ss}\n" +
+                          $"Turnos totales: {totalTurns}\n" +
+                          $"Precisión: {accuracy:0.00}%";
 
         var lblStats = new Label
         {
-            Text = $"Turnos totales: {totalTurns}\nPrecisión: {accuracy:0.00}%",
-            Font = new Font("Segoe UI", 18, FontStyle.Regular),
+            Text = descText,
+            Font = new Font("Segoe UI", 16, FontStyle.Regular),
             ForeColor = Color.White,
-            AutoSize = true,
-            Location = new Point(280, 250)
+            TextAlign = ContentAlignment.MiddleCenter,
+            Dock = DockStyle.Fill
         };
-        this.Controls.Add(lblStats);
 
         var btnMenu = new Button
         {
             Text = "Volver al Menú",
-            Size = new Size(200, 50),
-            Location = new Point(290, 400),
+            Size = new Size(250, 50),
+            Anchor = AnchorStyles.None,
             FlatStyle = FlatStyle.Flat,
             BackColor = Color.SeaGreen,
             ForeColor = Color.White,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold)
+            Font = new Font("Segoe UI", 14, FontStyle.Bold),
+            Cursor = Cursors.Hand
         };
         btnMenu.Click += (s, e) => MainForm?.SwitchForm(new MainMenuForm(_gameManager));
-        this.Controls.Add(btnMenu);
+
+        tlp.Controls.Add(lblTitle, 0, 0);
+        tlp.Controls.Add(lblStats, 0, 1);
+        tlp.Controls.Add(btnMenu, 0, 2);
+
+        this.Controls.Add(tlp);
     }
 
     private bool IsHit(Point target, Dictionary<Point, Ship> ships)
