@@ -55,8 +55,10 @@ public partial class GameForm : Form
         _gameStopwatch = new Stopwatch();
         _gameStopwatch.Start();
 
+        // Top menu
         playerNameLabel.Text = _game.Description.Username;
 
+        // Board
         _playerCanvas = new GameCanvas(playerCanvasPictureBox, _game.Description.Configuration.BoardSize);
         _enemyCanvas = new GameCanvas(enemyCanvasPictureBox, _game.Description.Configuration.BoardSize);
 
@@ -65,6 +67,11 @@ public partial class GameForm : Form
         _playerBoard = new Board(_game.Description.Configuration.BoardSize, _game.PlayerShips, _game.PlayerBoard,
             false);
         _enemyBoard = new Board(_game.Description.Configuration.BoardSize, _game.EnemyShips, _game.EnemyBoard, true);
+
+        // Ship count area
+        RotatePictureBox(battleshipPictureBox);
+        RotatePictureBox(destructorPictureBox);
+        UpdateShipCount();
     }
 
     private void GameLoop(object? sender, EventArgs eventArgs)
@@ -88,14 +95,30 @@ public partial class GameForm : Form
             {
                 _playerBoard.PlayExplosion(attack, () =>
                 {
-                    _isAnimating = false;
+                    PostTurn();
                 });
             }
             else
             {
-                _isAnimating = false;
+                PostTurn();
             }
+
+            UpdateShipCount();
         });
+    }
+
+    private void PostTurn()
+    {
+        _isAnimating = false;
+
+        if (_game.State == GameState.Victory)
+        {
+            ShowVictory();
+        }
+        else if (_game.State == GameState.GameOver)
+        {
+            ShowGameOver();
+        }
     }
 
     private void UpdateGame()
@@ -171,6 +194,18 @@ public partial class GameForm : Form
         }
     }
 
+    private void ShowVictory()
+    {
+        MessageBox.Show(
+            "¡Felicitaciones, sos el mejor almirante de los siete mares! ¡Viva la guerra!",
+            "Victoria"
+        );
+
+        // TODO: registrar victoria
+
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
+    }
+
     private void ShowGameOver()
     {
         MessageBox.Show(
@@ -181,6 +216,23 @@ public partial class GameForm : Form
         // TODO: registrar derrota
 
         MainForm?.SwitchForm(new MainMenuForm(_gameManager));
+    }
+
+    private void RotatePictureBox(PictureBox pictureBox)
+    {
+        var image = pictureBox.Image;
+
+        Debug.Assert(image != null);
+        image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+
+        pictureBox.Image = image;
+    }
+
+    private void UpdateShipCount()
+    {
+        battleshipCountLabel.Text = $"{_enemyBoard.GetAliveShipCount(3)}";
+        destructorCountLabel.Text = $"{_enemyBoard.GetAliveShipCount(2)}";
+        patrolCountLabel.Text = $"{_enemyBoard.GetAliveShipCount(1)}";
     }
 }
 
@@ -305,20 +357,25 @@ internal class WaterTile : IGameObject
 
 public class MockGame : IGame
 {
-        public GameDescription Description =>
-        new(
-            0,
-            "Joaquín Forni",
-            new DateTime(2026, 06, 10),
-            new DateTime(2026, 06, 10),
-            null, TimeSpan.Zero,
-            GameState.InGame,
-            new GameConfiguration(
-                GameMode.SinglePlayer,
-                new(8, 8),
-                new List<Ship>()
-            )
-        );
+    public GameDescription Description =>
+    new(
+        0,
+        "Joaquín Forni",
+        new DateTime(2026, 06, 10),
+        new DateTime(2026, 06, 10),
+        null, TimeSpan.Zero,
+        GameState.InGame,
+        new GameConfiguration(
+            GameMode.SinglePlayer,
+            new(8, 8),
+            [
+                new(1, ShipOrientation.Horizontal),
+                new(2, ShipOrientation.Vertical),
+                new(2, ShipOrientation.Horizontal),
+                new(3, ShipOrientation.Vertical)
+            ]
+        )
+    );
 
     public bool[,] EnemyBoard { get; }
 
@@ -363,30 +420,22 @@ public class MockGame : IGame
         EnemyBoard = new bool[width, height];
         PlayerBoard = new bool[width, height];
 
-        for (var i = 0; i < 4; i++)
+        foreach (var ship in Description.Configuration.Ships)
         {
-            var x = Random.Shared.Next(0, width);
-            var y = Random.Shared.Next(0, height);
-            var point = new Point(x, y);
-
-            PlayerShips[point] = CreateRandomShip();
-        }
-
-        for (var i = 0; i < 4; i++)
-        {
-            var x = Random.Shared.Next(0, width);
-            var y = Random.Shared.Next(0, height);
-            var point = new Point(x, y);
-
-            EnemyShips[point] = CreateRandomShip();
+            PlaceShip(PlayerShips, ship);
+            PlaceShip(EnemyShips, ship);
         }
     }
 
-    private static Ship CreateRandomShip()
+    private void PlaceShip(Dictionary<Point, Ship> dictionary, Ship ship)
     {
-        var length = Random.Shared.Next(1, 4);
-        var orientation = (ShipOrientation)Random.Shared.Next(2);
+        var width = Description.Configuration.BoardSize.Width;
+        var height = Description.Configuration.BoardSize.Height;
 
-        return new Ship(length, orientation);
+        var x = Random.Shared.Next(0, width);
+        var y = Random.Shared.Next(0, height);
+        var point = new Point(x, y);
+
+        dictionary[point] = ship;
     }
 }
