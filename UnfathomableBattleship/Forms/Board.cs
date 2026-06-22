@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
@@ -265,5 +266,27 @@ public class Board : IGameObject
     {
         var hitCount = GetHitCount(shipGameObject);
         return hitCount == shipGameObject.Ship.Length;
+    }
+
+    /// <summary>
+    /// Gets the amount of alive ships with the given length.
+    /// </summary>
+    /// <param name="length">The length to look for.</param>
+    /// <returns>The amount of alive ships with the given length.</returns>
+    public int GetAliveShipCount(int length)
+    {
+        Debug.Assert(length > 0);
+
+        var ships = new HashSet<Ship>();
+
+        foreach (var ship in _ships)
+        {
+            if (ship?.Ship.Length == length)
+            {
+                if (!IsShipSunken(ship)) ships.Add(ship.Ship);
+            }
+        }
+
+        return ships.Count;
     }
 }

@@ -39,17 +39,29 @@
             buttonLayoutPanel = new FlowLayoutPanel();
             saveButton = new Button();
             exitButton = new Button();
+            fleetLabel = new Label();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            battleshipPictureBox = new PictureBox();
+            battleshipCountLabel = new Label();
+            destructorPictureBox = new PictureBox();
+            destructorCountLabel = new Label();
+            patrolPictureBox = new PictureBox();
+            patrolCountLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)playerCanvasPictureBox).BeginInit();
             mainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)enemyCanvasPictureBox).BeginInit();
             infoLayoutPanel.SuspendLayout();
             buttonLayoutPanel.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)battleshipPictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)destructorPictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)patrolPictureBox).BeginInit();
             SuspendLayout();
             // 
             // playerCanvasPictureBox
             // 
             playerCanvasPictureBox.Anchor = AnchorStyles.None;
-            playerCanvasPictureBox.Location = new Point(46, 149);
+            playerCanvasPictureBox.Location = new Point(46, 109);
             playerCanvasPictureBox.Name = "playerCanvasPictureBox";
             playerCanvasPictureBox.Size = new Size(300, 300);
             playerCanvasPictureBox.TabIndex = 0;
@@ -64,19 +76,23 @@
             mainLayoutPanel.Controls.Add(infoLayoutPanel, 0, 0);
             mainLayoutPanel.Controls.Add(playerCanvasPictureBox, 0, 1);
             mainLayoutPanel.Controls.Add(buttonLayoutPanel, 1, 0);
+            mainLayoutPanel.Controls.Add(fleetLabel, 0, 2);
+            mainLayoutPanel.Controls.Add(flowLayoutPanel1, 0, 3);
             mainLayoutPanel.Dock = DockStyle.Fill;
             mainLayoutPanel.Location = new Point(0, 0);
             mainLayoutPanel.Name = "mainLayoutPanel";
-            mainLayoutPanel.RowCount = 2;
+            mainLayoutPanel.RowCount = 4;
             mainLayoutPanel.RowStyles.Add(new RowStyle());
             mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 16F));
+            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
             mainLayoutPanel.Size = new Size(784, 561);
             mainLayoutPanel.TabIndex = 2;
             // 
             // enemyCanvasPictureBox
             // 
             enemyCanvasPictureBox.Anchor = AnchorStyles.None;
-            enemyCanvasPictureBox.Location = new Point(438, 149);
+            enemyCanvasPictureBox.Location = new Point(438, 109);
             enemyCanvasPictureBox.Name = "enemyCanvasPictureBox";
             enemyCanvasPictureBox.Size = new Size(300, 300);
             enemyCanvasPictureBox.TabIndex = 2;
@@ -84,12 +100,13 @@
             // 
             // infoLayoutPanel
             // 
+            infoLayoutPanel.Anchor = AnchorStyles.Left;
             infoLayoutPanel.AutoSize = true;
             infoLayoutPanel.Controls.Add(playerLabel);
             infoLayoutPanel.Controls.Add(playerNameLabel);
             infoLayoutPanel.Controls.Add(timerLabel);
             infoLayoutPanel.Controls.Add(timerValueLabel);
-            infoLayoutPanel.Location = new Point(3, 3);
+            infoLayoutPanel.Location = new Point(3, 11);
             infoLayoutPanel.Name = "infoLayoutPanel";
             infoLayoutPanel.Size = new Size(271, 15);
             infoLayoutPanel.TabIndex = 1;
@@ -172,6 +189,101 @@
             exitButton.UseVisualStyleBackColor = true;
             exitButton.Click += exitButton_Click;
             // 
+            // fleetLabel
+            // 
+            fleetLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            fleetLabel.AutoSize = true;
+            fleetLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            fleetLabel.Location = new Point(3, 482);
+            fleetLabel.Name = "fleetLabel";
+            fleetLabel.Size = new Size(85, 15);
+            fleetLabel.TabIndex = 4;
+            fleetLabel.Text = "Flota enemiga";
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            mainLayoutPanel.SetColumnSpan(flowLayoutPanel1, 2);
+            flowLayoutPanel1.Controls.Add(battleshipPictureBox);
+            flowLayoutPanel1.Controls.Add(battleshipCountLabel);
+            flowLayoutPanel1.Controls.Add(destructorPictureBox);
+            flowLayoutPanel1.Controls.Add(destructorCountLabel);
+            flowLayoutPanel1.Controls.Add(patrolPictureBox);
+            flowLayoutPanel1.Controls.Add(patrolCountLabel);
+            flowLayoutPanel1.Location = new Point(3, 500);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(778, 58);
+            flowLayoutPanel1.TabIndex = 5;
+            // 
+            // battleshipPictureBox
+            // 
+            battleshipPictureBox.Anchor = AnchorStyles.Left;
+            battleshipPictureBox.Image = Properties.Resources.ship_l;
+            battleshipPictureBox.Location = new Point(3, 3);
+            battleshipPictureBox.Name = "battleshipPictureBox";
+            battleshipPictureBox.Size = new Size(96, 50);
+            battleshipPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+            battleshipPictureBox.TabIndex = 0;
+            battleshipPictureBox.TabStop = false;
+            // 
+            // battleshipCountLabel
+            // 
+            battleshipCountLabel.Anchor = AnchorStyles.Left;
+            battleshipCountLabel.AutoSize = true;
+            battleshipCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            battleshipCountLabel.Location = new Point(105, 13);
+            battleshipCountLabel.Name = "battleshipCountLabel";
+            battleshipCountLabel.Padding = new Padding(0, 0, 16, 0);
+            battleshipCountLabel.Size = new Size(41, 30);
+            battleshipCountLabel.TabIndex = 1;
+            battleshipCountLabel.Text = "0";
+            // 
+            // destructorPictureBox
+            // 
+            destructorPictureBox.Anchor = AnchorStyles.Left;
+            destructorPictureBox.Image = Properties.Resources.ship_m;
+            destructorPictureBox.Location = new Point(152, 3);
+            destructorPictureBox.Name = "destructorPictureBox";
+            destructorPictureBox.Size = new Size(64, 50);
+            destructorPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+            destructorPictureBox.TabIndex = 2;
+            destructorPictureBox.TabStop = false;
+            // 
+            // destructorCountLabel
+            // 
+            destructorCountLabel.Anchor = AnchorStyles.Left;
+            destructorCountLabel.AutoSize = true;
+            destructorCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            destructorCountLabel.Location = new Point(222, 13);
+            destructorCountLabel.Name = "destructorCountLabel";
+            destructorCountLabel.Padding = new Padding(0, 0, 16, 0);
+            destructorCountLabel.Size = new Size(41, 30);
+            destructorCountLabel.TabIndex = 3;
+            destructorCountLabel.Text = "0";
+            // 
+            // patrolPictureBox
+            // 
+            patrolPictureBox.Anchor = AnchorStyles.Left;
+            patrolPictureBox.Image = Properties.Resources.ship_s;
+            patrolPictureBox.Location = new Point(269, 3);
+            patrolPictureBox.Name = "patrolPictureBox";
+            patrolPictureBox.Size = new Size(32, 50);
+            patrolPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+            patrolPictureBox.TabIndex = 4;
+            patrolPictureBox.TabStop = false;
+            // 
+            // patrolCountLabel
+            // 
+            patrolCountLabel.Anchor = AnchorStyles.Left;
+            patrolCountLabel.AutoSize = true;
+            patrolCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            patrolCountLabel.Location = new Point(307, 13);
+            patrolCountLabel.Name = "patrolCountLabel";
+            patrolCountLabel.Padding = new Padding(0, 0, 16, 0);
+            patrolCountLabel.Size = new Size(41, 30);
+            patrolCountLabel.TabIndex = 5;
+            patrolCountLabel.Text = "0";
+            // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -189,6 +301,11 @@
             infoLayoutPanel.PerformLayout();
             buttonLayoutPanel.ResumeLayout(false);
             buttonLayoutPanel.PerformLayout();
+            flowLayoutPanel1.ResumeLayout(false);
+            flowLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)battleshipPictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)destructorPictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)patrolPictureBox).EndInit();
             ResumeLayout(false);
         }
 
@@ -205,5 +322,13 @@
         public Label timerValueLabel;
         private FlowLayoutPanel buttonLayoutPanel;
         private Button exitButton;
+        private Label fleetLabel;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private PictureBox battleshipPictureBox;
+        private Label battleshipCountLabel;
+        private PictureBox destructorPictureBox;
+        private Label destructorCountLabel;
+        private PictureBox patrolPictureBox;
+        private Label patrolCountLabel;
     }
 }
