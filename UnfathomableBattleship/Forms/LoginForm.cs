@@ -15,7 +15,7 @@ public partial class LoginForm : Form
         tableLayoutPanel.CellPaint += tableLayoutPanel_CellPaint;
     }
     /// <summary>
-    /// To pint a semi-transparent black rectangle over the right side of the form, where the login controls are, to improve readability over the background image.
+    /// Paints a semi-transparent black rectangle over the right side of the form, where the login controls are, to improve readability over the background image.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

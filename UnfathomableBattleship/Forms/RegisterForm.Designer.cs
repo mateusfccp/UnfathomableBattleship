@@ -122,7 +122,7 @@
             // 
             lbUserExists.AutoSize = true;
             lbUserExists.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lbUserExists.ForeColor = Color.Red;
+            lbUserExists.ForeColor = Color.FromArgb(192, 0, 0);
             lbUserExists.Location = new Point(40, 147);
             lbUserExists.Name = "lbUserExists";
             lbUserExists.Size = new Size(239, 20);

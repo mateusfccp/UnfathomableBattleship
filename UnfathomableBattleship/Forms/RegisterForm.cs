@@ -23,6 +23,7 @@ public partial class RegisterForm : Form
         tbPassword.Location = new Point(ClientSize.Width / 2 - tbPassword.Width / 2, tbUser.Bottom + 75);
         lbUser.Location = new Point(tbUser.Left, tbUser.Top - lbUser.Height);
         lbPassword.Location = new Point(tbPassword.Left, tbPassword.Top - lbPassword.Height);
+        lbUserExists.Location = new Point(tbUser.Left, tbUser.Bottom + 5);
 
         //CheckBox
         checkBoxSeePassword.Location = new Point(tbPassword.Right +5, tbPassword.Top);
