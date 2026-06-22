@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterForm));
             tbUser = new TextBox();
             tbPassword = new TextBox();
             btCreate = new Button();
@@ -41,7 +42,8 @@
             // 
             // tbUser
             // 
-            tbUser.Location = new Point(137, 111);
+            tbUser.BackColor = SystemColors.ActiveCaption;
+            tbUser.Location = new Point(40, 117);
             tbUser.MaxLength = 30;
             tbUser.Name = "tbUser";
             tbUser.Size = new Size(267, 27);
@@ -50,7 +52,8 @@
             // 
             // tbPassword
             // 
-            tbPassword.Location = new Point(137, 227);
+            tbPassword.BackColor = SystemColors.ActiveCaption;
+            tbPassword.Location = new Point(40, 212);
             tbPassword.Name = "tbPassword";
             tbPassword.Size = new Size(267, 27);
             tbPassword.TabIndex = 1;
@@ -59,53 +62,58 @@
             // 
             // btCreate
             // 
-            btCreate.Location = new Point(278, 285);
+            btCreate.BackColor = Color.MediumSpringGreen;
+            btCreate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btCreate.Location = new Point(181, 291);
             btCreate.Name = "btCreate";
             btCreate.Size = new Size(126, 57);
             btCreate.TabIndex = 2;
             btCreate.Text = "Crear";
-            btCreate.UseVisualStyleBackColor = true;
+            btCreate.UseVisualStyleBackColor = false;
             btCreate.Click += btCreate_Click;
             // 
             // lbUser
             // 
             lbUser.AutoSize = true;
-            lbUser.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lbUser.Location = new Point(137, 76);
+            lbUser.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbUser.Location = new Point(40, 82);
             lbUser.Name = "lbUser";
-            lbUser.Size = new Size(218, 20);
+            lbUser.Size = new Size(266, 25);
             lbUser.TabIndex = 3;
             lbUser.Text = "Escriba su nombre de usuario:";
             // 
             // lbPassword
             // 
             lbPassword.AutoSize = true;
-            lbPassword.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lbPassword.Location = new Point(137, 195);
+            lbPassword.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbPassword.Location = new Point(40, 184);
             lbPassword.Name = "lbPassword";
-            lbPassword.Size = new Size(163, 20);
+            lbPassword.Size = new Size(200, 25);
             lbPassword.TabIndex = 4;
             lbPassword.Text = "Escriba su contraseña:";
             // 
             // lbTitle
             // 
             lbTitle.AutoSize = true;
-            lbTitle.Font = new Font("Segoe UI", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lbTitle.Location = new Point(200, 10);
+            lbTitle.BackColor = Color.Transparent;
+            lbTitle.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbTitle.Location = new Point(72, 15);
             lbTitle.Name = "lbTitle";
-            lbTitle.Size = new Size(150, 28);
+            lbTitle.Size = new Size(207, 38);
             lbTitle.TabIndex = 5;
             lbTitle.Text = "Crea tu cuenta";
             // 
             // btCancel
             // 
+            btCancel.BackColor = Color.LightCoral;
             btCancel.DialogResult = DialogResult.Cancel;
-            btCancel.Location = new Point(137, 285);
+            btCancel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btCancel.Location = new Point(40, 291);
             btCancel.Name = "btCancel";
             btCancel.Size = new Size(126, 57);
             btCancel.TabIndex = 6;
             btCancel.Text = "Cancelar";
-            btCancel.UseVisualStyleBackColor = true;
+            btCancel.UseVisualStyleBackColor = false;
             btCancel.Click += btCancel_Click;
             // 
             // lbUserExists
@@ -113,31 +121,33 @@
             lbUserExists.AutoSize = true;
             lbUserExists.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lbUserExists.ForeColor = Color.Red;
-            lbUserExists.Location = new Point(137, 141);
+            lbUserExists.Location = new Point(40, 147);
             lbUserExists.Name = "lbUserExists";
-            lbUserExists.Size = new Size(214, 20);
+            lbUserExists.Size = new Size(239, 20);
             lbUserExists.TabIndex = 7;
-            lbUserExists.Text = "This user name already exists";
+            lbUserExists.Text = "Este nombre de usuario ya existe";
             lbUserExists.Visible = false;
             // 
             // checkBoxSeePassword
             // 
             checkBoxSeePassword.AutoSize = true;
-            checkBoxSeePassword.Location = new Point(419, 230);
+            checkBoxSeePassword.BackColor = Color.Transparent;
+            checkBoxSeePassword.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            checkBoxSeePassword.Location = new Point(313, 215);
             checkBoxSeePassword.Name = "checkBoxSeePassword";
-            checkBoxSeePassword.Size = new Size(52, 24);
+            checkBoxSeePassword.Size = new Size(53, 24);
             checkBoxSeePassword.TabIndex = 8;
-            checkBoxSeePassword.Text = "Ver";
-            checkBoxSeePassword.UseVisualStyleBackColor = true;
+            checkBoxSeePassword.Text = "👁";
+            checkBoxSeePassword.UseVisualStyleBackColor = false;
             checkBoxSeePassword.CheckedChanged += checkBoxSeePassword_CheckedChanged;
             // 
-            // CreateCountForm
+            // RegisterForm
             // 
             AcceptButton = btCreate;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.GradientInactiveCaption;
-            ClientSize = new Size(562, 383);
+            BackColor = Color.SteelBlue;
+            ClientSize = new Size(407, 383);
             Controls.Add(checkBoxSeePassword);
             Controls.Add(lbUserExists);
             Controls.Add(btCancel);
@@ -147,7 +157,10 @@
             Controls.Add(btCreate);
             Controls.Add(tbPassword);
             Controls.Add(tbUser);
-            Name = "CreateCountForm";
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "RegisterForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Crear Cuenta";
             ResumeLayout(false);

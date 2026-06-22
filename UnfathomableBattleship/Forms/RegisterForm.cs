@@ -15,8 +15,21 @@ public partial class RegisterForm : Form
     }
     private void MyInitializeComponet()
     {
-            
-        lbTitle.Location = new Point(ClientSize.Height/2,10);
+        //Title
+        lbTitle.Location = new Point(ClientSize.Width/2 - lbTitle.Width/2,10);
+
+        //Labels and textBoxes
+        tbUser.Location = new Point(ClientSize.Width / 2 - tbUser.Width / 2, lbTitle.Bottom + 50);
+        tbPassword.Location = new Point(ClientSize.Width / 2 - tbPassword.Width / 2, tbUser.Bottom + 75);
+        lbUser.Location = new Point(tbUser.Left, tbUser.Top - lbUser.Height);
+        lbPassword.Location = new Point(tbPassword.Left, tbPassword.Top - lbPassword.Height);
+
+        //CheckBox
+        checkBoxSeePassword.Location = new Point(tbPassword.Right +5, tbPassword.Top);
+
+        //Buttons
+        btCancel.Location = new Point(ClientSize.Width / 2 - btCancel.Width - 5, tbPassword.Bottom + 40);
+        btCreate.Location = new Point(ClientSize.Width / 2 + 5, tbPassword.Bottom + 40);
     }
 
     private void textBox2_TextChanged(object sender, EventArgs e)
@@ -60,6 +73,7 @@ public partial class RegisterForm : Form
 
     private void checkBoxSeePassword_CheckedChanged(object sender, EventArgs e)
     {
-        tbPassword.UseSystemPasswordChar = checkBoxSeePassword.Checked ? false : true;
+        tbPassword.UseSystemPasswordChar = !checkBoxSeePassword.Checked;
+        checkBoxSeePassword.Text = checkBoxSeePassword.Checked ? "◡" : "👁";
     }
 }
