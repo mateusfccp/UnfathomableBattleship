@@ -43,8 +43,8 @@
             // usernameTextbox
             // 
             usernameTextbox.BackColor = SystemColors.ActiveCaption;
-            usernameTextbox.Location = new Point(325, 417);
-            usernameTextbox.Margin = new Padding(3, 4, 3, 4);
+            usernameTextbox.Location = new Point(325, 409);
+            usernameTextbox.Margin = new Padding(15, 5, 15, 5);
             usernameTextbox.Name = "usernameTextbox";
             usernameTextbox.Size = new Size(228, 27);
             usernameTextbox.TabIndex = 0;
@@ -52,25 +52,27 @@
             // 
             // usernameLabel
             // 
+            usernameLabel.Anchor = AnchorStyles.None;
             usernameLabel.AutoSize = true;
-            usernameLabel.BackColor = Color.SteelBlue;
-            usernameLabel.BorderStyle = BorderStyle.Fixed3D;
+            usernameLabel.BackColor = Color.Transparent;
             usernameLabel.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            usernameLabel.ForeColor = SystemColors.ActiveCaptionText;
-            usernameLabel.Location = new Point(325, 386);
+            usernameLabel.ForeColor = Color.WhiteSmoke;
+            usernameLabel.Location = new Point(400, 379);
+            usernameLabel.Margin = new Padding(10, 15, 10, 0);
             usernameLabel.Name = "usernameLabel";
-            usernameLabel.Size = new Size(79, 27);
+            usernameLabel.Size = new Size(77, 25);
             usernameLabel.TabIndex = 2;
             usernameLabel.Text = "Usuario";
             // 
             // passwordLabel
             // 
+            passwordLabel.Anchor = AnchorStyles.None;
             passwordLabel.AutoSize = true;
-            passwordLabel.BackColor = Color.SteelBlue;
+            passwordLabel.BackColor = Color.Transparent;
             passwordLabel.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            passwordLabel.ForeColor = SystemColors.ActiveCaptionText;
-            passwordLabel.Location = new Point(325, 459);
-            passwordLabel.Margin = new Padding(3, 11, 3, 0);
+            passwordLabel.ForeColor = Color.WhiteSmoke;
+            passwordLabel.Location = new Point(385, 456);
+            passwordLabel.Margin = new Padding(10, 15, 10, 15);
             passwordLabel.Name = "passwordLabel";
             passwordLabel.Size = new Size(108, 25);
             passwordLabel.TabIndex = 3;
@@ -79,8 +81,8 @@
             // passwordTextBox
             // 
             passwordTextBox.BackColor = SystemColors.ActiveCaption;
-            passwordTextBox.Location = new Point(325, 488);
-            passwordTextBox.Margin = new Padding(3, 4, 3, 4);
+            passwordTextBox.Location = new Point(325, 501);
+            passwordTextBox.Margin = new Padding(15, 5, 15, 5);
             passwordTextBox.Name = "passwordTextBox";
             passwordTextBox.Size = new Size(228, 27);
             passwordTextBox.TabIndex = 4;
@@ -88,6 +90,7 @@
             // 
             // tableLayoutPanel
             // 
+            tableLayoutPanel.Anchor = AnchorStyles.None;
             tableLayoutPanel.BackgroundImage = Properties.Resources.login_background;
             tableLayoutPanel.BackgroundImageLayout = ImageLayout.Stretch;
             tableLayoutPanel.ColumnCount = 3;
@@ -101,7 +104,6 @@
             tableLayoutPanel.Controls.Add(loginButton, 1, 5);
             tableLayoutPanel.Controls.Add(createAccountButton, 1, 6);
             tableLayoutPanel.Controls.Add(lbFeedBackUser, 2, 2);
-            tableLayoutPanel.Dock = DockStyle.Fill;
             tableLayoutPanel.Location = new Point(9, 11);
             tableLayoutPanel.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel.Name = "tableLayoutPanel";
@@ -119,16 +121,17 @@
             // 
             // loginButton
             // 
-            loginButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            loginButton.Anchor = AnchorStyles.None;
             loginButton.AutoSize = true;
             loginButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             loginButton.BackColor = Color.SteelBlue;
+            loginButton.Cursor = Cursors.Hand;
             loginButton.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            loginButton.Location = new Point(325, 535);
-            loginButton.Margin = new Padding(3, 16, 3, 4);
+            loginButton.Location = new Point(402, 538);
+            loginButton.Margin = new Padding(5);
             loginButton.Name = "loginButton";
             loginButton.Padding = new Padding(2, 3, 2, 3);
-            loginButton.Size = new Size(228, 41);
+            loginButton.Size = new Size(73, 41);
             loginButton.TabIndex = 5;
             loginButton.Text = "Login";
             loginButton.UseVisualStyleBackColor = false;
@@ -136,16 +139,17 @@
             // 
             // createAccountButton
             // 
-            createAccountButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            createAccountButton.Anchor = AnchorStyles.None;
             createAccountButton.AutoSize = true;
             createAccountButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             createAccountButton.BackColor = Color.SteelBlue;
+            createAccountButton.Cursor = Cursors.Hand;
             createAccountButton.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            createAccountButton.Location = new Point(325, 584);
-            createAccountButton.Margin = new Padding(3, 4, 3, 4);
+            createAccountButton.Location = new Point(372, 589);
+            createAccountButton.Margin = new Padding(5);
             createAccountButton.Name = "createAccountButton";
             createAccountButton.Padding = new Padding(2, 3, 2, 3);
-            createAccountButton.Size = new Size(228, 41);
+            createAccountButton.Size = new Size(134, 41);
             createAccountButton.TabIndex = 6;
             createAccountButton.Text = "Crear cuenta";
             createAccountButton.UseVisualStyleBackColor = false;
@@ -155,7 +159,7 @@
             // 
             lbFeedBackUser.AutoSize = true;
             lbFeedBackUser.ForeColor = Color.Red;
-            lbFeedBackUser.Location = new Point(559, 413);
+            lbFeedBackUser.Location = new Point(571, 404);
             lbFeedBackUser.Name = "lbFeedBackUser";
             lbFeedBackUser.Size = new Size(0, 20);
             lbFeedBackUser.TabIndex = 7;

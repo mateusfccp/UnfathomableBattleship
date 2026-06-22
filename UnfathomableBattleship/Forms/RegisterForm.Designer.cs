@@ -63,6 +63,7 @@
             // btCreate
             // 
             btCreate.BackColor = Color.MediumSpringGreen;
+            btCreate.Cursor = Cursors.Hand;
             btCreate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btCreate.Location = new Point(181, 291);
             btCreate.Name = "btCreate";
@@ -106,6 +107,7 @@
             // btCancel
             // 
             btCancel.BackColor = Color.LightCoral;
+            btCancel.Cursor = Cursors.Hand;
             btCancel.DialogResult = DialogResult.Cancel;
             btCancel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btCancel.Location = new Point(40, 291);

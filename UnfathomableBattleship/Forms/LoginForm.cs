@@ -12,8 +12,21 @@ public partial class LoginForm : Form
     {
         InitializeComponent();
         _authenticationService = authService;
+        tableLayoutPanel.CellPaint += tableLayoutPanel_CellPaint;
     }
-
+    /// <summary>
+    /// To pint a semi-transparent black rectangle over the right side of the form, where the login controls are, to improve readability over the background image.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void tableLayoutPanel_CellPaint(object? sender, TableLayoutCellPaintEventArgs e)
+    {
+        if (e.Column == 1 && e.Row >= 1 && e.Row <= 6)
+        {
+            using SolidBrush brush = new SolidBrush(Color.FromArgb(180, 0, 0, 0));
+            e.Graphics.FillRectangle(brush, e.CellBounds);
+        }
+    }
     private void LoginButton_Click(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(usernameTextbox.Text) || string.IsNullOrWhiteSpace(passwordTextBox.Text))
