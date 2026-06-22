@@ -8,9 +8,6 @@ using UnfathomableBattleship.Properties;
 
 namespace UnfathomableBattleship.Forms;
 
-/// <summary>
-/// The main form of the game.
-/// </summary>
 public partial class GameForm : Form
 {
     MainForm? MainForm => Tag as MainForm;
@@ -32,11 +29,6 @@ public partial class GameForm : Form
 
     private TimeSpan ElapsedTime => _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
 
-    /// <summary>
-    /// Creates a new game form.
-    /// </summary>
-    /// <param name="gameManager">The game manager related to the given game.</param>
-    /// <param name="game">The game to be played.</param>
     public GameForm(IGameManager gameManager, IGame game)
     {
         _gameManager = gameManager;
@@ -44,6 +36,20 @@ public partial class GameForm : Form
         DoubleBuffered = true;
 
         InitializeComponent();
+
+        this.BackColor = Color.FromArgb(26, 26, 36);
+        timerValueLabel.ForeColor = Color.White;
+        playerNameLabel.ForeColor = Color.White;
+        playerLabel.ForeColor = Color.White;
+        timerLabel.ForeColor = Color.White;
+
+        saveButton.FlatStyle = FlatStyle.Flat;
+        saveButton.BackColor = Color.SeaGreen;
+        saveButton.ForeColor = Color.White;
+
+        exitButton.FlatStyle = FlatStyle.Flat;
+        exitButton.BackColor = Color.IndianRed;
+        exitButton.ForeColor = Color.White;
 
         System.Windows.Forms.Timer gameTimer = new()
         {
@@ -62,8 +68,7 @@ public partial class GameForm : Form
 
         _enemyCanvas.TileClicked += EnemyCanvasTileClicked;
 
-        _playerBoard = new Board(_game.Description.Configuration.BoardSize, _game.PlayerShips, _game.PlayerBoard,
-            false);
+        _playerBoard = new Board(_game.Description.Configuration.BoardSize, _game.PlayerShips, _game.PlayerBoard, false);
         _enemyBoard = new Board(_game.Description.Configuration.BoardSize, _game.EnemyShips, _game.EnemyBoard, true);
     }
 
@@ -73,6 +78,53 @@ public partial class GameForm : Form
         RenderGame();
     }
 
+    private void ShakeWindow()
+    {
+        var original = this.Location;
+        var rnd = new Random();
+        for (int i = 0; i < 10; i++)
+        {
+            this.Location = new Point(original.X + rnd.Next(-5, 5), original.Y + rnd.Next(-5, 5));
+            System.Threading.Thread.Sleep(20);
+        }
+        this.Location = original;
+    }
+
+    private bool IsHit(Point target, Dictionary<Point, Ship> ships)
+    {
+        foreach (var kvp in ships)
+        {
+            var origin = kvp.Key;
+            var ship = kvp.Value;
+            for (int i = 0; i < ship.Length; i++)
+            {
+                int x = origin.X + (ship.Orientation == ShipOrientation.Horizontal ? i : 0);
+                int y = origin.Y + (ship.Orientation == ShipOrientation.Vertical ? i : 0);
+                if (x == target.X && y == target.Y) return true;
+            }
+        }
+        return false;
+    }
+
+    private int CountSunkShips(Dictionary<Point, Ship> ships, bool[,] board)
+    {
+        int sunk = 0;
+        foreach (var kvp in ships)
+        {
+            var origin = kvp.Key;
+            var ship = kvp.Value;
+            int hits = 0;
+            for (int i = 0; i < ship.Length; i++)
+            {
+                int x = origin.X + (ship.Orientation == ShipOrientation.Horizontal ? i : 0);
+                int y = origin.Y + (ship.Orientation == ShipOrientation.Vertical ? i : 0);
+                if (board[x, y]) hits++;
+            }
+            if (hits == ship.Length) sunk++;
+        }
+        return sunk;
+    }
+
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
     {
         if (_isAnimating) return;
@@ -80,14 +132,39 @@ public partial class GameForm : Form
 
         _isAnimating = true;
 
+        if (IsHit(eventArgs, _game.EnemyShips)) System.Media.SystemSounds.Exclamation.Play();
+        else System.Media.SystemSounds.Hand.Play();
+
+        int previousEnemySunk = CountSunkShips(_game.EnemyShips, _game.EnemyBoard);
+
         _enemyBoard.PlayExplosion(eventArgs, () =>
         {
+            if (CountSunkShips(_game.EnemyShips, _game.EnemyBoard) > previousEnemySunk) ShakeWindow();
+
+            if (CountSunkShips(_game.EnemyShips, _game.EnemyBoard) == _game.EnemyShips.Count)
+            {
+                ShowGameOver(true);
+                return;
+            }
+
+            int previousPlayerSunk = CountSunkShips(_game.PlayerShips, _game.PlayerBoard);
             var enemyAttack = _game.AttackCell(eventArgs);
 
             if (enemyAttack is Point attack)
             {
+                if (IsHit(attack, _game.PlayerShips)) System.Media.SystemSounds.Exclamation.Play();
+                else System.Media.SystemSounds.Hand.Play();
+
                 _playerBoard.PlayExplosion(attack, () =>
                 {
+                    if (CountSunkShips(_game.PlayerShips, _game.PlayerBoard) > previousPlayerSunk) ShakeWindow();
+
+                    if (CountSunkShips(_game.PlayerShips, _game.PlayerBoard) == _game.PlayerShips.Count)
+                    {
+                        ShowGameOver(false);
+                        return;
+                    }
+
                     _isAnimating = false;
                 });
             }
@@ -115,11 +192,9 @@ public partial class GameForm : Form
         _playerCanvas.Graphics.Clear(Color.Black);
         _enemyCanvas.Graphics.Clear(Color.Black);
 
-        // Board
         _playerBoard.Draw(_playerCanvas.Graphics, Point.Empty);
         _enemyBoard.Draw(_enemyCanvas.Graphics, Point.Empty);
 
-        // Cursor
         if (!_isAnimating)
         {
             using var pen = new Pen(Brushes.Yellow, 2.0f);
@@ -167,20 +242,13 @@ public partial class GameForm : Form
 
         if (result == DialogResult.Yes)
         {
-            ShowGameOver();
+            ShowGameOver(false);
         }
     }
 
-    private void ShowGameOver()
+    private void ShowGameOver(bool isVictory)
     {
-        MessageBox.Show(
-            "¡Que fracasado, perdiste el juego!",
-            "Game Over"
-        );
-
-        // TODO: registrar derrota
-
-        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
+        MainForm?.SwitchForm(new GameOverForm(_gameManager, _game, isVictory));
     }
 }
 
@@ -197,7 +265,7 @@ internal class ShipGameObject : IGameObject
         {
             1 => Resources.ship_s,
             2 => Resources.ship_m,
-            3 => Resources.ship_l,
+            >= 3 => Resources.ship_l,
             _ => throw new NotImplementedException($"No sprites available for a ship with length {ship.Length}."),
         };
 
@@ -305,16 +373,16 @@ internal class WaterTile : IGameObject
 
 public class MockGame : IGame
 {
-        public GameDescription Description =>
+    public GameDescription Description =>
         new(
             0,
-            "Joaquín Forni",
+            "Usuario Prueba",
             new DateTime(2026, 06, 10),
             new DateTime(2026, 06, 10),
             null, TimeSpan.Zero,
             GameState.InGame,
             new GameConfiguration(
-                GameMode.SinglePlayer,
+                GameMode.SinglePlayerEasy,
                 new(8, 8),
                 new List<Ship>()
             )

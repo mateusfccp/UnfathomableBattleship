@@ -4,8 +4,11 @@ public class GameCanvas : IDisposable
 {
     private bool _isLeftMouseDown;
     private bool _wasLeftMouseDown;
+    private bool _isRightMouseDown;
+    private bool _wasRightMouseDown;
 
     public event EventHandler<Point> TileClicked = delegate { };
+    public event EventHandler<Point> RightTileClicked = delegate { };
 
     private Point? MousePosition { get; set; }
 
@@ -27,7 +30,6 @@ public class GameCanvas : IDisposable
 
     public GameCanvas(PictureBox pictureBox, Size size)
     {
-        
         PictureBox = pictureBox;
         PictureBox.Width = size.Width * GameForm.TileDimension;
         PictureBox.Height = size.Height * GameForm.TileDimension;
@@ -60,23 +62,24 @@ public class GameCanvas : IDisposable
     private void MouseDown(object? sender, MouseEventArgs eventArgs)
     {
         if (eventArgs.Button == MouseButtons.Left)
-        {
             _isLeftMouseDown = true;
-        }
+        if (eventArgs.Button == MouseButtons.Right)
+            _isRightMouseDown = true;
     }
 
     private void MouseUp(object? sender, MouseEventArgs eventArgs)
     {
         if (eventArgs.Button == MouseButtons.Left)
-        {
             _isLeftMouseDown = false;
-        }
+        if (eventArgs.Button == MouseButtons.Right)
+            _isRightMouseDown = false;
     }
 
     private void MouseLeave(object? sender, EventArgs eventArgs)
     {
         MousePosition = null;
         _isLeftMouseDown = false;
+        _isRightMouseDown = false;
     }
 
     public void Present()
@@ -86,15 +89,18 @@ public class GameCanvas : IDisposable
 
     public void Update()
     {
-        if (_isLeftMouseDown && !_wasLeftMouseDown)
+        if (_isLeftMouseDown && !_wasLeftMouseDown && CursorPosition is Point posL)
         {
-            if (CursorPosition is Point position)
-            {
-                TileClicked.Invoke(this, position);
-            }
+            TileClicked.Invoke(this, posL);
+        }
+
+        if (_isRightMouseDown && !_wasRightMouseDown && CursorPosition is Point posR)
+        {
+            RightTileClicked.Invoke(this, posR);
         }
 
         _wasLeftMouseDown = _isLeftMouseDown;
+        _wasRightMouseDown = _isRightMouseDown;
     }
 
     public void Dispose()
