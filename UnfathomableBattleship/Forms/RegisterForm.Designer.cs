@@ -159,6 +159,7 @@
             Controls.Add(btCreate);
             Controls.Add(tbPassword);
             Controls.Add(tbUser);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
