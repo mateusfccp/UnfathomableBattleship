@@ -1,4 +1,4 @@
-﻿using UnfathomableBattleship.Enums;
+using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Services;
@@ -21,5 +21,12 @@ public partial class MainMenuForm : Form
         using var createForm = new GameSettingsForm(_gameManager);
         createForm.Tag = MainForm;
         createForm.ShowDialog();
+    }
+
+    private void LoadGameButton_Click(object sender, EventArgs e)
+    {
+        using var loadForm = new LoadGameForm(_gameManager);
+        loadForm.Tag = MainForm;
+        loadForm.ShowDialog();
     }
 }
