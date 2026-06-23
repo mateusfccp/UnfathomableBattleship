@@ -69,7 +69,7 @@ public class PreparationForm : Form
         Render();
     }
 
-    private void Render()
+    private void Render()   // Renderizado del barco fantasma.
     {
         _canvas.Present();
         _canvas.Graphics.Clear(Color.Black);
@@ -78,41 +78,41 @@ public class PreparationForm : Form
         if (_shipsToPlace.Count > 0 && _canvas.CursorPosition is Point pos)
         {
             var previewShip = new Ship(_shipsToPlace[0].Length, _currentOrientation);
-            DrawGhostShip(_canvas.Graphics, pos, previewShip);
+            DrawGhostShip(_canvas.Graphics, pos, previewShip);  //Se le pasa la posicion del mouse.
         }
     }
 
-    private void DrawGhostShip(Graphics graphics, Point pos, Ship ship)
+    private void DrawGhostShip(Graphics graphics, Point pos, Ship ship) // Logica del renderizado del barco fantasma.
     {
         var shipGO = new ShipGameObject(ship);
         var pixelPos = new Point(pos.X * GameForm.TileDimension, pos.Y * GameForm.TileDimension);
         var isValid = ((Game)_game).IsValidPlacement(pos.X, pos.Y, ship, _game.PlayerShips);
 
-        using var tempBmp = new Bitmap(this.ClientSize.Width, this.ClientSize.Height);
+        using var tempBmp = new Bitmap(this.ClientSize.Width, this.ClientSize.Height); 
         using var tempG = Graphics.FromImage(tempBmp);
-        shipGO.Draw(tempG, pixelPos);
+        shipGO.Draw(tempG, pixelPos); 
 
-        float[][] matrixItems = {
-            [1, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0],
-            [0, 0, 1, 0, 0],
+        float[][] matrixItems = {   // Esta matriz define la opacidad del barco fantasma
+            [1, 0, 0, 0, 0],        // Se basa funcionando como un vector R, G, B, A, W donde A representa opacidad
+            [0, 1, 0, 0, 0],        // En C# el ColorMatrix funciona haciendo una multiplicacion de matrices sobre cada pixel de la imagen original.
+            [0, 0, 1, 0, 0],       // Es como aplicarle filtros a la imagen en base a un preset creado desde antes.
             [0, 0, 0, 0.6f, 0],
             [0, 0, 0, 0, 1]
         };
-        var colorMatrix = new ColorMatrix(matrixItems);
+        var colorMatrix = new ColorMatrix(matrixItems); 
         var imageAtt = new ImageAttributes();
-        imageAtt.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+        imageAtt.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap); // Se definen los atributos de la imagen en base a la matriz que generamos antes.
 
-        graphics.DrawImage(tempBmp, new Rectangle(0, 0, tempBmp.Width, tempBmp.Height), 0, 0, tempBmp.Width, tempBmp.Height, GraphicsUnit.Pixel, imageAtt);
+        graphics.DrawImage(tempBmp, new Rectangle(0, 0, tempBmp.Width, tempBmp.Height), 0, 0, tempBmp.Width, tempBmp.Height, GraphicsUnit.Pixel, imageAtt); // Dibujo de la imagen del barco fantasma.
 
         var width = (ship.Orientation == ShipOrientation.Horizontal ? ship.Length : 1) * GameForm.TileDimension;
         var height = (ship.Orientation == ShipOrientation.Vertical ? ship.Length : 1) * GameForm.TileDimension;
         var color = isValid ? Color.LimeGreen : Color.Red;
         using var pen = new Pen(color, 2);
-        graphics.DrawRectangle(pen, new Rectangle(pixelPos.X, pixelPos.Y, width, height));
+        graphics.DrawRectangle(pen, new Rectangle(pixelPos.X, pixelPos.Y, width, height)); // Dibujo del rectangulo de posicion correcta.
     }
 
-    private void OnLeftClick(object? sender, Point pos)
+    private void OnLeftClick(object? sender, Point pos)     // Logica para añadir barcos con click izquierdo.
     {
         if (_shipsToPlace.Count == 0) return;
 
@@ -124,7 +124,7 @@ public class PreparationForm : Form
         }
     }
 
-    private void OnRightClick(object? sender, Point pos)
+    private void OnRightClick(object? sender, Point pos)    // Logica para remover barcos con click derecho.
     {
         foreach (var kvp in _game.PlayerShips.ToList())
         {
@@ -149,7 +149,7 @@ public class PreparationForm : Form
         }
     }
 
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)    // Logica para rotar barcos.
     {
         if (keyData == Keys.R || keyData == Keys.Up || keyData == Keys.Down || keyData == Keys.Left || keyData == Keys.Right)
         {
@@ -161,7 +161,7 @@ public class PreparationForm : Form
         return base.ProcessCmdKey(ref msg, keyData);
     }
 
-    private void UpdateBoard()
+    private void UpdateBoard()      // Actualizar tablero al colocar barcos.
     {
         _board = new Board(_config.BoardSize, _game.PlayerShips, _game.PlayerBoard, false);
         shipCountLabel.Text = $"Barcos restantes: {_shipsToPlace.Count}";

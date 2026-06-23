@@ -71,8 +71,8 @@ namespace UnfathomableBattleship.Models
             ElapsedTime = description.ElapsedTime;
         }
 
-        private void GenerateEnemyShips(List<Ship> shipsToPlace)
-        {
+        private void GenerateEnemyShips(List<Ship> shipsToPlace) // Generacion de los barcos enemigos. Estos se generan en posiciones al azar y orientacion al azar.
+        {                                                          // Se utiliza la funcion "IsValidPlacement" para que se coloquen correctamente.
             foreach (var shipTemplate in shipsToPlace)
             {
                 bool placed = false;
@@ -92,7 +92,7 @@ namespace UnfathomableBattleship.Models
             }
         }
 
-        public bool IsValidPlacement(int startX, int startY, Ship ship, Dictionary<Point, Ship> existingShips)
+        public bool IsValidPlacement(int startX, int startY, Ship ship, Dictionary<Point, Ship> existingShips)  // Funcion para comprobar si es valido el posicionamiento.
         {
             for (int i = 0; i < ship.Length; i++)
             {
@@ -128,7 +128,7 @@ namespace UnfathomableBattleship.Models
             PlayerShips.Remove(origin);
         }
 
-        public Point? AttackCell(Point position)
+        public Point? AttackCell(Point position)    // Logica de ataque y dificultades de la IA.
         {
             EnemyBoard[position.X, position.Y] = true;
 
@@ -141,42 +141,43 @@ namespace UnfathomableBattleship.Models
             Point pcTarget = new Point();
             bool validTarget = false;
             var mode = Description.Configuration.Mode;
-            if (mode == GameMode.SinglePlayer) return null;
+            if (mode == GameMode.SinglePlayer) return null;     // MODO SINGLEPLAYER. Si esta activo no se realiza nada.
             do
             {
                 switch (mode)
                 {
-                    case GameMode.MultiPlayerFearAndHunger:
-                        pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                    case GameMode.MultiPlayerFearAndHunger:        // FEAR AND HUNGER. 
+                        pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height)); // Ataca a un punto exacto o al azar si es nulo.
                         break;
 
-                    case GameMode.MultiPlayerEasy:
+                    case GameMode.MultiPlayerEasy:      // MULTYPLAYEREASY
                         if (Random.Shared.Next(100) < 50 || _targetQueue.Count == 0)
                         {
-                            pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                            pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));    // Ataca al azar si se da las condiciones.
                         }
                         else
                         {
-                            int r = Random.Shared.Next(_targetQueue.Count);
+                            int r = Random.Shared.Next(_targetQueue.Count); // Si le pego a un barco lanza una moneda de 50/50 para volver a pegarle.
                             pcTarget = _targetQueue[r];
                             _targetQueue.RemoveAt(r);
                         }
                         break;
 
-                    case GameMode.MultiPlayerNormal:
+                    case GameMode.MultiPlayerNormal:       // MODO NORMAL Y DIFICIL
+                                                            // La logica del modo normal contiene tambien la del modo dificil ya que la IA funciona de forma similar.
                     case GameMode.MultiPlayerHard:
                         if (_targetQueue.Count > 0)
                         {
-                            pcTarget = _targetQueue[0];
+                            pcTarget = _targetQueue[0]; // Si tiene memoria de lograr un ataque va a focusear a ese barco
                             _targetQueue.RemoveAt(0);
                         }
-                        else if (mode == GameMode.MultiPlayerHard && Random.Shared.Next(100) < 40)
+                        else if (mode == GameMode.MultiPlayerHard && Random.Shared.Next(100) < 40)  // 60% de probabilidad de disparar al azar, va a pegar 1 de 6 disparos.
                         {
                             pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
                         }
                         else
                         {
-                            pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                            pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));    // Ataca al azar si no tiene informacion.
                         }
                         break;
 
@@ -184,7 +185,8 @@ namespace UnfathomableBattleship.Models
                         pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
                         break;
                 }
-
+                ////////////////////////// Fin del switch
+                // Logica de Queues de targets para la inteligencia de la IA.
                 if (!PlayerBoard[pcTarget.X, pcTarget.Y])
                 {
                     validTarget = true;
@@ -223,7 +225,7 @@ namespace UnfathomableBattleship.Models
             return pcTarget;
         }
 
-        private int CountSunkShips(Dictionary<Point, Ship> ships, bool[,] board)
+        private int CountSunkShips(Dictionary<Point, Ship> ships, bool[,] board)       // Contar cantidad de barcos undidos.
         {
             int sunk = 0;
             foreach (var kvp in ships)
@@ -242,7 +244,7 @@ namespace UnfathomableBattleship.Models
             return sunk;
         }
 
-        private Point? GetUnhitShipCell()
+        private Point? GetUnhitShipCell()       // Radar trampa de la IA que hace que sepa las posiciones.
         {
             var unhitCells = new List<Point>();
             foreach (var kvp in PlayerShips)
