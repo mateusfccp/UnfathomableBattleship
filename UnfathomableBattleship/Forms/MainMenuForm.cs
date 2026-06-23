@@ -17,6 +17,7 @@ public partial class MainMenuForm : Form
     private void NewGameButton_Click(object sender, EventArgs e)
     {
         using var createForm = new GameSettingsForm(_gameManager);
+        createForm.Tag = MainForm;
         createForm.ShowDialog();
     }
 }
