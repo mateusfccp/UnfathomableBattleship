@@ -29,4 +29,9 @@ public partial class MainMenuForm : Form
         loadForm.Tag = MainForm;
         loadForm.ShowDialog();
     }
+
+    private void LoadGameButton_Click(object sender, EventArgs e)
+    {
+        MainForm?.SwitchForm(new LoadGameForm(_gameManager));
+    }
 }
