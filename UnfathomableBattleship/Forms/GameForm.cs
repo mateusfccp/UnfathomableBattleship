@@ -26,10 +26,6 @@ public partial class GameForm : Form
 
     private bool _isAnimating;
 
-    private Label _lblGameMode;
-    private Label _lblPlayerShips;
-    private Label _lblEnemyShips;
-
     public const int TileDimension = 32;
     public static readonly Size TileSize = new(TileDimension, TileDimension);
 
@@ -188,11 +184,8 @@ public partial class GameForm : Form
     {
         timerValueLabel.Text = $"{ElapsedTime.Hours:00}:{ElapsedTime.Minutes:00}:{ElapsedTime.Seconds:00}";
 
-        int playerRemaining = _game.PlayerShips.Count - CountSunkShips(_game.PlayerShips, _game.PlayerBoard);
-        int enemyRemaining = _game.EnemyShips.Count - CountSunkShips(_game.EnemyShips, _game.EnemyBoard);
-
-        _lblPlayerShips.Text = $"Aliados Vivos: {playerRemaining}";
-        _lblEnemyShips.Text = $"Enemigos Vivos: {enemyRemaining}";
+        // int playerRemaining = _game.PlayerShips.Count - CountSunkShips(_game.PlayerShips, _game.PlayerBoard);
+        // int enemyRemaining = _game.EnemyShips.Count - CountSunkShips(_game.EnemyShips, _game.EnemyBoard);
 
         _playerCanvas.Update();
         _enemyCanvas.Update();
