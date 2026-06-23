@@ -186,7 +186,7 @@ namespace UnfathomableBattleship.Models
                         break;
                 }
                 ////////////////////////// Fin del switch
-                // Logica de Queues de targets para la inteligencia de la IA.
+                // Logica de Queues de targets para la inteligencia de la IA. 
                 if (!PlayerBoard[pcTarget.X, pcTarget.Y])
                 {
                     validTarget = true;
@@ -194,23 +194,23 @@ namespace UnfathomableBattleship.Models
             } while (!validTarget);
 
             PlayerBoard[pcTarget.X, pcTarget.Y] = true;
-
+            // Si la ia pego a un bargo almacena la posicion.
             if (IsHit(pcTarget))
             {
                 if (mode == GameMode.MultiPlayerNormal || mode == GameMode.MultiPlayerHard)
                 {
                     _currentShipHits.Add(pcTarget);
-                    if (IsShipSunk(pcTarget))
+                    if (IsShipSunk(pcTarget))   // Si el tiro undio el barco se reinicia la queue.
                     {
                         _currentShipHits.Clear();
                         _targetQueue.Clear();
                     }
-                    else
+                    else // Si simplemente daño el barco llama a la logica de IA para modos normal y dificil.
                     {
                         UpdateTargetQueueHard(pcTarget);
                     }
                 }
-                else if (mode == GameMode.MultiPlayerEasy)
+                else if (mode == GameMode.MultiPlayerEasy)  // Si pego pero el modo era facil va a atacar al azar en sus alrededores.
                 {
                     AddAdjacentTargets(pcTarget);
                 }
@@ -306,13 +306,13 @@ namespace UnfathomableBattleship.Models
             return false;
         }
 
-        private void UpdateTargetQueueHard(Point hit)
+        private void UpdateTargetQueueHard(Point hit)   // IA de modos Normal y dificil. Solo que el dificil conoce el tablero y tiene un 60% de probabilidad de pegarle.
         {
             if (_currentShipHits.Count == 1)
             {
-                AddAdjacentTargets(hit);
+                AddAdjacentTargets(hit);       // Si pego a uno solo actua de forma normal.
             }
-            else if (_currentShipHits.Count >= 2)
+            else if (_currentShipHits.Count >= 2)   // SI pego a 2 deduce su posicion.
             {
                 bool isHorizontal = _currentShipHits[0].Y == _currentShipHits[1].Y;
                 _targetQueue.RemoveAll(p => isHorizontal ? p.Y != hit.Y : p.X != hit.X);
@@ -320,14 +320,14 @@ namespace UnfathomableBattleship.Models
                 Point lastHit = _currentShipHits.Last();
                 Point firstHit = _currentShipHits.First();
 
-                if (isHorizontal)
+                if (isHorizontal)       // Deteccion si es horizontal
                 {
                     int minX = Math.Min(lastHit.X, firstHit.X) - 1;
                     int maxX = Math.Max(lastHit.X, firstHit.X) + 1;
                     if (minX >= 0 && !PlayerBoard[minX, hit.Y] && !_targetQueue.Contains(new Point(minX, hit.Y))) _targetQueue.Insert(0, new Point(minX, hit.Y));
                     if (maxX < BoardSize.Width && !PlayerBoard[maxX, hit.Y] && !_targetQueue.Contains(new Point(maxX, hit.Y))) _targetQueue.Insert(0, new Point(maxX, hit.Y));
                 }
-                else
+                else              // Deteccion vertical
                 {
                     int minY = Math.Min(lastHit.Y, firstHit.Y) - 1;
                     int maxY = Math.Max(lastHit.Y, firstHit.Y) + 1;
@@ -337,9 +337,9 @@ namespace UnfathomableBattleship.Models
             }
         }
 
-        private void AddAdjacentTargets(Point hit)
+        private void AddAdjacentTargets(Point hit)      // Añade a la queue de la IA los puntos adyacentes
         {
-            Point[] adjacents = {
+            Point[] adjacents = {           // Guarda los puntos al rededor de donde pegó
                 new Point(hit.X, hit.Y - 1),
                 new Point(hit.X, hit.Y + 1),
                 new Point(hit.X - 1, hit.Y),
