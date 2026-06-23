@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Windows.Forms;
+﻿using System.Drawing.Imaging;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
@@ -19,15 +14,18 @@ public class PreparationForm : Form
 
     private readonly GameCanvas _canvas;
     private Board _board;
-    private PictureBox _pb;
 
     private List<Ship> _shipsToPlace;
     private ShipOrientation _currentOrientation = ShipOrientation.Horizontal;
 
-    private Button _btnContinue;
-    private Label _lblStatus;
-    private Label _lblInstructions;
-
+    private TableLayoutPanel mainLayoutPanel;
+    private PictureBox canvasPictureBox;
+    private FlowLayoutPanel buttonFlowLayout;
+    private Button startButton;
+    private Button backButton;
+    private FlowLayoutPanel instructionsFlowLayout;
+    private Label shipCountLabel;
+    private Label instructionsLabel;
     private System.Windows.Forms.Timer _timer;
 
     public PreparationForm(IGameManager gameManager, GameConfiguration config)
@@ -35,55 +33,17 @@ public class PreparationForm : Form
         _gameManager = gameManager;
         _config = config;
 
+        InitializeComponent();
+
         _game = _gameManager.NewGame(config);
-        _shipsToPlace = new List<Ship>(config.Ships);
+        _shipsToPlace = [.. config.Ships];
 
-        this.Text = "Fase de Preparación";
-        this.BackColor = Color.FromArgb(26, 26, 36);
-        this.KeyPreview = true;
+        Text = "Fase de Preparación";
+        KeyPreview = true;
 
-        _lblStatus = new Label
-        {
-            Text = $"Barcos restantes: {_shipsToPlace.Count}",
-            ForeColor = Color.White,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            AutoSize = true,
-            Location = new Point(20, 20)
-        };
-        this.Controls.Add(_lblStatus);
+        canvasPictureBox.MouseEnter += (s, e) => canvasPictureBox.Focus();
 
-        _lblInstructions = new Label
-        {
-            Text = "Rotar: R o Flechas | Quitar: Clic Derecho",
-            ForeColor = Color.LightGray,
-            Font = new Font("Segoe UI", 10, FontStyle.Regular),
-            AutoSize = true,
-            Location = new Point(20, 50)
-        };
-        this.Controls.Add(_lblInstructions);
-
-        _btnContinue = new Button
-        {
-            Text = "Comenzar Batalla",
-            Enabled = false,
-            Size = new Size(150, 40),
-            FlatStyle = FlatStyle.Flat,
-            ForeColor = Color.White,
-            BackColor = Color.SeaGreen
-        };
-        _btnContinue.Click += BtnContinue_Click;
-        this.Controls.Add(_btnContinue);
-
-        _pb = new PictureBox
-        {
-            Size = new Size(config.BoardSize.Width * GameForm.TileDimension, config.BoardSize.Height * GameForm.TileDimension),
-            Anchor = AnchorStyles.None
-        };
-
-        _pb.MouseEnter += (s, e) => _pb.Focus();
-        this.Controls.Add(_pb);
-
-        _canvas = new GameCanvas(_pb, config.BoardSize);
+        _canvas = new GameCanvas(canvasPictureBox, config.BoardSize);
         _canvas.TileClicked += OnLeftClick;
         _canvas.RightTileClicked += OnRightClick;
 
@@ -93,25 +53,13 @@ public class PreparationForm : Form
         _timer.Tick += GameLoop;
         _timer.Start();
 
-        this.Resize += PreparationForm_Resize;
+        UpdateBoard();
     }
 
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        CenterElements();
-        _pb.Select();
-    }
-
-    private void PreparationForm_Resize(object? sender, EventArgs e)
-    {
-        CenterElements();
-    }
-
-    private void CenterElements()
-    {
-        _pb.Location = new Point((this.ClientSize.Width - _pb.Width) / 2, (this.ClientSize.Height - _pb.Height) / 2 + 20);
-        _btnContinue.Location = new Point(this.ClientSize.Width - _btnContinue.Width - 20, 15);
+        canvasPictureBox.Select();
     }
 
     private void GameLoop(object? sender, EventArgs e)
@@ -134,7 +82,7 @@ public class PreparationForm : Form
         }
     }
 
-    private void DrawGhostShip(Graphics g, Point pos, Ship ship)
+    private void DrawGhostShip(Graphics graphics, Point pos, Ship ship)
     {
         var shipGO = new ShipGameObject(ship);
         var pixelPos = new Point(pos.X * GameForm.TileDimension, pos.Y * GameForm.TileDimension);
@@ -145,23 +93,23 @@ public class PreparationForm : Form
         shipGO.Draw(tempG, pixelPos);
 
         float[][] matrixItems = {
-            new float[] {1, 0, 0, 0, 0},
-            new float[] {0, 1, 0, 0, 0},
-            new float[] {0, 0, 1, 0, 0},
-            new float[] {0, 0, 0, 0.6f, 0},
-            new float[] {0, 0, 0, 0, 1}
+            [1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 0, 0.6f, 0],
+            [0, 0, 0, 0, 1]
         };
         var colorMatrix = new ColorMatrix(matrixItems);
         var imageAtt = new ImageAttributes();
         imageAtt.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
-        g.DrawImage(tempBmp, new Rectangle(0, 0, tempBmp.Width, tempBmp.Height), 0, 0, tempBmp.Width, tempBmp.Height, GraphicsUnit.Pixel, imageAtt);
+        graphics.DrawImage(tempBmp, new Rectangle(0, 0, tempBmp.Width, tempBmp.Height), 0, 0, tempBmp.Width, tempBmp.Height, GraphicsUnit.Pixel, imageAtt);
 
         var width = (ship.Orientation == ShipOrientation.Horizontal ? ship.Length : 1) * GameForm.TileDimension;
         var height = (ship.Orientation == ShipOrientation.Vertical ? ship.Length : 1) * GameForm.TileDimension;
         var color = isValid ? Color.LimeGreen : Color.Red;
         using var pen = new Pen(color, 2);
-        g.DrawRectangle(pen, new Rectangle(pixelPos.X, pixelPos.Y, width, height));
+        graphics.DrawRectangle(pen, new Rectangle(pixelPos.X, pixelPos.Y, width, height));
     }
 
     private void OnLeftClick(object? sender, Point pos)
@@ -216,12 +164,139 @@ public class PreparationForm : Form
     private void UpdateBoard()
     {
         _board = new Board(_config.BoardSize, _game.PlayerShips, _game.PlayerBoard, false);
-        _lblStatus.Text = $"Barcos restantes: {_shipsToPlace.Count}";
-        _btnContinue.Enabled = _shipsToPlace.Count == 0;
-        _btnContinue.BackColor = _btnContinue.Enabled ? Color.LimeGreen : Color.SeaGreen;
+        shipCountLabel.Text = $"Barcos restantes: {_shipsToPlace.Count}";
+        startButton.Enabled = _shipsToPlace.Count == 0;
     }
 
-    private void BtnContinue_Click(object? sender, EventArgs e)
+    private void InitializeComponent()
+    {
+        mainLayoutPanel = new TableLayoutPanel();
+        canvasPictureBox = new PictureBox();
+        buttonFlowLayout = new FlowLayoutPanel();
+        startButton = new Button();
+        backButton = new Button();
+        instructionsFlowLayout = new FlowLayoutPanel();
+        shipCountLabel = new Label();
+        instructionsLabel = new Label();
+        mainLayoutPanel.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)canvasPictureBox).BeginInit();
+        buttonFlowLayout.SuspendLayout();
+        instructionsFlowLayout.SuspendLayout();
+        SuspendLayout();
+        // 
+        // mainLayoutPanel
+        // 
+        mainLayoutPanel.ColumnCount = 2;
+        mainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        mainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        mainLayoutPanel.Controls.Add(canvasPictureBox, 0, 1);
+        mainLayoutPanel.Controls.Add(buttonFlowLayout, 1, 0);
+        mainLayoutPanel.Controls.Add(instructionsFlowLayout, 0, 0);
+        mainLayoutPanel.Dock = DockStyle.Fill;
+        mainLayoutPanel.Location = new Point(0, 0);
+        mainLayoutPanel.Name = "mainLayoutPanel";
+        mainLayoutPanel.RowCount = 2;
+        mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+        mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        mainLayoutPanel.Size = new Size(768, 544);
+        mainLayoutPanel.TabIndex = 0;
+        // 
+        // canvasPictureBox
+        // 
+        canvasPictureBox.Anchor = AnchorStyles.None;
+        canvasPictureBox.BackColor = SystemColors.ActiveBorder;
+        mainLayoutPanel.SetColumnSpan(canvasPictureBox, 2);
+        canvasPictureBox.Location = new Point(224, 142);
+        canvasPictureBox.Name = "canvasPictureBox";
+        canvasPictureBox.Size = new Size(320, 320);
+        canvasPictureBox.TabIndex = 0;
+        canvasPictureBox.TabStop = false;
+        // 
+        // buttonFlowLayout
+        // 
+        buttonFlowLayout.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+        buttonFlowLayout.AutoSize = true;
+        buttonFlowLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        buttonFlowLayout.Controls.Add(startButton);
+        buttonFlowLayout.Controls.Add(backButton);
+        buttonFlowLayout.Location = new Point(595, 3);
+        buttonFlowLayout.Name = "buttonFlowLayout";
+        buttonFlowLayout.Size = new Size(170, 54);
+        buttonFlowLayout.TabIndex = 1;
+        // 
+        // startButton
+        // 
+        startButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        startButton.AutoSize = true;
+        startButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        startButton.Enabled = false;
+        startButton.Location = new Point(3, 3);
+        startButton.Name = "startButton";
+        startButton.Size = new Size(109, 25);
+        startButton.TabIndex = 0;
+        startButton.Text = "Comenzar batalla";
+        startButton.UseVisualStyleBackColor = true;
+        startButton.Click += startButton_Click;
+        // 
+        // backButton
+        // 
+        backButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        backButton.AutoSize = true;
+        backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        backButton.Location = new Point(118, 3);
+        backButton.Name = "backButton";
+        backButton.Size = new Size(49, 25);
+        backButton.TabIndex = 1;
+        backButton.Text = "Volver";
+        backButton.UseVisualStyleBackColor = true;
+        // 
+        // instructionsFlowLayout
+        // 
+        instructionsFlowLayout.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        instructionsFlowLayout.Controls.Add(shipCountLabel);
+        instructionsFlowLayout.Controls.Add(instructionsLabel);
+        instructionsFlowLayout.FlowDirection = FlowDirection.TopDown;
+        instructionsFlowLayout.Location = new Point(3, 3);
+        instructionsFlowLayout.Name = "instructionsFlowLayout";
+        instructionsFlowLayout.Size = new Size(378, 54);
+        instructionsFlowLayout.TabIndex = 2;
+        // 
+        // shipCountLabel
+        // 
+        shipCountLabel.AutoSize = true;
+        shipCountLabel.Location = new Point(3, 0);
+        shipCountLabel.Name = "shipCountLabel";
+        shipCountLabel.Size = new Size(145, 15);
+        shipCountLabel.TabIndex = 0;
+        shipCountLabel.Text = "Barcos restantes: <count>";
+        // 
+        // instructionsLabel
+        // 
+        instructionsLabel.AutoSize = true;
+        instructionsLabel.Location = new Point(3, 15);
+        instructionsLabel.Name = "instructionsLabel";
+        instructionsLabel.Size = new Size(215, 15);
+        instructionsLabel.TabIndex = 1;
+        instructionsLabel.Text = "Rotar: R o Flechas | Quitar: Clic Derecho";
+        // 
+        // PreparationForm
+        // 
+        ClientSize = new Size(768, 544);
+        Controls.Add(mainLayoutPanel);
+        FormBorderStyle = FormBorderStyle.None;
+        Name = "PreparationForm";
+        mainLayoutPanel.ResumeLayout(false);
+        mainLayoutPanel.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)canvasPictureBox).EndInit();
+        buttonFlowLayout.ResumeLayout(false);
+        buttonFlowLayout.PerformLayout();
+        instructionsFlowLayout.ResumeLayout(false);
+        instructionsFlowLayout.PerformLayout();
+        ResumeLayout(false);
+
+    }
+
+    private void startButton_Click(object sender, EventArgs e)
     {
         _timer.Stop();
         MainForm?.SwitchForm(new GameForm(_gameManager, _game));
