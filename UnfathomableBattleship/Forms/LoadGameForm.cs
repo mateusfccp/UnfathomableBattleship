@@ -93,9 +93,10 @@ namespace UnfathomableBattleship.Forms
                 card.Controls.Add(btnBorrar);
                 flowLayoutPanel.Controls.Add(card);
 
-                if(partida.State != Enums.GameState.InGame)
+                if(Enums.GameStateExtensions.IsOver(partida.State))
                 {
                     btnCargar.Enabled = false;
+                    btnCargar.BackColor = Color.Gray;
                 }
             }
         }
