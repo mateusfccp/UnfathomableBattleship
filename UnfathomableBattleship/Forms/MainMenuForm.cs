@@ -22,18 +22,4 @@ public partial class MainMenuForm : Form
         createForm.Tag = MainForm;
         createForm.ShowDialog();
     }
-
-    private void QuickGameButton_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.QuickGame()));
-            this.Hide();
-            this.Dispose();
-        }
-        catch
-        {
-            MessageBox.Show("No se ha encontrado partida para la partida rápida.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
 }

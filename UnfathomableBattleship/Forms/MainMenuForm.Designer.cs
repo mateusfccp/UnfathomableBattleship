@@ -30,7 +30,6 @@
         {
             NewGameButton = new Button();
             LoadGameButton = new Button();
-            QuickGameButton = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -38,7 +37,7 @@
             // NewGameButton
             // 
             NewGameButton.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            NewGameButton.Location = new Point(326, 281);
+            NewGameButton.Location = new Point(326, 342);
             NewGameButton.Name = "NewGameButton";
             NewGameButton.Size = new Size(131, 55);
             NewGameButton.TabIndex = 1;
@@ -55,16 +54,6 @@
             LoadGameButton.Text = "Load Game";
             LoadGameButton.UseVisualStyleBackColor = true;
             // 
-            // QuickGameButton
-            // 
-            QuickGameButton.Location = new Point(326, 342);
-            QuickGameButton.Name = "QuickGameButton";
-            QuickGameButton.Size = new Size(131, 55);
-            QuickGameButton.TabIndex = 3;
-            QuickGameButton.Text = "Quick Game";
-            QuickGameButton.UseVisualStyleBackColor = true;
-            QuickGameButton.Click += QuickGameButton_Click;
-            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.BackgroundImage = Properties.Resources.login_background;
@@ -75,7 +64,6 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(LoadGameButton, 1, 3);
             tableLayoutPanel1.Controls.Add(NewGameButton, 1, 1);
-            tableLayoutPanel1.Controls.Add(QuickGameButton, 1, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -109,7 +97,6 @@
 
         private Button NewGameButton;
         private Button LoadGameButton;
-        private Button QuickGameButton;
         private TableLayoutPanel tableLayoutPanel1;
     }
 }
