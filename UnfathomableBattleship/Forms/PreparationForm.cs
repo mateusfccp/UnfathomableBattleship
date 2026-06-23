@@ -317,6 +317,7 @@ public class PreparationForm : Form
     private void backButton_Click(object sender, EventArgs e)
     {
         _timer.Stop();
+        _gameManager.DeleteGame(_game.Description.Id);
         MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 }
