@@ -16,13 +16,12 @@ namespace UnfathomableBattleship.Forms
         private void LoadGames()
         {
             var partidas = _gameManager.GetCurrentPlayerGames();
-
+            foreach (Control control in flowLayoutPanel.Controls)
+            {
+                control.Dispose();
+            }
             if ((partidas.Count == 0))
             {
-                foreach (Control control in flowLayoutPanel.Controls)
-                {
-                    control.Dispose();
-                }
                 flowLayoutPanel.Controls.Clear();
                 Panel card = new Panel
                 {
@@ -105,12 +104,20 @@ namespace UnfathomableBattleship.Forms
 
         private void BtnBorrar_Click(object? sender, EventArgs e)
         {
-            var result = MessageBox.Show("Desea borrar esta partida?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
+            try
             {
-                _gameManager.DeleteGame((sender as Button)?.Tag);
-                LoadGames();
+                var result = MessageBox.Show("Desea borrar esta partida?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    _gameManager.DeleteGame((sender as Button)?.Tag);
+                    LoadGames();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al borrar la partida: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void btBack_Click(object sender, EventArgs e)
