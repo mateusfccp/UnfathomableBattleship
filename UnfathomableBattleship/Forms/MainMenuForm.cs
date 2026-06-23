@@ -23,7 +23,7 @@ public partial class MainMenuForm : Form
         createForm.ShowDialog();
     }
 
-    private void QuickGame_Click(object sender, EventArgs e)
+    private void QuickGameButton_Click(object sender, EventArgs e)
     {
         try
         {

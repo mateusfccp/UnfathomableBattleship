@@ -63,6 +63,7 @@
             QuickGameButton.TabIndex = 3;
             QuickGameButton.Text = "Quick Game";
             QuickGameButton.UseVisualStyleBackColor = true;
+            QuickGameButton.Click += QuickGameButton_Click;
             // 
             // tableLayoutPanel1
             // 
