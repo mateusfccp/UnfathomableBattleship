@@ -1,4 +1,8 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Drawing;
+using System.Linq;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 
@@ -40,7 +44,9 @@ namespace UnfathomableBattleship.Models
                     Dictionary<Point, Ship> savedPlayerShips,
                     Dictionary<Point, Ship> savedEnemyShips,
                     bool[,] savedPlayerBoard,
-                    bool[,] savedEnemyBoard)
+                    bool[,] savedEnemyBoard,
+                    List<Point> savedTargetQueue,
+                    List<Point> savedShipHits)
         {
             Description = description;
             _connectionString = connectionString;
@@ -52,6 +58,9 @@ namespace UnfathomableBattleship.Models
             EnemyShips = savedEnemyShips;
             PlayerBoard = savedPlayerBoard;
             EnemyBoard = savedEnemyBoard;
+
+            _targetQueue = savedTargetQueue;
+            _currentShipHits = savedShipHits;
         }
 
         private void GenerateEnemyShips(List<Ship> shipsToPlace)
@@ -319,6 +328,7 @@ namespace UnfathomableBattleship.Models
                 SaveShips(connection, userBoardId, enemyBoardId);
                 SaveShots(connection, userBoardId, enemyBoardId);
                 RefreshLastUpdateTime(connection);
+                SaveAiMemory(connection);
                 transaction.Commit();
             }
             catch
@@ -384,7 +394,7 @@ namespace UnfathomableBattleship.Models
             {
                 return (reader.GetInt32(0), reader.GetInt32(1));
             }
-            throw new Exception("No se encontraron los tableros para este juego.");
+            throw new Exception();
         }
 
         private void SaveShots(SQLiteConnection connection, int userBoardId, int enemyBoardId)
@@ -429,7 +439,38 @@ namespace UnfathomableBattleship.Models
 
             if (command.ExecuteNonQuery() == 0)
             {
-                throw new Exception("No se pudo actualizar la última hora de actualización del juego.");
+                throw new Exception();
+            }
+        }
+
+        private void SaveAiMemory(SQLiteConnection connection)
+        {
+            using var deleteCmd = new SQLiteCommand("DELETE FROM AiMemory WHERE game_id = @gameId;", connection);
+            deleteCmd.Parameters.AddWithValue("@gameId", _gameId);
+            deleteCmd.ExecuteNonQuery();
+
+            using var insertCmd = new SQLiteCommand("INSERT INTO AiMemory (game_id, pos_x, pos_y, list_type) VALUES (@gameId, @x, @y, @type);", connection);
+            insertCmd.Parameters.Add("@gameId", System.Data.DbType.Int32);
+            insertCmd.Parameters.Add("@x", System.Data.DbType.Int32);
+            insertCmd.Parameters.Add("@y", System.Data.DbType.Int32);
+            insertCmd.Parameters.Add("@type", System.Data.DbType.Int32);
+
+            foreach (var point in _targetQueue)
+            {
+                insertCmd.Parameters["@gameId"].Value = _gameId;
+                insertCmd.Parameters["@x"].Value = point.X;
+                insertCmd.Parameters["@y"].Value = point.Y;
+                insertCmd.Parameters["@type"].Value = 0;
+                insertCmd.ExecuteNonQuery();
+            }
+
+            foreach (var point in _currentShipHits)
+            {
+                insertCmd.Parameters["@gameId"].Value = _gameId;
+                insertCmd.Parameters["@x"].Value = point.X;
+                insertCmd.Parameters["@y"].Value = point.Y;
+                insertCmd.Parameters["@type"].Value = 1;
+                insertCmd.ExecuteNonQuery();
             }
         }
     }

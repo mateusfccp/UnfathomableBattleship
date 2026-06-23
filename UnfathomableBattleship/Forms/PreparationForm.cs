@@ -96,14 +96,14 @@ public class PreparationForm : Form
         this.Resize += PreparationForm_Resize;
     }
 
-    protected override void OnLoad(EventArgs e)
+    protected override void OnLoad(EventArgs e) ///////////////////////////////////////
     {
         base.OnLoad(e);
         CenterElements();
         _pb.Select();
     }
 
-    private void PreparationForm_Resize(object? sender, EventArgs e)
+    private void PreparationForm_Resize(object? sender, EventArgs e) //Centrado de elementos en pantalla
     {
         CenterElements();
     }

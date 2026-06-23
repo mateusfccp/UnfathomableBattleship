@@ -2,6 +2,7 @@
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
+using System.Drawing;
 
 namespace UnfathomableBattleship.Services
 {
@@ -9,11 +10,13 @@ namespace UnfathomableBattleship.Services
     {
         private readonly string _connectionString;
         private readonly object _userId;
+
         public GameManager(string connectionString, object userId)
         {
             _connectionString = connectionString;
             _userId = userId;
         }
+
         public IGame NewGame(GameConfiguration configuration)
         {
             using var connection = new SQLiteConnection(_connectionString);
@@ -112,6 +115,7 @@ namespace UnfathomableBattleship.Services
             command.Parameters.AddWithValue("@height", boardSize.Height);
             return Convert.ToInt32(command.ExecuteScalar());
         }
+
         public void DeleteGame(object id)
         {
             int targetGameId = Convert.ToInt32(id);
@@ -134,6 +138,7 @@ namespace UnfathomableBattleship.Services
                 throw;
             }
         }
+
         private (int userBoardId, int enemyBoardId) GetBoardIdsForDeletion(SQLiteConnection connection, int targetGameId)
         {
             const string query = "SELECT user_board_id, enemy_board_id FROM Game WHERE game_id = @gameId AND user_id = @userId;";
@@ -287,6 +292,8 @@ namespace UnfathomableBattleship.Services
             var (mode, state, boardSize, userBoardId, enemyBoardId, username, startTime, lastUpdate, endTime, elapsedTime) = GetGameInfo(connection, targetGameId);
             var (playerShips, enemyShips, allShipsForConfig) = LoadShips(connection, userBoardId, enemyBoardId);
             var (playerBoard, enemyBoard) = LoadShots(connection, userBoardId, enemyBoardId, boardSize);
+            var (targetQueue, shipHits) = LoadAiMemory(connection, targetGameId);
+
             var configuration = new GameConfiguration(mode, boardSize, allShipsForConfig);
 
             var description = new GameDescription(
@@ -299,10 +306,32 @@ namespace UnfathomableBattleship.Services
                 state,
                 configuration
             );
-            return new Game(description, _connectionString, playerShips, enemyShips, playerBoard, enemyBoard);
+            return new Game(description, _connectionString, playerShips, enemyShips, playerBoard, enemyBoard, targetQueue, shipHits);
         }
 
-        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime,TimeSpan elapsedTime) GetGameInfo(SQLiteConnection connection, int targetGameId)
+        private (List<Point> targetQueue, List<Point> shipHits) LoadAiMemory(SQLiteConnection connection, int gameId)
+        {
+            var targetQueue = new List<Point>();
+            var shipHits = new List<Point>();
+
+            const string query = "SELECT pos_x, pos_y, list_type FROM AiMemory WHERE game_id = @gameId;";
+            using var command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@gameId", gameId);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var point = new Point(reader.GetInt32(0), reader.GetInt32(1));
+                if (reader.GetInt32(2) == 0)
+                    targetQueue.Add(point);
+                else
+                    shipHits.Add(point);
+            }
+
+            return (targetQueue, shipHits);
+        }
+
+        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, TimeSpan elapsedTime) GetGameInfo(SQLiteConnection connection, int targetGameId)
         {
             const string query = @"
         SELECT g.game_mode, g.state, b.width, b.height, g.user_board_id, g.enemy_board_id, 
