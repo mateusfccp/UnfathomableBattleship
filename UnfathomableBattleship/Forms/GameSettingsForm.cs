@@ -32,7 +32,7 @@ namespace UnfathomableBattleship.Forms
             for (int i = 0; i < DestructorCountBox.Value; i++) Ships.Add(new Ship(2, ShipOrientation.Horizontal));
             for (int i = 0; i < AcorazadoCountBox.Value; i++) Ships.Add(new Ship(3, ShipOrientation.Horizontal));
             GameConfiguration config = new GameConfiguration(Gamemode, BoardSize, Ships);
-            MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.NewGame(config)));
+            MainForm?.SwitchForm(new PreparationForm(_gameManager, config));
             this.Hide();
         }
 
