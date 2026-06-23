@@ -176,6 +176,7 @@
             CancelarButton.TabIndex = 14;
             CancelarButton.Text = "Cancelar";
             CancelarButton.UseVisualStyleBackColor = false;
+            CancelarButton.Click += CancelarButton_Click;
             // 
             // OKButton
             // 
