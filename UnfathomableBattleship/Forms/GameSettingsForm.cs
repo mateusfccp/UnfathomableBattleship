@@ -22,6 +22,7 @@ namespace UnfathomableBattleship.Forms
             DificultadComboBox.DisplayMember = "Name";
             DificultadComboBox.ValueMember = "Id";
             DificultadComboBox.DataSource = Enum.GetValues(typeof(GameMode));
+            DificultadComboBox.SelectedIndex = 2;
 
             GridXBox.ValueChanged += ActualizarLimitesDeBarcos;
             GridYBox.ValueChanged += ActualizarLimitesDeBarcos;

@@ -76,6 +76,7 @@
             PatrulleroCountBox.Name = "PatrulleroCountBox";
             PatrulleroCountBox.Size = new Size(107, 23);
             PatrulleroCountBox.TabIndex = 2;
+            PatrulleroCountBox.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // AcorazadoCountBox
             // 
@@ -83,6 +84,7 @@
             AcorazadoCountBox.Name = "AcorazadoCountBox";
             AcorazadoCountBox.Size = new Size(107, 23);
             AcorazadoCountBox.TabIndex = 4;
+            AcorazadoCountBox.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // DestructorCountBox
             // 
@@ -90,6 +92,7 @@
             DestructorCountBox.Name = "DestructorCountBox";
             DestructorCountBox.Size = new Size(107, 23);
             DestructorCountBox.TabIndex = 3;
+            DestructorCountBox.Value = new decimal(new int[] { 2, 0, 0, 0 });
             // 
             // GridSizeLabel
             // 
