@@ -67,7 +67,7 @@ namespace UnfathomableBattleship.Models
         }
         public Point? AttackCell(Point position)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public void Save()
