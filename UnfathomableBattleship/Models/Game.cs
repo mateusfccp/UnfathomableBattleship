@@ -116,29 +116,26 @@ namespace UnfathomableBattleship.Models
         {
             EnemyBoard[position.X, position.Y] = true;
 
-            if (CountSunkShips(EnemyShips, EnemyBoard) == EnemyShips.Count) {
+            if (CountSunkShips(EnemyShips, EnemyBoard) == EnemyShips.Count)
+            {
                 State = GameState.Victory;
                 return null;
             }
 
-            Point pcTarget;
+            Point pcTarget = new Point();
             bool validTarget = false;
             var mode = Description.Configuration.Mode;
-
-            if (mode == GameMode.FearAndHunger)
-            {
-                pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
-                PlayerBoard[pcTarget.X, pcTarget.Y] = true;
-                return pcTarget;
-            }
-
+            if (mode == GameMode.SinglePlayer) return null;
             do
             {
-                if (_targetQueue.Count > 0)
+                switch (mode)
                 {
-                    if (mode == GameMode.SinglePlayerEasy)
-                    {
-                        if (Random.Shared.Next(100) < 50)
+                    case GameMode.MultiPlayerFearAndHunger:
+                        pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                        break;
+
+                    case GameMode.MultiPlayerEasy:
+                        if (Random.Shared.Next(100) < 50 || _targetQueue.Count == 0)
                         {
                             pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
                         }
@@ -148,23 +145,28 @@ namespace UnfathomableBattleship.Models
                             pcTarget = _targetQueue[r];
                             _targetQueue.RemoveAt(r);
                         }
-                    }
-                    else
-                    {
-                        pcTarget = _targetQueue[0];
-                        _targetQueue.RemoveAt(0);
-                    }
-                }
-                else
-                {
-                    if (mode == GameMode.SinglePlayerHard && Random.Shared.Next(100) < 40)
-                    {
-                        pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
-                    }
-                    else
-                    {
+                        break;
+
+                    case GameMode.MultiPlayerNormal:
+                    case GameMode.MultiPlayerHard:
+                        if (_targetQueue.Count > 0)
+                        {
+                            pcTarget = _targetQueue[0];
+                            _targetQueue.RemoveAt(0);
+                        }
+                        else if (mode == GameMode.MultiPlayerHard && Random.Shared.Next(100) < 40)
+                        {
+                            pcTarget = GetUnhitShipCell() ?? new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                        }
+                        else
+                        {
+                            pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
+                        }
+                        break;
+
+                    default:
                         pcTarget = new Point(Random.Shared.Next(BoardSize.Width), Random.Shared.Next(BoardSize.Height));
-                    }
+                        break;
                 }
 
                 if (!PlayerBoard[pcTarget.X, pcTarget.Y])
@@ -177,7 +179,7 @@ namespace UnfathomableBattleship.Models
 
             if (IsHit(pcTarget))
             {
-                if (mode == GameMode.SinglePlayerNormal || mode == GameMode.SinglePlayerHard)
+                if (mode == GameMode.MultiPlayerNormal || mode == GameMode.MultiPlayerHard)
                 {
                     _currentShipHits.Add(pcTarget);
                     if (IsShipSunk(pcTarget))
@@ -190,7 +192,7 @@ namespace UnfathomableBattleship.Models
                         UpdateTargetQueueHard(pcTarget);
                     }
                 }
-                else if (mode == GameMode.SinglePlayerEasy)
+                else if (mode == GameMode.MultiPlayerEasy)
                 {
                     AddAdjacentTargets(pcTarget);
                 }

@@ -363,7 +363,7 @@ public class MockGame : IGame
         null, TimeSpan.Zero,
         GameState.InGame,
         new GameConfiguration(
-            GameMode.SinglePlayerNormal,
+            GameMode.MultiPlayerNormal,
             new(8, 8),
             [
                 new(1, ShipOrientation.Horizontal),
