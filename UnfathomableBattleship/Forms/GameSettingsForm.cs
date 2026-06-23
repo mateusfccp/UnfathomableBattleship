@@ -29,10 +29,10 @@ namespace UnfathomableBattleship.Forms
             Size BoardSize = new Size((int)GridXBox.Value, (int)GridYBox.Value);
             List<Ship> Ships = new List<Ship>();
             for (int i = 0; i < PatrulleroCountBox.Value; i++) Ships.Add(new Ship(1, ShipOrientation.Horizontal));
-            for (int i = 0; i < DestructorCountBox.Value; i++) Ships.Add(new Ship(1, ShipOrientation.Horizontal));
-            for (int i = 0; i < AcorazadoCountBox.Value; i++) Ships.Add(new Ship(1, ShipOrientation.Horizontal));
+            for (int i = 0; i < DestructorCountBox.Value; i++) Ships.Add(new Ship(2, ShipOrientation.Horizontal));
+            for (int i = 0; i < AcorazadoCountBox.Value; i++) Ships.Add(new Ship(3, ShipOrientation.Horizontal));
             GameConfiguration config = new GameConfiguration(Gamemode, BoardSize, Ships);
-            MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.NewGame(config))); // Porque no funciona???
+            MainForm?.SwitchForm(new PreparationForm(_gameManager, config)); // Porque no funciona???
             this.Hide();
         }
 
