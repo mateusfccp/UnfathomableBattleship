@@ -128,11 +128,14 @@ public partial class GameForm : Form
 
         if (_game.State == GameState.Victory)
         {
+
+            try { new System.Media.SoundPlayer(@"C:\Windows\Media\tada.wav").Play(); } catch { }
             _enemyBoard.PlayGameOverAnimation(() => ShowGameOver(true));
 
         }
         else if (_game.State == GameState.GameOver)
         {
+            try { new System.Media.SoundPlayer(@"C:\Windows\Media\chord.wav").Play(); } catch { }
             _playerBoard.PlayGameOverAnimation(() => ShowGameOver(false));
         }
     }
@@ -214,10 +217,7 @@ public partial class GameForm : Form
 
     private void ShowGameOver(bool isVictory)
     {
-        var form = new GameOverForm(_gameManager, _game, isVictory)
-        {
-            Tag = MainForm
-        };
+        var form = new GameOverForm(_game, isVictory);
         form.Show();
         MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }

@@ -6,8 +6,6 @@ namespace UnfathomableBattleship.Forms;
 
 public class GameOverForm : Form
 {
-    private MainForm? MainForm => Tag as MainForm;
-    private readonly IGameManager _gameManager;
     private TableLayoutPanel mainLayoutPanel;
     private Label resultLabel;
     private Button button;
@@ -16,21 +14,11 @@ public class GameOverForm : Form
     private Label label1;
     private readonly IGame _game;
 
-    public GameOverForm(IGameManager gameManager, IGame game, bool isVictory)
+    public GameOverForm(IGame game, bool isVictory)
     {
-        _gameManager = gameManager;
         _game = game;
 
         InitializeComponent();
-
-        if (isVictory)
-        {
-            try { new System.Media.SoundPlayer(@"C:\Windows\Media\tada.wav").Play(); } catch { }
-        }
-        else
-        {
-            try { new System.Media.SoundPlayer(@"C:\Windows\Media\chord.wav").Play(); } catch { }
-        }
 
         int totalTurns = 0;
         int successfulHits = 0;
@@ -179,6 +167,7 @@ public class GameOverForm : Form
         ClientSize = new Size(284, 261);
         Controls.Add(mainLayoutPanel);
         Name = "GameOverForm";
+        StartPosition = FormStartPosition.CenterScreen;
         mainLayoutPanel.ResumeLayout(false);
         mainLayoutPanel.PerformLayout();
         ResumeLayout(false);
