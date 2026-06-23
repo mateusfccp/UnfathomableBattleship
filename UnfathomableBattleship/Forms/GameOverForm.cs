@@ -11,7 +11,6 @@ public class GameOverForm : Form
     private Button button;
     private Label statusLabel;
     private Label statusResultLabel;
-    private Label label1;
     private readonly IGame _game;
 
     public GameOverForm(IGame game, bool isVictory)
@@ -77,7 +76,6 @@ public class GameOverForm : Form
     {
         mainLayoutPanel = new TableLayoutPanel();
         statusResultLabel = new Label();
-        label1 = new Label();
         resultLabel = new Label();
         button = new Button();
         statusLabel = new Label();
@@ -91,7 +89,6 @@ public class GameOverForm : Form
         mainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 8F));
         mainLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
         mainLayoutPanel.Controls.Add(statusResultLabel, 2, 1);
-        mainLayoutPanel.Controls.Add(label1, 1, 1);
         mainLayoutPanel.Controls.Add(resultLabel, 0, 0);
         mainLayoutPanel.Controls.Add(button, 0, 2);
         mainLayoutPanel.Controls.Add(statusLabel, 0, 1);
@@ -116,15 +113,6 @@ public class GameOverForm : Form
         statusResultLabel.TabIndex = 4;
         statusResultLabel.Text = "<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>";
         statusResultLabel.TextAlign = ContentAlignment.MiddleLeft;
-        // 
-        // label1
-        // 
-        label1.Anchor = AnchorStyles.None;
-        label1.AutoSize = true;
-        label1.Location = new Point(142, 123);
-        label1.Name = "label1";
-        label1.Size = new Size(0, 15);
-        label1.TabIndex = 3;
         // 
         // resultLabel
         // 

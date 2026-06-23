@@ -1,8 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
@@ -143,9 +139,6 @@ public partial class GameForm : Form
     private void UpdateGame()
     {
         timerValueLabel.Text = $"{ElapsedTime.Hours:00}:{ElapsedTime.Minutes:00}:{ElapsedTime.Seconds:00}";
-
-        // int playerRemaining = _game.PlayerShips.Count - CountSunkShips(_game.PlayerShips, _game.PlayerBoard);
-        // int enemyRemaining = _game.EnemyShips.Count - CountSunkShips(_game.EnemyShips, _game.EnemyBoard);
 
         _playerCanvas.Update();
         _enemyCanvas.Update();
