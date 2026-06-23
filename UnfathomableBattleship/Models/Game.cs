@@ -1,5 +1,6 @@
 ﻿using System.Data.SQLite;
 using UnfathomableBattleship.Enums;
+using UnfathomableBattleship.Forms;
 using UnfathomableBattleship.Interfaces;
 
 namespace UnfathomableBattleship.Models
@@ -115,6 +116,11 @@ namespace UnfathomableBattleship.Models
         {
             EnemyBoard[position.X, position.Y] = true;
 
+            if (CountSunkShips(EnemyShips, EnemyBoard) == EnemyShips.Count) {
+                State = GameState.Victory;
+                return null;
+            }
+
             Point pcTarget;
             bool validTarget = false;
             var mode = Description.Configuration.Mode;
@@ -190,7 +196,32 @@ namespace UnfathomableBattleship.Models
                 }
             }
 
+            if (CountSunkShips(PlayerShips, PlayerBoard) == PlayerShips.Count)
+            {
+                State = GameState.GameOver;
+                return null;
+            }
+
             return pcTarget;
+        }
+
+        private int CountSunkShips(Dictionary<Point, Ship> ships, bool[,] board)
+        {
+            int sunk = 0;
+            foreach (var kvp in ships)
+            {
+                var origin = kvp.Key;
+                var ship = kvp.Value;
+                int hits = 0;
+                for (int i = 0; i < ship.Length; i++)
+                {
+                    int x = origin.X + (ship.Orientation == ShipOrientation.Horizontal ? i : 0);
+                    int y = origin.Y + (ship.Orientation == ShipOrientation.Vertical ? i : 0);
+                    if (board[x, y]) hits++;
+                }
+                if (hits == ship.Length) sunk++;
+            }
+            return sunk;
         }
 
         private Point? GetUnhitShipCell()

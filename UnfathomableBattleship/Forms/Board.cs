@@ -89,7 +89,6 @@ public class Board : IGameObject
     /// </summary>
     /// <param name="tileCoordinate">The tile coordinate of the explosion.</param>
     /// <param name="onFinish">The action to happen when the animation ends.</param>
-    /// <returns></returns>
     public void PlayExplosion(Point tileCoordinate, Action onFinish)
     {
         var isShip = _ships[tileCoordinate.X, tileCoordinate.Y] != null;
@@ -113,6 +112,31 @@ public class Board : IGameObject
         });
 
         _explosions.Add(new Explosion(explosionSprite, tileCoordinate));
+    }
+
+    /// <summary>
+    /// Play a game over animation in the board.
+    /// </summary>
+    /// <param name="onFinish">The action to happen when the animation ends.</param>
+    public void PlayGameOverAnimation(Action onFinish)
+    {
+        var explosionTimer = new System.Windows.Forms.Timer { Interval = 100 };
+        explosionTimer.Tick += (s, e) =>
+        {
+            var x = Random.Shared.Next(Size.Width);
+            var y = Random.Shared.Next(Size.Height);
+            PlayExplosion(new Point(x, y), () => { });
+        };
+        explosionTimer.Start();
+
+        var delayTimer = new System.Windows.Forms.Timer { Interval = 2000 };
+        delayTimer.Tick += (s, e) =>
+        {
+            onFinish();
+            explosionTimer.Stop();
+            delayTimer.Stop();
+        };
+        delayTimer.Start();
     }
 
     public void Draw(Graphics graphics, Point _)

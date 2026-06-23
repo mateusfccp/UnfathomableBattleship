@@ -89,47 +89,6 @@ public partial class GameForm : Form
         return false;
     }
 
-    private int CountSunkShips(Dictionary<Point, Ship> ships, bool[,] board)
-    {
-        int sunk = 0;
-        foreach (var kvp in ships)
-        {
-            var origin = kvp.Key;
-            var ship = kvp.Value;
-            int hits = 0;
-            for (int i = 0; i < ship.Length; i++)
-            {
-                int x = origin.X + (ship.Orientation == ShipOrientation.Horizontal ? i : 0);
-                int y = origin.Y + (ship.Orientation == ShipOrientation.Vertical ? i : 0);
-                if (board[x, y]) hits++;
-            }
-            if (hits == ship.Length) sunk++;
-        }
-        return sunk;
-    }
-
-    private void TriggerEndGameExplosions(Board targetBoard, bool isVictory)
-    {
-        var rnd = new Random();
-        var explosionTimer = new System.Windows.Forms.Timer { Interval = 100 };
-        explosionTimer.Tick += (s, e) =>
-        {
-            int x = rnd.Next(_game.Description.Configuration.BoardSize.Width);
-            int y = rnd.Next(_game.Description.Configuration.BoardSize.Height);
-            targetBoard.PlayExplosion(new Point(x, y), () => { });
-        };
-        explosionTimer.Start();
-
-        var delayTimer = new System.Windows.Forms.Timer { Interval = 2000 };
-        delayTimer.Tick += (s, e) =>
-        {
-            explosionTimer.Stop();
-            delayTimer.Stop();
-            ShowGameOver(isVictory);
-        };
-        delayTimer.Start();
-    }
-
     private void EnemyCanvasTileClicked(object? sender, Point eventArgs)
     {
         if (_isAnimating) return;
@@ -143,12 +102,6 @@ public partial class GameForm : Form
         _enemyBoard.PlayExplosion(eventArgs, () =>
         {
             var enemyAttack = _game.AttackCell(eventArgs);
-
-            if (CountSunkShips(_game.EnemyShips, _game.EnemyBoard) == _game.EnemyShips.Count)
-            {
-                TriggerEndGameExplosions(_enemyBoard, true);
-                return;
-            }
 
             if (enemyAttack is Point attack)
             {
@@ -173,11 +126,15 @@ public partial class GameForm : Form
     {
         _isAnimating = false;
 
-	if (CountSunkShips(_game.PlayerShips, _game.PlayerBoard) == _game.PlayerShips.Count)
-	{
-	    TriggerEndGameExplosions(_playerBoard, false);
-	    return;
-	}
+        if (_game.State == GameState.Victory)
+        {
+            _enemyBoard.PlayGameOverAnimation(() => ShowGameOver(true));
+
+        }
+        else if (_game.State == GameState.GameOver)
+        {
+            _playerBoard.PlayGameOverAnimation(() => ShowGameOver(false));
+        }
     }
 
     private void UpdateGame()
