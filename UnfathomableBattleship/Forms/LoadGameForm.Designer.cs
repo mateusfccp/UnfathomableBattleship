@@ -47,6 +47,7 @@
             ClientSize = new Size(878, 701);
             Controls.Add(flowLayoutPanel);
             Name = "LoadGameForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "LoadGameForm";
             ResumeLayout(false);
         }

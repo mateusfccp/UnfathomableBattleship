@@ -66,6 +66,8 @@ namespace UnfathomableBattleship.Forms
             if (result == DialogResult.Yes)
             {
                 MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.LoadGame((sender as Button)?.Tag)));
+                Hide();
+                Dispose();
             }
         }
     }
