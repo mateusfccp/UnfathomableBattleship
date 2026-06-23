@@ -88,21 +88,6 @@ namespace UnfathomableBattleship.Forms
             nud.Maximum = nuevoMaximo;
         }
 
-
-        private void QuickSettings_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.QuickGame()));
-                this.Hide();
-                this.Dispose();
-            }
-            catch
-            {
-                MessageBox.Show("No se ha encontrado partida para la configuración rápida.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         private void CancelarButton_Click(object sender, EventArgs e)
         {
             this.Hide();

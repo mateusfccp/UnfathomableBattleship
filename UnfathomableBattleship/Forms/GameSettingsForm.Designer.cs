@@ -43,7 +43,6 @@
             TitleLabel = new Label();
             CancelarButton = new Button();
             OKButton = new Button();
-            QuickSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)GridXBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)GridYBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PatrulleroCountBox).BeginInit();
@@ -187,22 +186,11 @@
             OKButton.UseVisualStyleBackColor = false;
             OKButton.Click += OKButton_Click;
             // 
-            // QuickSettings
-            // 
-            QuickSettings.Location = new Point(152, 298);
-            QuickSettings.Name = "QuickSettings";
-            QuickSettings.Size = new Size(146, 25);
-            QuickSettings.TabIndex = 16;
-            QuickSettings.Text = "Configuración Rápida";
-            QuickSettings.UseVisualStyleBackColor = true;
-            QuickSettings.Click += QuickSettings_Click;
-            // 
             // GameSettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(434, 411);
-            Controls.Add(QuickSettings);
             Controls.Add(OKButton);
             Controls.Add(CancelarButton);
             Controls.Add(TitleLabel);
@@ -249,6 +237,5 @@
         private Label TitleLabel;
         private Button CancelarButton;
         private Button OKButton;
-        private Button QuickSettings;
     }
 }
