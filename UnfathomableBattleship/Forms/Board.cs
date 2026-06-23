@@ -301,13 +301,13 @@ public class Board : IGameObject
     {
         Debug.Assert(length > 0);
 
-        var ships = new HashSet<Ship>();
+        var ships = new HashSet<ShipGameObject>();
 
         foreach (var ship in _ships)
         {
             if (ship?.Ship.Length == length)
             {
-                if (!IsShipSunken(ship)) ships.Add(ship.Ship);
+                if (!IsShipSunken(ship)) ships.Add(ship);
             }
         }
 
