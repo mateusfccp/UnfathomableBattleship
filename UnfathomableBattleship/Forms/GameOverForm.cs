@@ -40,7 +40,7 @@ public class GameOverForm : Form
         resultLabel.ForeColor = isVictory ? Color.LimeGreen : Color.IndianRed;
 
         statusLabel.Text = $"Jugador:\n" +
-                           $"Dificultad:\n" +
+                           $"Modo:\n" +
                            $"Inicio:\n" +
                            $"Fin:\n" +
                            $"Tiempo de juego:\n" +
@@ -48,7 +48,7 @@ public class GameOverForm : Form
                            $"Precisión:";
 
         statusResultLabel.Text = $"{_game.Description.Username}\n" +
-                           $"{_game.Description.Configuration.Mode}\n" +
+                           $"{_game.Description.Configuration.Mode.ToDisplayString()}\n" +
                            $"{_game.Description.StartTime:dd/MM/yyyy HH:mm}\n" +
                            $"{DateTime.Now:dd/MM/yyyy HH:mm}\n" +
                            $"{_game.Description.ElapsedTime:hh\\:mm\\:ss}\n" +

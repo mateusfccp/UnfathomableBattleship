@@ -1,3 +1,4 @@
+using System.Windows.Forms.VisualStyles;
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
@@ -17,11 +18,17 @@ namespace UnfathomableBattleship.Forms
         }
         private void InicializeElements()
         {
-            DificultadComboBox.Items.Clear();
-            DificultadComboBox.DisplayMember = "Name";
-            DificultadComboBox.ValueMember = "Id";
-            DificultadComboBox.DataSource = Enum.GetValues(typeof(GameMode));
-            DificultadComboBox.SelectedIndex = 2;
+            modeGomboBox.Items.Clear();
+            modeGomboBox.DisplayMember = "Name";
+            modeGomboBox.ValueMember = "Id";
+            modeGomboBox.DataSource =
+                Enum
+                .GetValues<GameMode>()
+                .Select(gameMode => new { Value = gameMode, Display = gameMode.ToDisplayString() })
+                .ToList();
+            modeGomboBox.DisplayMember = "Display";
+            modeGomboBox.ValueMember = "Value";
+            modeGomboBox.SelectedIndex = 2;
 
             GridXBox.ValueChanged += ActualizarLimitesDeBarcos;
             GridYBox.ValueChanged += ActualizarLimitesDeBarcos;
@@ -34,7 +41,7 @@ namespace UnfathomableBattleship.Forms
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            GameMode Gamemode = (GameMode)DificultadComboBox.SelectedItem;
+            GameMode Gamemode = (GameMode)modeGomboBox.SelectedValue;
             Size BoardSize = new Size((int)GridXBox.Value, (int)GridYBox.Value);
             List<Ship> Ships = new List<Ship>();
             for (int i = 0; i < PatrulleroCountBox.Value; i++) Ships.Add(new Ship(1, ShipOrientation.Horizontal));
@@ -92,16 +99,6 @@ namespace UnfathomableBattleship.Forms
         {
             Hide();
             Dispose();
-        }
-
-        private void mainLayoutPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void DificultadComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

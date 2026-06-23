@@ -39,7 +39,7 @@
             B2Label = new Label();
             B1Label = new Label();
             DificultadLabel = new Label();
-            DificultadComboBox = new ComboBox();
+            modeGomboBox = new ComboBox();
             TitleLabel = new Label();
             CancelarButton = new Button();
             OKButton = new Button();
@@ -172,20 +172,19 @@
             DificultadLabel.Location = new Point(3, 7);
             DificultadLabel.Margin = new Padding(3, 0, 8, 0);
             DificultadLabel.Name = "DificultadLabel";
-            DificultadLabel.Size = new Size(58, 15);
+            DificultadLabel.Size = new Size(39, 15);
             DificultadLabel.TabIndex = 11;
-            DificultadLabel.Text = "Dificultad";
+            DificultadLabel.Text = "Modo";
             // 
-            // DificultadComboBox
+            // modeGomboBox
             // 
-            DificultadComboBox.Anchor = AnchorStyles.Top;
-            DificultadComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            DificultadComboBox.FormattingEnabled = true;
-            DificultadComboBox.Location = new Point(72, 3);
-            DificultadComboBox.Name = "DificultadComboBox";
-            DificultadComboBox.Size = new Size(121, 23);
-            DificultadComboBox.TabIndex = 12;
-            DificultadComboBox.SelectedIndexChanged += DificultadComboBox_SelectedIndexChanged;
+            modeGomboBox.Anchor = AnchorStyles.Top;
+            modeGomboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            modeGomboBox.FormattingEnabled = true;
+            modeGomboBox.Location = new Point(53, 3);
+            modeGomboBox.Name = "modeGomboBox";
+            modeGomboBox.Size = new Size(121, 23);
+            modeGomboBox.TabIndex = 12;
             // 
             // TitleLabel
             // 
@@ -244,7 +243,6 @@
             mainLayoutPanel.RowStyles.Add(new RowStyle());
             mainLayoutPanel.Size = new Size(384, 361);
             mainLayoutPanel.TabIndex = 16;
-            mainLayoutPanel.Paint += mainLayoutPanel_Paint;
             // 
             // flowLayoutPanel2
             // 
@@ -302,10 +300,10 @@
             flowLayoutPanel6.AutoSize = true;
             flowLayoutPanel6.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             flowLayoutPanel6.Controls.Add(DificultadLabel);
-            flowLayoutPanel6.Controls.Add(DificultadComboBox);
-            flowLayoutPanel6.Location = new Point(94, 243);
+            flowLayoutPanel6.Controls.Add(modeGomboBox);
+            flowLayoutPanel6.Location = new Point(103, 243);
             flowLayoutPanel6.Name = "flowLayoutPanel6";
-            flowLayoutPanel6.Size = new Size(196, 29);
+            flowLayoutPanel6.Size = new Size(177, 29);
             flowLayoutPanel6.TabIndex = 18;
             // 
             // flowLayoutPanel1
@@ -365,7 +363,7 @@
         private Label B2Label;
         private Label B3Label;
         private Label DificultadLabel;
-        private ComboBox DificultadComboBox;
+        private ComboBox modeGomboBox;
         private Label TitleLabel;
         private Button CancelarButton;
         private Button OKButton;
