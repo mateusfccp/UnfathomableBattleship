@@ -13,7 +13,7 @@ public class GameOverForm : Form
     private Label statusResultLabel;
     private readonly IGame _game;
 
-    public GameOverForm(IGame game, bool isVictory)
+    public GameOverForm(IGame game, bool isVictory, TimeSpan finalTime)
     {
         _game = game;
 
@@ -51,7 +51,7 @@ public class GameOverForm : Form
                            $"{_game.Description.Configuration.Mode.ToDisplayString()}\n" +
                            $"{_game.Description.StartTime:dd/MM/yyyy HH:mm}\n" +
                            $"{DateTime.Now:dd/MM/yyyy HH:mm}\n" +
-                           $"{_game.Description.ElapsedTime:hh\\:mm\\:ss}\n" +
+                           $"{finalTime:hh\\:mm\\:ss}\n" +
                            $"{totalTurns}\n" +
                            $"{accuracy:0.00}%";
     }
@@ -74,6 +74,7 @@ public class GameOverForm : Form
 
     private void InitializeComponent()
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameOverForm));
         mainLayoutPanel = new TableLayoutPanel();
         statusResultLabel = new Label();
         resultLabel = new Label();
@@ -107,9 +108,9 @@ public class GameOverForm : Form
         // 
         statusResultLabel.Anchor = AnchorStyles.Left;
         statusResultLabel.AutoSize = true;
-        statusResultLabel.Location = new Point(149, 78);
+        statusResultLabel.Location = new Point(149, 60);
         statusResultLabel.Name = "statusResultLabel";
-        statusResultLabel.Size = new Size(54, 105);
+        statusResultLabel.Size = new Size(67, 140);
         statusResultLabel.TabIndex = 4;
         statusResultLabel.Text = "<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>\r\n<status>";
         statusResultLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -120,22 +121,24 @@ public class GameOverForm : Form
         resultLabel.AutoSize = true;
         mainLayoutPanel.SetColumnSpan(resultLabel, 3);
         resultLabel.Font = new Font("Segoe UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
-        resultLabel.Location = new Point(53, 8);
+        resultLabel.Location = new Point(32, 8);
         resultLabel.Name = "resultLabel";
-        resultLabel.Size = new Size(178, 45);
+        resultLabel.Size = new Size(220, 49);
         resultLabel.TabIndex = 0;
         resultLabel.Text = "<victoria>";
         // 
         // button
         // 
         button.Anchor = AnchorStyles.Bottom;
+        button.BackColor = SystemColors.GradientActiveCaption;
         mainLayoutPanel.SetColumnSpan(button, 3);
+        button.Cursor = Cursors.Hand;
         button.Location = new Point(104, 227);
         button.Name = "button";
         button.Size = new Size(75, 23);
         button.TabIndex = 1;
         button.Text = "Volver";
-        button.UseVisualStyleBackColor = true;
+        button.UseVisualStyleBackColor = false;
         button.Click += button_Click;
         // 
         // statusLabel
@@ -143,17 +146,19 @@ public class GameOverForm : Form
         statusLabel.Anchor = AnchorStyles.Right;
         statusLabel.AutoSize = true;
         statusLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-        statusLabel.Location = new Point(32, 78);
+        statusLabel.Location = new Point(22, 57);
         statusLabel.Name = "statusLabel";
-        statusLabel.Size = new Size(103, 105);
+        statusLabel.Size = new Size(113, 147);
         statusLabel.TabIndex = 2;
         statusLabel.Text = "Jugador:\r\nDificultad:\r\nInicio:\r\nFin:\r\nTiempo de juego:\r\nTurnos totales:\r\nPrecisión:";
         statusLabel.TextAlign = ContentAlignment.MiddleRight;
         // 
         // GameOverForm
         // 
+        BackColor = Color.SteelBlue;
         ClientSize = new Size(284, 261);
         Controls.Add(mainLayoutPanel);
+        Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "GameOverForm";
         StartPosition = FormStartPosition.CenterScreen;
         mainLayoutPanel.ResumeLayout(false);

@@ -198,7 +198,7 @@ namespace UnfathomableBattleship.Services
             using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
-            foreach (var (gameId, username, startTime, lastUpdate, endTime, state, mode, boardSize, boardId) in rawGames)
+            foreach (var (gameId, username, startTime, lastUpdate, endTime, state, mode, boardSize, boardId, elapsedTime) in rawGames)
             {
                 var ships = new List<Ship>();
                 const string shipQuery = "SELECT length, orientation FROM Ship WHERE board_id = @boardId;";
@@ -217,15 +217,16 @@ namespace UnfathomableBattleship.Services
                 }
 
                 var config = new GameConfiguration(mode, boardSize, ships);
-                finalGamesList.Add(new GameDescription(gameId, username, startTime, lastUpdate, endTime, TimeSpan.Zero, state, config));
+                var finalTimeSpan = TimeSpan.FromTicks(elapsedTime);
+                finalGamesList.Add(new GameDescription(gameId, username, startTime, lastUpdate, endTime, finalTimeSpan, state, config));
             }
 
             return finalGamesList;
         }
 
-        private List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId)> GetRawGameList(bool filterByCurrentUser)
+        private List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId, long elapsedTime)> GetRawGameList(bool filterByCurrentUser)
         {
-            var rawGames = new List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId)>();
+            var rawGames = new List<(int gameId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, GameState state, GameMode mode, Size boardSize, int boardId, long elapsedTime)>();
             using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
@@ -240,7 +241,8 @@ namespace UnfathomableBattleship.Services
             g.game_mode, 
             b.width, 
             b.height, 
-            g.user_board_id
+            g.user_board_id,
+            g.elapsed_time
         FROM Game g
         INNER JOIN User u ON g.user_id = u.user_id
         INNER JOIN Board b ON g.user_board_id = b.board_id";
@@ -271,7 +273,8 @@ namespace UnfathomableBattleship.Services
                         state: (GameState)reader.GetInt32(5),
                         mode: (GameMode)reader.GetInt32(6),
                         boardSize: new Size(reader.GetInt32(7), reader.GetInt32(8)),
-                        boardId: reader.GetInt32(9)
+                        boardId: reader.GetInt32(9),
+                        elapsedTime: reader.GetInt64(10)
                     ));
                 }
             }
@@ -280,29 +283,38 @@ namespace UnfathomableBattleship.Services
 
         public IGame LoadGame(object id)
         {
-            int targetGameId = Convert.ToInt32(id);
-            using var connection = new SQLiteConnection(_connectionString);
-            connection.Open();
+            try
+            {
+                int targetGameId = Convert.ToInt32(id);
+                using var connection = new SQLiteConnection(_connectionString);
+                connection.Open();
 
-            var (mode, state, boardSize, userBoardId, enemyBoardId, username, startTime, lastUpdate, endTime, elapsedTime) = GetGameInfo(connection, targetGameId);
-            var (playerShips, enemyShips, allShipsForConfig) = LoadShips(connection, userBoardId, enemyBoardId);
-            var (playerBoard, enemyBoard) = LoadShots(connection, userBoardId, enemyBoardId, boardSize);
-            var configuration = new GameConfiguration(mode, boardSize, allShipsForConfig);
+                var (mode, state, boardSize, userBoardId, enemyBoardId, username, startTime, lastUpdate, endTime, elapsedTime) = GetGameInfo(connection, targetGameId);
+                var (playerShips, enemyShips, allShipsForConfig) = LoadShips(connection, userBoardId, enemyBoardId);
+                var (playerBoard, enemyBoard) = LoadShots(connection, userBoardId, enemyBoardId, boardSize);
+                var configuration = new GameConfiguration(mode, boardSize, allShipsForConfig);
 
-            var description = new GameDescription(
-                targetGameId,
-                username,
-                startTime,
-                lastUpdate,
-                endTime,
-                elapsedTime,
-                state,
-                configuration
-            );
-            return new Game(description, _connectionString, playerShips, enemyShips, playerBoard, enemyBoard);
+                var description = new GameDescription(
+                    targetGameId,
+                    username,
+                    startTime,
+                    lastUpdate,
+                    endTime,
+                    elapsedTime,
+                    state,
+                    configuration
+                );
+                return new Game(description, _connectionString, playerShips, enemyShips, playerBoard, enemyBoard);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar la partida: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            throw new Exception();
+
         }
 
-        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime,TimeSpan elapsedTime) GetGameInfo(SQLiteConnection connection, int targetGameId)
+        private (GameMode mode, GameState state, Size boardSize, int userBoardId, int enemyBoardId, string username, DateTime startTime, DateTime lastUpdate, DateTime? endTime, TimeSpan elapsedTime) GetGameInfo(SQLiteConnection connection, int targetGameId)
         {
             const string query = @"
         SELECT g.game_mode, g.state, b.width, b.height, g.user_board_id, g.enemy_board_id, 

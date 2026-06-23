@@ -170,6 +170,7 @@ public class PreparationForm : Form
 
     private void InitializeComponent()
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreparationForm));
         mainLayoutPanel = new TableLayoutPanel();
         canvasPictureBox = new PictureBox();
         buttonFlowLayout = new FlowLayoutPanel();
@@ -206,7 +207,7 @@ public class PreparationForm : Form
         canvasPictureBox.Anchor = AnchorStyles.None;
         canvasPictureBox.BackColor = SystemColors.ActiveBorder;
         mainLayoutPanel.SetColumnSpan(canvasPictureBox, 2);
-        canvasPictureBox.Location = new Point(224, 130);
+        canvasPictureBox.Location = new Point(224, 135);
         canvasPictureBox.Name = "canvasPictureBox";
         canvasPictureBox.Size = new Size(320, 320);
         canvasPictureBox.TabIndex = 0;
@@ -219,9 +220,9 @@ public class PreparationForm : Form
         buttonFlowLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         buttonFlowLayout.Controls.Add(startButton);
         buttonFlowLayout.Controls.Add(backButton);
-        buttonFlowLayout.Location = new Point(569, 3);
+        buttonFlowLayout.Location = new Point(518, 3);
         buttonFlowLayout.Name = "buttonFlowLayout";
-        buttonFlowLayout.Size = new Size(196, 31);
+        buttonFlowLayout.Size = new Size(247, 40);
         buttonFlowLayout.TabIndex = 1;
         // 
         // startButton
@@ -229,13 +230,15 @@ public class PreparationForm : Form
         startButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         startButton.AutoSize = true;
         startButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        startButton.BackColor = SystemColors.GradientActiveCaption;
+        startButton.Cursor = Cursors.Hand;
         startButton.Enabled = false;
         startButton.Location = new Point(3, 3);
         startButton.Name = "startButton";
-        startButton.Size = new Size(124, 25);
+        startButton.Size = new Size(161, 30);
         startButton.TabIndex = 0;
         startButton.Text = "⚔️ Comenzar batalla";
-        startButton.UseVisualStyleBackColor = true;
+        startButton.UseVisualStyleBackColor = false;
         startButton.Click += startButton_Click;
         // 
         // backButton
@@ -243,12 +246,14 @@ public class PreparationForm : Form
         backButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         backButton.AutoSize = true;
         backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        backButton.Location = new Point(133, 3);
+        backButton.BackColor = SystemColors.GradientActiveCaption;
+        backButton.Cursor = Cursors.Hand;
+        backButton.Location = new Point(170, 3);
         backButton.Name = "backButton";
-        backButton.Size = new Size(60, 25);
+        backButton.Size = new Size(74, 30);
         backButton.TabIndex = 1;
         backButton.Text = "⮌ Volver";
-        backButton.UseVisualStyleBackColor = true;
+        backButton.UseVisualStyleBackColor = false;
         backButton.Click += backButton_Click;
         // 
         // instructionsFlowLayout
@@ -261,32 +266,36 @@ public class PreparationForm : Form
         instructionsFlowLayout.FlowDirection = FlowDirection.TopDown;
         instructionsFlowLayout.Location = new Point(3, 3);
         instructionsFlowLayout.Name = "instructionsFlowLayout";
-        instructionsFlowLayout.Size = new Size(378, 30);
+        instructionsFlowLayout.Size = new Size(378, 40);
         instructionsFlowLayout.TabIndex = 2;
         // 
         // shipCountLabel
         // 
         shipCountLabel.AutoSize = true;
+        shipCountLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
         shipCountLabel.Location = new Point(3, 0);
         shipCountLabel.Name = "shipCountLabel";
-        shipCountLabel.Size = new Size(145, 15);
+        shipCountLabel.Size = new Size(195, 20);
         shipCountLabel.TabIndex = 0;
         shipCountLabel.Text = "Barcos restantes: <count>";
         // 
         // instructionsLabel
         // 
         instructionsLabel.AutoSize = true;
-        instructionsLabel.Location = new Point(3, 15);
+        instructionsLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        instructionsLabel.Location = new Point(3, 20);
         instructionsLabel.Name = "instructionsLabel";
-        instructionsLabel.Size = new Size(215, 15);
+        instructionsLabel.Size = new Size(287, 20);
         instructionsLabel.TabIndex = 1;
         instructionsLabel.Text = "Rotar: R o Flechas | Quitar: Clic Derecho";
         // 
         // PreparationForm
         // 
+        BackColor = Color.SteelBlue;
         ClientSize = new Size(768, 544);
         Controls.Add(mainLayoutPanel);
         FormBorderStyle = FormBorderStyle.None;
+        Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "PreparationForm";
         mainLayoutPanel.ResumeLayout(false);
         mainLayoutPanel.PerformLayout();
@@ -307,6 +316,7 @@ public class PreparationForm : Form
 
     private void backButton_Click(object sender, EventArgs e)
     {
+        _timer.Stop();
         MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 }

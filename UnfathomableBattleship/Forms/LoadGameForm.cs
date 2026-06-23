@@ -17,8 +17,12 @@ namespace UnfathomableBattleship.Forms
         {
             var partidas = _gameManager.GetCurrentPlayerGames();
 
-            if((partidas.Count == 0))
+            if ((partidas.Count == 0))
             {
+                foreach (Control control in flowLayoutPanel.Controls)
+                {
+                    control.Dispose();
+                }
                 flowLayoutPanel.Controls.Clear();
                 Panel card = new Panel
                 {
@@ -29,7 +33,7 @@ namespace UnfathomableBattleship.Forms
                 };
                 Label infoLabel = new Label
                 {
-                    Text ="No hay partidas guardadas",
+                    Text = "No hay partidas guardadas",
                     ForeColor = Color.White,
                     AutoSize = true,
                     Location = new Point(10, 15),
@@ -39,7 +43,7 @@ namespace UnfathomableBattleship.Forms
                 flowLayoutPanel.Controls.Add(card);
                 return;
             }
-            
+
 
             foreach (var partida in partidas)
             {
@@ -52,7 +56,7 @@ namespace UnfathomableBattleship.Forms
                 };
                 Label infoLabel = new Label
                 {
-                    Text = $"Partida #{partida.Id} - Estado: {partida.State}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {partida.ElapsedTime.Minutes} min",
+                    Text = $"Partida #{partida.Id} - Estado: {partida.State}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {(int)partida.ElapsedTime.TotalMinutes} min",
                     ForeColor = Color.White,
                     AutoSize = true,
                     Location = new Point(10, 15),
@@ -62,7 +66,6 @@ namespace UnfathomableBattleship.Forms
                 {
                     Text = "Cargar",
                     BackColor = Color.MediumSpringGreen,
-                    FlatStyle = FlatStyle.Flat,
                     Size = new Size(100, 40),
                     Location = new Point(card.Width - 120, 20),
                     Cursor = Cursors.Hand,
@@ -72,8 +75,7 @@ namespace UnfathomableBattleship.Forms
                 Button btnBorrar = new Button
                 {
                     Text = "Borrar",
-                    BackColor = Color.Red,
-                    FlatStyle = FlatStyle.Flat,
+                    BackColor = Color.LightCoral,
                     Size = new Size(100, 40),
                     Location = new Point(btnCargar.Left - 120, 20),
                     Cursor = Cursors.Hand,
@@ -109,6 +111,11 @@ namespace UnfathomableBattleship.Forms
                 _gameManager.DeleteGame((sender as Button)?.Tag);
                 LoadGames();
             }
+        }
+
+        private void btBack_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -19,7 +19,17 @@ namespace UnfathomableBattleship.Models
         public Size BoardSize { get; private set; }
         public GameState State { get; private set; }
         public GameDescription Description { get; private set; }
-        public TimeSpan ElapsedTime { get; set; }
+        private TimeSpan _elapsedTime;
+        public TimeSpan ElapsedTime
+        {
+            get => _elapsedTime;
+            set
+            {
+                _elapsedTime = value;
+                // Keep Description in sync so UI that reads Description.ElapsedTime shows updated value
+                Description = Description with { ElapsedTime = value };
+            }
+        }
 
         public Game(GameDescription description, string connectionString)
         {
@@ -33,6 +43,9 @@ namespace UnfathomableBattleship.Models
             PlayerBoard = new bool[BoardSize.Width, BoardSize.Height];
             PlayerShips = new Dictionary<Point, Ship>();
             EnemyShips = new Dictionary<Point, Ship>();
+
+            // Initialize ElapsedTime from the description so saves use the correct accumulated time
+            ElapsedTime = description.ElapsedTime;
 
             GenerateEnemyShips(description.Configuration.Ships);
         }
@@ -53,6 +66,9 @@ namespace UnfathomableBattleship.Models
             EnemyShips = savedEnemyShips;
             PlayerBoard = savedPlayerBoard;
             EnemyBoard = savedEnemyBoard;
+
+            // Initialize ElapsedTime from the description so saves use the correct accumulated time
+            ElapsedTime = description.ElapsedTime;
         }
 
         private void GenerateEnemyShips(List<Ship> shipsToPlace)
