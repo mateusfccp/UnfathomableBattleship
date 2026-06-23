@@ -367,6 +367,7 @@ namespace UnfathomableBattleship.Models
             {
                 (int userBoardId, int enemyBoardId) = GetBoardIds(connection);
                 ClearBoards(connection);
+                SaveState(connection);
                 SaveShips(connection, userBoardId, enemyBoardId);
                 SaveShots(connection, userBoardId, enemyBoardId);
                 RefreshLastUpdateTime(connection);
@@ -376,6 +377,18 @@ namespace UnfathomableBattleship.Models
             {
                 transaction.Rollback();
                 throw;
+            }
+        }
+        private void SaveState(SQLiteConnection connection)
+        {
+            const string query = "UPDATE Game SET state = @gameState WHERE game_id = @gameId";
+            using var command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@gameState", (int)State);
+            command.Parameters.AddWithValue("@gameId", _gameId);
+            command.ExecuteNonQuery();
+            if (command.ExecuteNonQuery() == 0)
+            {
+                throw new Exception("No se pudo actualizar el estado del juego.");
             }
         }
 

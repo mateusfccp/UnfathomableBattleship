@@ -93,7 +93,7 @@ public class PreparationForm : Form
         shipGO.Draw(tempG, pixelPos); 
 
         float[][] matrixItems = {   // Esta matriz define la opacidad del barco fantasma
-            [1, 0, 0, 0, 0],        // Se basa funcionando como un vector R, G, B, A, W donde A representa opacidad
+            [1, 0, 0, 0, 0],        // Se basa funcionando como un vector R, G, B, A, W donde A representa opacidad. W representa un valor de traslación y se debe dejar en 1.
             [0, 1, 0, 0, 0],        // En C# el ColorMatrix funciona haciendo una multiplicacion de matrices sobre cada pixel de la imagen original.
             [0, 0, 1, 0, 0],       // Es como aplicarle filtros a la imagen en base a un preset creado desde antes.
             [0, 0, 0, 0.6f, 0],
