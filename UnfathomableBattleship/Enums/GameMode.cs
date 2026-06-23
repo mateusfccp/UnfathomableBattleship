@@ -8,10 +8,17 @@ public enum GameMode
     /// <summary>
     /// The game is played against yourself.
     /// </summary>
-    SinglePlayer,
+
+
+    SinglePlayerEasy,
+    SinglePlayerNormal,
+    SinglePlayerHard,
+    FearAndHunger,
+
 
     /// <summary>
     /// The game is played against an AI.
     /// </summary>
     Multiplayer
+
 }
