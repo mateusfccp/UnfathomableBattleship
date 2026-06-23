@@ -1,4 +1,5 @@
-﻿using UnfathomableBattleship.Interfaces;
+﻿using UnfathomableBattleship.Enums;
+using UnfathomableBattleship.Interfaces;
 
 namespace UnfathomableBattleship.Forms
 {
@@ -56,7 +57,7 @@ namespace UnfathomableBattleship.Forms
 
                 Label infoLabel = new Label
                 {
-                    Text = $"Partida #{partida.Id} ({partida.Configuration.BoardSize.Width}x{partida.Configuration.BoardSize.Height}) - Estado: {partida.State}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {(int)partida.ElapsedTime.TotalMinutes} min",
+                    Text = $"Partida #{partida.Id} ({partida.Configuration.BoardSize.Width}x{partida.Configuration.BoardSize.Height}) - Estado: {partida.State.ToDisplayString()}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {(int)partida.ElapsedTime.TotalMinutes} min",
                     ForeColor = Color.White,
                     AutoSize = true,
                     Location = new Point(10, 15),

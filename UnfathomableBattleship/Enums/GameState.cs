@@ -32,4 +32,11 @@ public static class GameStateExtensions
     /// <param name="state">The state.</param>
     /// <returns>Whether the game is over.</returns>
     public static bool IsOver(this GameState state) => state != GameState.InGame;
+    public static string ToDisplayString(this GameState gameState) => gameState switch
+    {
+        GameState.InGame => "En juego",
+        GameState.GameOver => "DERROTA",
+        GameState.Victory => "VICTORIA",
+        _ => gameState.ToString(),
+    };
 }
