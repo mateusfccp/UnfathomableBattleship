@@ -26,6 +26,7 @@ public partial class GameForm : Form
     public static readonly Size TileSize = new(TileDimension, TileDimension);
 
     private TimeSpan ElapsedTime => _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
+    private readonly System.Windows.Forms.Timer _gameTimer;
 
     public GameForm(IGameManager gameManager, IGame game)
     {
@@ -35,12 +36,12 @@ public partial class GameForm : Form
 
         InitializeComponent();
 
-        System.Windows.Forms.Timer gameTimer = new()
+        _gameTimer = new System.Windows.Forms.Timer
         {
             Interval = 16
         };
-        gameTimer.Tick += GameLoop;
-        gameTimer.Start();
+        _gameTimer.Tick += GameLoop;
+        _gameTimer.Start();
 
         _gameStopwatch = new Stopwatch();
         _gameStopwatch.Start();
@@ -174,6 +175,10 @@ public partial class GameForm : Form
     {
         try
         {
+            if (_game is UnfathomableBattleship.Models.Game concreteGameSave)
+            {
+                concreteGameSave.ElapsedTime = _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
+            }
             _game.Save();
             MessageBox.Show(
                 "¡El juego fue guardado con éxito!",
@@ -210,6 +215,8 @@ public partial class GameForm : Form
 
     private void backButton_Click(object sender, EventArgs e)
     {
+        _gameTimer.Stop();
+        _gameStopwatch.Stop();
         var result = MessageBox.Show(
             "¿Deseás guardar el juego antes de volver al menu?",
             "Volver al menu",
@@ -219,6 +226,10 @@ public partial class GameForm : Form
 
         if (result == DialogResult.Yes)
         {
+            if (_game is UnfathomableBattleship.Models.Game concreteGameBack)
+            {
+                concreteGameBack.ElapsedTime = _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
+            }
             _game.Save();
             MainForm?.SwitchForm(new MainMenuForm(_gameManager));
         }
@@ -230,7 +241,14 @@ public partial class GameForm : Form
 
     private void ShowGameOver(bool isVictory)
     {
-        var form = new GameOverForm(_game, isVictory);
+        _gameTimer.Stop();
+        _gameStopwatch.Stop();
+        if (_game is UnfathomableBattleship.Models.Game concreteGameOver)
+        {
+            concreteGameOver.ElapsedTime = _game.Description.ElapsedTime + _gameStopwatch.Elapsed;
+        }
+        _game.Save();
+        var form = new GameOverForm(_game, isVictory, ElapsedTime);
         form.Show();
         MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }

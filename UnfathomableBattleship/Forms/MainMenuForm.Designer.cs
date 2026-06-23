@@ -37,24 +37,30 @@ namespace UnfathomableBattleship.Forms
             // NewGameButton
             // 
             NewGameButton.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            NewGameButton.Location = new Point(373, 376);
+            NewGameButton.BackColor = Color.SteelBlue;
+            NewGameButton.Cursor = Cursors.Hand;
+            NewGameButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            NewGameButton.Location = new Point(373, 457);
             NewGameButton.Margin = new Padding(3, 4, 3, 4);
             NewGameButton.Name = "NewGameButton";
             NewGameButton.Size = new Size(150, 73);
             NewGameButton.TabIndex = 1;
             NewGameButton.Text = "New Game";
-            NewGameButton.UseVisualStyleBackColor = true;
+            NewGameButton.UseVisualStyleBackColor = false;
             NewGameButton.Click += NewGameButton_Click;
             // 
             // LoadGameButton
             // 
+            LoadGameButton.BackColor = Color.SteelBlue;
+            LoadGameButton.Cursor = Cursors.Hand;
+            LoadGameButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             LoadGameButton.Location = new Point(373, 538);
             LoadGameButton.Margin = new Padding(3, 4, 3, 4);
             LoadGameButton.Name = "LoadGameButton";
             LoadGameButton.Size = new Size(150, 73);
             LoadGameButton.TabIndex = 2;
             LoadGameButton.Text = "Load Game";
-            LoadGameButton.UseVisualStyleBackColor = true;
+            LoadGameButton.UseVisualStyleBackColor = false;
             LoadGameButton.Click += LoadGameButton_Click;
             // 
             // tableLayoutPanel1

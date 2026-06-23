@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             playerCanvasPictureBox = new PictureBox();
             mainLayoutPanel = new TableLayoutPanel();
             enemyCanvasPictureBox = new PictureBox();
@@ -39,6 +40,7 @@
             buttonLayoutPanel = new FlowLayoutPanel();
             saveButton = new Button();
             giveUpButton = new Button();
+            backButton = new Button();
             fleetLabel = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             battleshipPictureBox = new PictureBox();
@@ -47,7 +49,6 @@
             destructorCountLabel = new Label();
             patrolPictureBox = new PictureBox();
             patrolCountLabel = new Label();
-            backButton = new Button();
             ((System.ComponentModel.ISupportInitialize)playerCanvasPictureBox).BeginInit();
             mainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)enemyCanvasPictureBox).BeginInit();
@@ -62,9 +63,10 @@
             // playerCanvasPictureBox
             // 
             playerCanvasPictureBox.Anchor = AnchorStyles.None;
-            playerCanvasPictureBox.Location = new Point(46, 109);
+            playerCanvasPictureBox.Location = new Point(52, 144);
+            playerCanvasPictureBox.Margin = new Padding(3, 4, 3, 4);
             playerCanvasPictureBox.Name = "playerCanvasPictureBox";
-            playerCanvasPictureBox.Size = new Size(300, 300);
+            playerCanvasPictureBox.Size = new Size(343, 400);
             playerCanvasPictureBox.TabIndex = 0;
             playerCanvasPictureBox.TabStop = false;
             // 
@@ -81,21 +83,23 @@
             mainLayoutPanel.Controls.Add(flowLayoutPanel1, 0, 3);
             mainLayoutPanel.Dock = DockStyle.Fill;
             mainLayoutPanel.Location = new Point(0, 0);
+            mainLayoutPanel.Margin = new Padding(3, 4, 3, 4);
             mainLayoutPanel.Name = "mainLayoutPanel";
             mainLayoutPanel.RowCount = 4;
             mainLayoutPanel.RowStyles.Add(new RowStyle());
             mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 16F));
-            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-            mainLayoutPanel.Size = new Size(784, 561);
+            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 21F));
+            mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 85F));
+            mainLayoutPanel.Size = new Size(896, 748);
             mainLayoutPanel.TabIndex = 2;
             // 
             // enemyCanvasPictureBox
             // 
             enemyCanvasPictureBox.Anchor = AnchorStyles.None;
-            enemyCanvasPictureBox.Location = new Point(438, 109);
+            enemyCanvasPictureBox.Location = new Point(500, 144);
+            enemyCanvasPictureBox.Margin = new Padding(3, 4, 3, 4);
             enemyCanvasPictureBox.Name = "enemyCanvasPictureBox";
-            enemyCanvasPictureBox.Size = new Size(300, 300);
+            enemyCanvasPictureBox.Size = new Size(343, 400);
             enemyCanvasPictureBox.TabIndex = 2;
             enemyCanvasPictureBox.TabStop = false;
             // 
@@ -107,9 +111,10 @@
             infoLayoutPanel.Controls.Add(playerNameLabel);
             infoLayoutPanel.Controls.Add(timerLabel);
             infoLayoutPanel.Controls.Add(timerValueLabel);
-            infoLayoutPanel.Location = new Point(3, 11);
+            infoLayoutPanel.Location = new Point(3, 13);
+            infoLayoutPanel.Margin = new Padding(3, 4, 3, 4);
             infoLayoutPanel.Name = "infoLayoutPanel";
-            infoLayoutPanel.Size = new Size(271, 15);
+            infoLayoutPanel.Size = new Size(339, 20);
             infoLayoutPanel.TabIndex = 1;
             // 
             // playerLabel
@@ -119,7 +124,7 @@
             playerLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             playerLabel.Location = new Point(3, 0);
             playerLabel.Name = "playerLabel";
-            playerLabel.Size = new Size(57, 15);
+            playerLabel.Size = new Size(75, 20);
             playerLabel.TabIndex = 1;
             playerLabel.Text = "Jugador: ";
             // 
@@ -127,9 +132,9 @@
             // 
             playerNameLabel.Anchor = AnchorStyles.Left;
             playerNameLabel.AutoSize = true;
-            playerNameLabel.Location = new Point(66, 0);
+            playerNameLabel.Location = new Point(84, 0);
             playerNameLabel.Name = "playerNameLabel";
-            playerNameLabel.Size = new Size(88, 15);
+            playerNameLabel.Size = new Size(111, 20);
             playerNameLabel.TabIndex = 2;
             playerNameLabel.Text = "<player name>";
             // 
@@ -138,9 +143,9 @@
             timerLabel.Anchor = AnchorStyles.Left;
             timerLabel.AutoSize = true;
             timerLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            timerLabel.Location = new Point(160, 0);
+            timerLabel.Location = new Point(201, 0);
             timerLabel.Name = "timerLabel";
-            timerLabel.Size = new Size(55, 15);
+            timerLabel.Size = new Size(70, 20);
             timerLabel.TabIndex = 3;
             timerLabel.Text = "Tiempo: ";
             // 
@@ -148,9 +153,9 @@
             // 
             timerValueLabel.Anchor = AnchorStyles.Left;
             timerValueLabel.AutoSize = true;
-            timerValueLabel.Location = new Point(221, 0);
+            timerValueLabel.Location = new Point(277, 0);
             timerValueLabel.Name = "timerValueLabel";
-            timerValueLabel.Size = new Size(47, 15);
+            timerValueLabel.Size = new Size(59, 20);
             timerValueLabel.TabIndex = 4;
             timerValueLabel.Text = "<time>";
             // 
@@ -161,9 +166,10 @@
             buttonLayoutPanel.Controls.Add(saveButton);
             buttonLayoutPanel.Controls.Add(giveUpButton);
             buttonLayoutPanel.Controls.Add(backButton);
-            buttonLayoutPanel.Location = new Point(552, 3);
+            buttonLayoutPanel.Location = new Point(603, 4);
+            buttonLayoutPanel.Margin = new Padding(3, 4, 3, 4);
             buttonLayoutPanel.Name = "buttonLayoutPanel";
-            buttonLayoutPanel.Size = new Size(229, 31);
+            buttonLayoutPanel.Size = new Size(290, 38);
             buttonLayoutPanel.TabIndex = 3;
             buttonLayoutPanel.WrapContents = false;
             // 
@@ -171,34 +177,55 @@
             // 
             saveButton.AutoSize = true;
             saveButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            saveButton.Location = new Point(3, 3);
+            saveButton.BackColor = SystemColors.GradientActiveCaption;
+            saveButton.Cursor = Cursors.Hand;
+            saveButton.Location = new Point(3, 4);
+            saveButton.Margin = new Padding(3, 4, 3, 4);
             saveButton.Name = "saveButton";
-            saveButton.Size = new Size(74, 25);
+            saveButton.Size = new Size(97, 30);
             saveButton.TabIndex = 0;
             saveButton.Text = "💾 Guardar";
-            saveButton.UseVisualStyleBackColor = true;
+            saveButton.UseVisualStyleBackColor = false;
             saveButton.Click += saveButton_Click;
             // 
             // giveUpButton
             // 
             giveUpButton.AutoSize = true;
             giveUpButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            giveUpButton.Location = new Point(83, 3);
+            giveUpButton.BackColor = SystemColors.GradientActiveCaption;
+            giveUpButton.Cursor = Cursors.Hand;
+            giveUpButton.Location = new Point(106, 4);
+            giveUpButton.Margin = new Padding(3, 4, 3, 4);
             giveUpButton.Name = "giveUpButton";
-            giveUpButton.Size = new Size(77, 25);
+            giveUpButton.Size = new Size(101, 30);
             giveUpButton.TabIndex = 1;
             giveUpButton.Text = "💀 Rendirse";
-            giveUpButton.UseVisualStyleBackColor = true;
+            giveUpButton.UseVisualStyleBackColor = false;
             giveUpButton.Click += giveUpButton_Click;
+            // 
+            // backButton
+            // 
+            backButton.AutoSize = true;
+            backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            backButton.BackColor = SystemColors.GradientActiveCaption;
+            backButton.Cursor = Cursors.Hand;
+            backButton.Location = new Point(213, 4);
+            backButton.Margin = new Padding(3, 4, 3, 4);
+            backButton.Name = "backButton";
+            backButton.Size = new Size(74, 30);
+            backButton.TabIndex = 2;
+            backButton.Text = "⮌ Volver";
+            backButton.UseVisualStyleBackColor = false;
+            backButton.Click += backButton_Click;
             // 
             // fleetLabel
             // 
             fleetLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             fleetLabel.AutoSize = true;
             fleetLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            fleetLabel.Location = new Point(3, 482);
+            fleetLabel.Location = new Point(3, 643);
             fleetLabel.Name = "fleetLabel";
-            fleetLabel.Size = new Size(85, 15);
+            fleetLabel.Size = new Size(108, 20);
             fleetLabel.TabIndex = 4;
             fleetLabel.Text = "Flota enemiga";
             // 
@@ -212,18 +239,20 @@
             flowLayoutPanel1.Controls.Add(destructorCountLabel);
             flowLayoutPanel1.Controls.Add(patrolPictureBox);
             flowLayoutPanel1.Controls.Add(patrolCountLabel);
-            flowLayoutPanel1.Location = new Point(3, 500);
+            flowLayoutPanel1.Location = new Point(3, 667);
+            flowLayoutPanel1.Margin = new Padding(3, 4, 3, 4);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(778, 58);
+            flowLayoutPanel1.Size = new Size(890, 77);
             flowLayoutPanel1.TabIndex = 5;
             // 
             // battleshipPictureBox
             // 
             battleshipPictureBox.Anchor = AnchorStyles.Left;
             battleshipPictureBox.Image = Properties.Resources.ship_l;
-            battleshipPictureBox.Location = new Point(3, 3);
+            battleshipPictureBox.Location = new Point(3, 4);
+            battleshipPictureBox.Margin = new Padding(3, 4, 3, 4);
             battleshipPictureBox.Name = "battleshipPictureBox";
-            battleshipPictureBox.Size = new Size(96, 50);
+            battleshipPictureBox.Size = new Size(110, 67);
             battleshipPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             battleshipPictureBox.TabIndex = 0;
             battleshipPictureBox.TabStop = false;
@@ -233,10 +262,10 @@
             battleshipCountLabel.Anchor = AnchorStyles.Left;
             battleshipCountLabel.AutoSize = true;
             battleshipCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            battleshipCountLabel.Location = new Point(105, 13);
+            battleshipCountLabel.Location = new Point(119, 19);
             battleshipCountLabel.Name = "battleshipCountLabel";
-            battleshipCountLabel.Padding = new Padding(0, 0, 16, 0);
-            battleshipCountLabel.Size = new Size(41, 30);
+            battleshipCountLabel.Padding = new Padding(0, 0, 18, 0);
+            battleshipCountLabel.Size = new Size(50, 37);
             battleshipCountLabel.TabIndex = 1;
             battleshipCountLabel.Text = "0";
             // 
@@ -244,9 +273,10 @@
             // 
             destructorPictureBox.Anchor = AnchorStyles.Left;
             destructorPictureBox.Image = Properties.Resources.ship_m;
-            destructorPictureBox.Location = new Point(152, 3);
+            destructorPictureBox.Location = new Point(175, 4);
+            destructorPictureBox.Margin = new Padding(3, 4, 3, 4);
             destructorPictureBox.Name = "destructorPictureBox";
-            destructorPictureBox.Size = new Size(64, 50);
+            destructorPictureBox.Size = new Size(73, 67);
             destructorPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             destructorPictureBox.TabIndex = 2;
             destructorPictureBox.TabStop = false;
@@ -256,10 +286,10 @@
             destructorCountLabel.Anchor = AnchorStyles.Left;
             destructorCountLabel.AutoSize = true;
             destructorCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            destructorCountLabel.Location = new Point(222, 13);
+            destructorCountLabel.Location = new Point(254, 19);
             destructorCountLabel.Name = "destructorCountLabel";
-            destructorCountLabel.Padding = new Padding(0, 0, 16, 0);
-            destructorCountLabel.Size = new Size(41, 30);
+            destructorCountLabel.Padding = new Padding(0, 0, 18, 0);
+            destructorCountLabel.Size = new Size(50, 37);
             destructorCountLabel.TabIndex = 3;
             destructorCountLabel.Text = "0";
             // 
@@ -267,9 +297,10 @@
             // 
             patrolPictureBox.Anchor = AnchorStyles.Left;
             patrolPictureBox.Image = Properties.Resources.ship_s;
-            patrolPictureBox.Location = new Point(269, 3);
+            patrolPictureBox.Location = new Point(310, 4);
+            patrolPictureBox.Margin = new Padding(3, 4, 3, 4);
             patrolPictureBox.Name = "patrolPictureBox";
-            patrolPictureBox.Size = new Size(32, 50);
+            patrolPictureBox.Size = new Size(37, 67);
             patrolPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             patrolPictureBox.TabIndex = 4;
             patrolPictureBox.TabStop = false;
@@ -279,32 +310,23 @@
             patrolCountLabel.Anchor = AnchorStyles.Left;
             patrolCountLabel.AutoSize = true;
             patrolCountLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            patrolCountLabel.Location = new Point(307, 13);
+            patrolCountLabel.Location = new Point(353, 19);
             patrolCountLabel.Name = "patrolCountLabel";
-            patrolCountLabel.Padding = new Padding(0, 0, 16, 0);
-            patrolCountLabel.Size = new Size(41, 30);
+            patrolCountLabel.Padding = new Padding(0, 0, 18, 0);
+            patrolCountLabel.Size = new Size(50, 37);
             patrolCountLabel.TabIndex = 5;
             patrolCountLabel.Text = "0";
             // 
-            // backButton
-            // 
-            backButton.AutoSize = true;
-            backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            backButton.Location = new Point(166, 3);
-            backButton.Name = "backButton";
-            backButton.Size = new Size(60, 25);
-            backButton.TabIndex = 2;
-            backButton.Text = "⮌ Volver";
-            backButton.UseVisualStyleBackColor = true;
-            backButton.Click += backButton_Click;
-            // 
             // GameForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 561);
+            BackColor = Color.SteelBlue;
+            ClientSize = new Size(896, 748);
             Controls.Add(mainLayoutPanel);
             FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 4, 3, 4);
             Name = "GameForm";
             Text = "GameForm";
             ((System.ComponentModel.ISupportInitialize)playerCanvasPictureBox).EndInit();
