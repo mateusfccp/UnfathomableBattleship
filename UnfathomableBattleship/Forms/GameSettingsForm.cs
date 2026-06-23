@@ -1,7 +1,6 @@
 using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
-using UnfathomableBattleship.Services;
 
 namespace UnfathomableBattleship.Forms
 {
@@ -91,8 +90,18 @@ namespace UnfathomableBattleship.Forms
 
         private void CancelarButton_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            this.Dispose();
+            Hide();
+            Dispose();
+        }
+
+        private void mainLayoutPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void DificultadComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
