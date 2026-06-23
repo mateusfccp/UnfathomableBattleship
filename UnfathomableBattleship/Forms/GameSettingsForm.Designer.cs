@@ -57,7 +57,6 @@
             GridXBox.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
             GridXBox.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             GridXBox.Name = "GridXBox";
-            GridXBox.ReadOnly = true;
             GridXBox.Size = new Size(39, 23);
             GridXBox.TabIndex = 0;
             GridXBox.Value = new decimal(new int[] { 8, 0, 0, 0 });
@@ -68,7 +67,6 @@
             GridYBox.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
             GridYBox.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             GridYBox.Name = "GridYBox";
-            GridYBox.ReadOnly = true;
             GridYBox.Size = new Size(39, 23);
             GridYBox.TabIndex = 1;
             GridYBox.Value = new decimal(new int[] { 8, 0, 0, 0 });
