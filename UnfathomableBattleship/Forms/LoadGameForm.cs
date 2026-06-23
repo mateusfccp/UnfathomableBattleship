@@ -16,9 +16,9 @@ namespace UnfathomableBattleship.Forms
         private void LoadGames()
         {
             var partidas = _gameManager.GetCurrentPlayerGames();
-            foreach (Control control in flowLayoutPanel.Controls)
+            while(flowLayoutPanel.Controls.Count > 0)
             {
-                control.Dispose();
+                flowLayoutPanel.Controls[0].Dispose();
             }
             if ((partidas.Count == 0))
             {
@@ -53,23 +53,27 @@ namespace UnfathomableBattleship.Forms
                     BackColor = Color.FromArgb(50, 70, 100),
                     Margin = new Padding(10)
                 };
+
                 Label infoLabel = new Label
                 {
-                    Text = $"Partida #{partida.Id} - Estado: {partida.State}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {(int)partida.ElapsedTime.TotalMinutes} min",
+                    Text = $"Partida #{partida.Id} ({partida.Configuration.BoardSize.Width}x{partida.Configuration.BoardSize.Height}) - Estado: {partida.State}\nÚltima vez: {partida.LastUpdate:dd/MM/yyyy HH:mm}\nTiempo jugado: {(int)partida.ElapsedTime.TotalMinutes} min",
                     ForeColor = Color.White,
                     AutoSize = true,
                     Location = new Point(10, 15),
                     Font = new Font("Segoe UI", 10, FontStyle.Bold)
                 };
-                Button btnCargar = new Button
-                {
-                    Text = "Cargar",
-                    BackColor = Color.MediumSpringGreen,
-                    Size = new Size(100, 40),
-                    Location = new Point(card.Width - 120, 20),
-                    Cursor = Cursors.Hand,
-                    Tag = partida.Id
-                };
+
+                    Button btnCargar = new Button
+                    {
+                        Text = "Cargar",
+                        BackColor = Color.MediumSpringGreen,
+                        Size = new Size(100, 40),
+                        Location = new Point(card.Width - 120, 20),
+                        Cursor = Cursors.Hand,
+                        Tag = partida.Id
+                    };
+  
+
 
                 Button btnBorrar = new Button
                 {
@@ -88,6 +92,11 @@ namespace UnfathomableBattleship.Forms
                 card.Controls.Add(btnCargar);
                 card.Controls.Add(btnBorrar);
                 flowLayoutPanel.Controls.Add(card);
+
+                if(partida.State != Enums.GameState.InGame)
+                {
+                    btnCargar.Enabled = false;
+                }
             }
         }
 
