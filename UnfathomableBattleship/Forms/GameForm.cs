@@ -214,7 +214,12 @@ public partial class GameForm : Form
 
     private void ShowGameOver(bool isVictory)
     {
-        MainForm?.SwitchForm(new GameOverForm(_gameManager, _game, isVictory));
+        var form = new GameOverForm(_gameManager, _game, isVictory)
+        {
+            Tag = MainForm
+        };
+        form.Show();
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 
     private void RotatePictureBox(PictureBox pictureBox)
