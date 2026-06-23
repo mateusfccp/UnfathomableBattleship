@@ -18,6 +18,7 @@ public partial class MainForm : Form
         {
             control.Tag = null;
             contentPanel.Controls.Remove(control);
+            control.Dispose();
         }
         
         subForm.TopLevel = false;
