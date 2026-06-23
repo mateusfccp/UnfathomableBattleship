@@ -1,4 +1,4 @@
-﻿using UnfathomableBattleship.Enums;
+using UnfathomableBattleship.Enums;
 using UnfathomableBattleship.Interfaces;
 using UnfathomableBattleship.Models;
 using UnfathomableBattleship.Services;
@@ -32,13 +32,21 @@ namespace UnfathomableBattleship.Forms
             for (int i = 0; i < DestructorCountBox.Value; i++) Ships.Add(new Ship(2, ShipOrientation.Horizontal));
             for (int i = 0; i < AcorazadoCountBox.Value; i++) Ships.Add(new Ship(3, ShipOrientation.Horizontal));
             GameConfiguration config = new GameConfiguration(Gamemode, BoardSize, Ships);
-            MainForm?.SwitchForm(new PreparationForm(_gameManager, config)); // Porque no funciona???
+            MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.NewGame(config))); // Porque no funciona???
             this.Hide();
         }
 
         private void QuickSettings_Click(object sender, EventArgs e)
         {
-            _gameManager.QuickGame();
+            try
+            {
+                MainForm?.SwitchForm(new GameForm(_gameManager, _gameManager.QuickGame()));
+                this.Hide();
+            }
+            catch
+            {
+                MessageBox.Show("No se ha encontrado partida para la configuración rápida.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
