@@ -196,7 +196,7 @@ public class PreparationForm : Form
         mainLayoutPanel.Location = new Point(0, 0);
         mainLayoutPanel.Name = "mainLayoutPanel";
         mainLayoutPanel.RowCount = 2;
-        mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+        mainLayoutPanel.RowStyles.Add(new RowStyle());
         mainLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
         mainLayoutPanel.Size = new Size(768, 544);
         mainLayoutPanel.TabIndex = 0;
@@ -206,7 +206,7 @@ public class PreparationForm : Form
         canvasPictureBox.Anchor = AnchorStyles.None;
         canvasPictureBox.BackColor = SystemColors.ActiveBorder;
         mainLayoutPanel.SetColumnSpan(canvasPictureBox, 2);
-        canvasPictureBox.Location = new Point(224, 142);
+        canvasPictureBox.Location = new Point(224, 130);
         canvasPictureBox.Name = "canvasPictureBox";
         canvasPictureBox.Size = new Size(320, 320);
         canvasPictureBox.TabIndex = 0;
@@ -219,9 +219,9 @@ public class PreparationForm : Form
         buttonFlowLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         buttonFlowLayout.Controls.Add(startButton);
         buttonFlowLayout.Controls.Add(backButton);
-        buttonFlowLayout.Location = new Point(595, 3);
+        buttonFlowLayout.Location = new Point(569, 3);
         buttonFlowLayout.Name = "buttonFlowLayout";
-        buttonFlowLayout.Size = new Size(170, 54);
+        buttonFlowLayout.Size = new Size(196, 31);
         buttonFlowLayout.TabIndex = 1;
         // 
         // startButton
@@ -232,9 +232,9 @@ public class PreparationForm : Form
         startButton.Enabled = false;
         startButton.Location = new Point(3, 3);
         startButton.Name = "startButton";
-        startButton.Size = new Size(109, 25);
+        startButton.Size = new Size(124, 25);
         startButton.TabIndex = 0;
-        startButton.Text = "Comenzar batalla";
+        startButton.Text = "⚔️ Comenzar batalla";
         startButton.UseVisualStyleBackColor = true;
         startButton.Click += startButton_Click;
         // 
@@ -243,22 +243,25 @@ public class PreparationForm : Form
         backButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         backButton.AutoSize = true;
         backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        backButton.Location = new Point(118, 3);
+        backButton.Location = new Point(133, 3);
         backButton.Name = "backButton";
-        backButton.Size = new Size(49, 25);
+        backButton.Size = new Size(60, 25);
         backButton.TabIndex = 1;
-        backButton.Text = "Volver";
+        backButton.Text = "⮌ Volver";
         backButton.UseVisualStyleBackColor = true;
+        backButton.Click += backButton_Click;
         // 
         // instructionsFlowLayout
         // 
         instructionsFlowLayout.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        instructionsFlowLayout.AutoSize = true;
+        instructionsFlowLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         instructionsFlowLayout.Controls.Add(shipCountLabel);
         instructionsFlowLayout.Controls.Add(instructionsLabel);
         instructionsFlowLayout.FlowDirection = FlowDirection.TopDown;
         instructionsFlowLayout.Location = new Point(3, 3);
         instructionsFlowLayout.Name = "instructionsFlowLayout";
-        instructionsFlowLayout.Size = new Size(378, 54);
+        instructionsFlowLayout.Size = new Size(378, 30);
         instructionsFlowLayout.TabIndex = 2;
         // 
         // shipCountLabel
@@ -300,5 +303,10 @@ public class PreparationForm : Form
     {
         _timer.Stop();
         MainForm?.SwitchForm(new GameForm(_gameManager, _game));
+    }
+
+    private void backButton_Click(object sender, EventArgs e)
+    {
+        MainForm?.SwitchForm(new MainMenuForm(_gameManager));
     }
 }

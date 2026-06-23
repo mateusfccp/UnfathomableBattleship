@@ -193,7 +193,7 @@ public partial class GameForm : Form
         }
     }
 
-    private void exitButton_Click(object sender, EventArgs e)
+    private void giveUpButton_Click(object sender, EventArgs e)
     {
         var result = MessageBox.Show(
             "¿Estás seguro que querés desistir, cobarde?",
@@ -205,6 +205,26 @@ public partial class GameForm : Form
         if (result == DialogResult.Yes)
         {
             ShowGameOver(false);
+        }
+    }
+
+    private void backButton_Click(object sender, EventArgs e)
+    {
+        var result = MessageBox.Show(
+            "¿Deseás guardar el juego antes de volver al menu?",
+            "Volver al menu",
+            MessageBoxButtons.YesNoCancel,
+            MessageBoxIcon.Question
+        );
+
+        if (result == DialogResult.Yes)
+        {
+            _game.Save();
+            MainForm?.SwitchForm(new MainMenuForm(_gameManager));
+        }
+        else if (result == DialogResult.No)
+        {
+            MainForm?.SwitchForm(new MainMenuForm(_gameManager));
         }
     }
 

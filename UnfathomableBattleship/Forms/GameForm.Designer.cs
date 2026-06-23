@@ -38,7 +38,7 @@
             timerValueLabel = new Label();
             buttonLayoutPanel = new FlowLayoutPanel();
             saveButton = new Button();
-            exitButton = new Button();
+            giveUpButton = new Button();
             fleetLabel = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             battleshipPictureBox = new PictureBox();
@@ -47,6 +47,7 @@
             destructorCountLabel = new Label();
             patrolPictureBox = new PictureBox();
             patrolCountLabel = new Label();
+            backButton = new Button();
             ((System.ComponentModel.ISupportInitialize)playerCanvasPictureBox).BeginInit();
             mainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)enemyCanvasPictureBox).BeginInit();
@@ -158,10 +159,11 @@
             buttonLayoutPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             buttonLayoutPanel.AutoSize = true;
             buttonLayoutPanel.Controls.Add(saveButton);
-            buttonLayoutPanel.Controls.Add(exitButton);
-            buttonLayoutPanel.Location = new Point(604, 3);
+            buttonLayoutPanel.Controls.Add(giveUpButton);
+            buttonLayoutPanel.Controls.Add(backButton);
+            buttonLayoutPanel.Location = new Point(552, 3);
             buttonLayoutPanel.Name = "buttonLayoutPanel";
-            buttonLayoutPanel.Size = new Size(177, 31);
+            buttonLayoutPanel.Size = new Size(229, 31);
             buttonLayoutPanel.TabIndex = 3;
             buttonLayoutPanel.WrapContents = false;
             // 
@@ -177,17 +179,17 @@
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += saveButton_Click;
             // 
-            // exitButton
+            // giveUpButton
             // 
-            exitButton.AutoSize = true;
-            exitButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            exitButton.Location = new Point(83, 3);
-            exitButton.Name = "exitButton";
-            exitButton.Size = new Size(91, 25);
-            exitButton.TabIndex = 1;
-            exitButton.Text = "💀 Abandonar";
-            exitButton.UseVisualStyleBackColor = true;
-            exitButton.Click += exitButton_Click;
+            giveUpButton.AutoSize = true;
+            giveUpButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            giveUpButton.Location = new Point(83, 3);
+            giveUpButton.Name = "giveUpButton";
+            giveUpButton.Size = new Size(77, 25);
+            giveUpButton.TabIndex = 1;
+            giveUpButton.Text = "💀 Rendirse";
+            giveUpButton.UseVisualStyleBackColor = true;
+            giveUpButton.Click += giveUpButton_Click;
             // 
             // fleetLabel
             // 
@@ -284,6 +286,18 @@
             patrolCountLabel.TabIndex = 5;
             patrolCountLabel.Text = "0";
             // 
+            // backButton
+            // 
+            backButton.AutoSize = true;
+            backButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            backButton.Location = new Point(166, 3);
+            backButton.Name = "backButton";
+            backButton.Size = new Size(60, 25);
+            backButton.TabIndex = 2;
+            backButton.Text = "⮌ Volver";
+            backButton.UseVisualStyleBackColor = true;
+            backButton.Click += backButton_Click;
+            // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -321,7 +335,7 @@
         private Label timerLabel;
         public Label timerValueLabel;
         private FlowLayoutPanel buttonLayoutPanel;
-        private Button exitButton;
+        private Button giveUpButton;
         private Label fleetLabel;
         private FlowLayoutPanel flowLayoutPanel1;
         private PictureBox battleshipPictureBox;
@@ -330,5 +344,6 @@
         private Label destructorCountLabel;
         private PictureBox patrolPictureBox;
         private Label patrolCountLabel;
+        private Button backButton;
     }
 }
