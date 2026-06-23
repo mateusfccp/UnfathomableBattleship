@@ -43,7 +43,7 @@
             // usernameTextbox
             // 
             usernameTextbox.BackColor = SystemColors.ActiveCaption;
-            usernameTextbox.Location = new Point(325, 410);
+            usernameTextbox.Location = new Point(325, 422);
             usernameTextbox.Margin = new Padding(15, 5, 15, 5);
             usernameTextbox.Name = "usernameTextbox";
             usernameTextbox.Size = new Size(228, 27);
@@ -57,7 +57,7 @@
             usernameLabel.BackColor = Color.Transparent;
             usernameLabel.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             usernameLabel.ForeColor = Color.WhiteSmoke;
-            usernameLabel.Location = new Point(400, 380);
+            usernameLabel.Location = new Point(400, 392);
             usernameLabel.Margin = new Padding(10, 15, 10, 0);
             usernameLabel.Name = "usernameLabel";
             usernameLabel.Size = new Size(77, 25);
@@ -71,8 +71,8 @@
             passwordLabel.BackColor = Color.Transparent;
             passwordLabel.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             passwordLabel.ForeColor = Color.WhiteSmoke;
-            passwordLabel.Location = new Point(385, 457);
-            passwordLabel.Margin = new Padding(10, 15, 10, 15);
+            passwordLabel.Location = new Point(385, 469);
+            passwordLabel.Margin = new Padding(10, 15, 10, 0);
             passwordLabel.Name = "passwordLabel";
             passwordLabel.Size = new Size(108, 25);
             passwordLabel.TabIndex = 3;
@@ -81,7 +81,7 @@
             // passwordTextBox
             // 
             passwordTextBox.BackColor = SystemColors.ActiveCaption;
-            passwordTextBox.Location = new Point(325, 502);
+            passwordTextBox.Location = new Point(325, 499);
             passwordTextBox.Margin = new Padding(15, 5, 15, 5);
             passwordTextBox.Name = "passwordTextBox";
             passwordTextBox.Size = new Size(228, 27);
@@ -126,7 +126,7 @@
             loginButton.BackColor = Color.SteelBlue;
             loginButton.Cursor = Cursors.Hand;
             loginButton.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            loginButton.Location = new Point(315, 539);
+            loginButton.Location = new Point(315, 536);
             loginButton.Margin = new Padding(5);
             loginButton.Name = "loginButton";
             loginButton.Padding = new Padding(2, 3, 2, 3);
@@ -143,7 +143,7 @@
             createAccountButton.BackColor = Color.SteelBlue;
             createAccountButton.Cursor = Cursors.Hand;
             createAccountButton.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            createAccountButton.Location = new Point(315, 589);
+            createAccountButton.Location = new Point(315, 586);
             createAccountButton.Margin = new Padding(5);
             createAccountButton.Name = "createAccountButton";
             createAccountButton.Padding = new Padding(2, 3, 2, 3);
@@ -157,7 +157,7 @@
             // 
             lbFeedBackUser.AutoSize = true;
             lbFeedBackUser.ForeColor = Color.Red;
-            lbFeedBackUser.Location = new Point(571, 405);
+            lbFeedBackUser.Location = new Point(571, 417);
             lbFeedBackUser.Name = "lbFeedBackUser";
             lbFeedBackUser.Size = new Size(0, 20);
             lbFeedBackUser.TabIndex = 7;
